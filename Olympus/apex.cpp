@@ -153,7 +153,7 @@ bool Apex::InitPhysX()
         return false;
 
     // Create a plane
-    PxRigidStatic* plane = PxCreatePlane(*mPhysics, PxPlane(PxVec3(0,1,0), 5), *defaultMaterial);
+    PxRigidStatic* plane = PxCreatePlane(*mPhysics, PxPlane(PxVec3(0,1,0), 0), *defaultMaterial);
     if (!plane)
         return false;
 

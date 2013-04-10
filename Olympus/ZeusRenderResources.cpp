@@ -359,7 +359,12 @@ struct VertexType
 
 void ZeusSpriteBuffer::writeBuffer(const physx::apex::NxApexRenderSpriteBufferData& data, physx::PxU32 firstSprite, physx::PxU32 numSprites)
 {
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
+    if (!mSpriteBuffer || !numSprites)
+	{
+		return;
+	}
+    
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT result;
 
     // Lock the vertex buffer so it can be written to.
@@ -369,48 +374,79 @@ void ZeusSpriteBuffer::writeBuffer(const physx::apex::NxApexRenderSpriteBufferDa
         return;
     }
 
-    // Get a pointer to the data in the vertex buffer.
+    for (physx::PxU32 i = 0; i < physx::apex::NxRenderSpriteSemantic::NUM_SEMANTICS; i++)
+	{
+		physx::apex::NxRenderSpriteSemantic::Enum semantic = (physx::apex::NxRenderSpriteSemantic::Enum)i;
+		const physx::apex::NxApexRenderSemanticData& semanticData = data.getSemanticData(semantic);
+		if (semanticData.data)
+		{
+			const void* srcData = semanticData.data;
+			const physx::PxU32 srcStride = semanticData.stride;
 
-    //const int num = &numSprites;
-    // Copy the data into the vertex buffer.
-	VertexType* vrticesPtr;
-    vrticesPtr = (VertexType*)mappedResource.pData + (firstSprite * mStride);
-
-    VertexType* v = new VertexType();
-    for(physx::PxU32 i = 0; i < numSprites; i++)
-    {
-		v->x = 0.0f;
-		v->y = 2.0f - (i * .125);
-		v->z = 0.0f;
-		
-		//memcpy( sorcData + (sizeof(v) * i), (void*)v, sizeof(v) );
-		memcpy( vrticesPtr + (mStride * i), (void*)v, (mStride) );
-        for (physx::PxU32 j = 0; j < physx::apex::NxRenderSpriteSemantic::NUM_SEMANTICS; j++)
-        {
-            physx::apex::NxRenderSpriteSemantic::Enum apexSemantic = (physx::apex::NxRenderSpriteSemantic::Enum)j;
-            const physx::apex::NxApexRenderSemanticData& semanticData = data.getSemanticData(apexSemantic);
-            if (semanticData.data)
+			physx::apex::NxRenderVertexSemantic::Enum apexSemantic = physx::apex::NxRenderVertexSemantic::NUM_SEMANTICS;
+            if(semantic == physx::apex::NxRenderSpriteSemantic::POSITION)
             {
-				if(apexSemantic == physx::apex::NxRenderSpriteSemantic::POSITION)
+                physx::PxU32 semanticStride = mStride;
+				void* dstData = mappedResource.pData;
+				void* dstDataCopy = dstData;
+				PX_ASSERT(dstData && semanticStride);
+				if (dstData && semanticStride)
 				{
-					//memcpy(srcData + (mStride * i), semanticData.data, semanticData.stride);
-					VertexType* srcPtr;
-					srcPtr = (VertexType*)semanticData.data + (mStride * i);
-					//memcpy(vrticesPtr + (mStride * i), (void*)srcPtr, (mStride));
+					dstData = ((physx::PxU8*)dstData) + firstSprite * semanticStride;
+                    physx::PxU32 formatSize = mStride;
+					for (physx::PxU32 j = 0; j < numSprites; j++)
+					{
+						memcpy(dstData, srcData, formatSize);
+						srcData = ((physx::PxU8*)srcData) + srcStride;
+						dstData = ((physx::PxU8*)dstData) + semanticStride;
+					}
 				}
             }
-        }
-    }
+		}
+	}
 
-    //memcpy(vrticesPtr, (void*)v, (mStride));
+ //   // Get a pointer to the data in the vertex buffer.
+
+ //   //const int num = &numSprites;
+ //   // Copy the data into the vertex buffer.
+	//VertexType* vrticesPtr;
+ //   vrticesPtr = (VertexType*)mappedResource.pData + (firstSprite * mStride);
+ //   VertexType* sauce = (VertexType*) malloc(mStride * 16);
+ //   VertexType* v = new VertexType();
+ //   for(physx::PxU32 i = 0; i < 16; i++)
+ //   {
+	//	v->x = 0.0f;
+	//	v->y = 2.0f - (i * .125);
+	//	v->z = 0.0f;
+	//	
+	//	//memcpy( sorcData + (sizeof(v) * i), (void*)v, sizeof(v) );
+	//	//memcpy( sauce + (mStride * i), (void*)v, (mStride) );
+ //       for (physx::PxU32 j = 0; j < physx::apex::NxRenderSpriteSemantic::NUM_SEMANTICS; j++)
+ //       {
+ //           physx::apex::NxRenderSpriteSemantic::Enum apexSemantic = (physx::apex::NxRenderSpriteSemantic::Enum)j;
+ //           const physx::apex::NxApexRenderSemanticData& semanticData = data.getSemanticData(apexSemantic);
+ //           if (semanticData.data)
+ //           {
+	//			if(apexSemantic == physx::apex::NxRenderSpriteSemantic::POSITION)
+	//			{
+	//				//memcpy(srcData + (mStride * i), semanticData.data, semanticData.stride);
+	//				VertexType* srcPtr;
+	//				srcPtr = (VertexType*)semanticData.data + (mStride * i);
+	//				memcpy(vrticesPtr + (mStride * i), (void*)srcPtr, (mStride));
+	//			}
+ //           }
+ //       }
+ //   }
+
+ //   //memcpy(vrticesPtr, (void*)sauce, (mStride));
 	
 	// Unlock the vertex buffer.
     mDevcon->Unmap(mSpriteBuffer, 0);
 
 	//free(vrticesPtr);
-	vrticesPtr = 0;
+	/*vrticesPtr = 0;
 	delete(v);
-	v = 0;
+	v = 0;*/
 }
 
 

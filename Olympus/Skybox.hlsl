@@ -39,5 +39,7 @@ VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float3 tangent 
 
 float4 PShader(VOut input) : SV_TARGET
 {
-    return cubeMap.Sample(samTriLinearSam, input.posL);
+    float4 color =  cubeMap.Sample(samTriLinearSam, input.posL);
+    color.a = 1.0f;
+    return color;
 }

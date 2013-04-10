@@ -14,6 +14,16 @@ struct GOut
 {
 	float4 Position : SV_POSITION;
 	uint primID		: SV_PrimitiveID;
+    float2 texcoord : TEX_COORDS;
+};
+
+Texture2D theTexture;
+
+SamplerState samTriLinearSam
+{
+	Filter = MIN_MAG_MIP_LINEAR;
+	AddressU = Wrap;
+	AddressV = Wrap;
 };
 
 VOut VShader(float3 position : POSITION)
@@ -29,9 +39,10 @@ void GShader(point VOut input[1], uint primID : SV_PrimitiveID, inout TriangleSt
 	// Compute local coordinate system to billboard to face eye
 	float3 up = float3(0.0f, 1.0f, 0.0f);
 	float3 look = eyePos - input[0].Position;
-	look.y = 0.0f;
+	//look.y = 0.0f;
 	look = normalize(look);
 	float3 left = cross(up, look);
+        //up = cross(look, left);
 
 	// Compute triangle strip vertices of the quad
 	float halfWidth = 0.05;
@@ -43,6 +54,7 @@ void GShader(point VOut input[1], uint primID : SV_PrimitiveID, inout TriangleSt
 	float4 topRight		= float4(input[0].Position - halfWidth * left + halfHeight * up, 1.0f);
 
 	float4 verts[4] = { bottomLeft, topLeft, bottomRight, topRight };
+    float2 texc[4]  = { float2(0.0f,0.0f), float2(0.0f,1.0f), float2(1.0f, 0.0f), float2(1.0f, 1.0f) }; 
 
 	GOut output;
 	[unroll]
@@ -50,11 +62,14 @@ void GShader(point VOut input[1], uint primID : SV_PrimitiveID, inout TriangleSt
 	{
 		output.Position = mul(final, verts[i]);
 		output.primID = primID;		
+        output.texcoord = texc[i];
 		triangleStream.Append(output);
 	}
 }
 
-float4 PShader() : SV_TARGET
+float4 PShader(GOut input) : SV_TARGET
 {
-	return float4(1.0f, 0.5f, 0.2f, 1.0f);
+	float4 color = float4(0.0f, 0.502f, 0.753f, 1.0f);//theTexture.Gather(samTriLinearSam, input.texcoord, int2(0,0));
+    color.a = theTexture.GatherAlpha(samTriLinearSam, input.texcoord, int2(0,0), int2(0,0), int2(0,0), int2(0,0));
+    return color;
 }

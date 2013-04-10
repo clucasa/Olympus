@@ -167,6 +167,26 @@ int System::initd3d()
 
     devcon->RSSetViewports(1, &viewport);
 
+    // Init blending
+    D3D11_BLEND_DESC blendDesc;
+    blendDesc.AlphaToCoverageEnable = FALSE;
+    blendDesc.IndependentBlendEnable = FALSE;
+    blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend              = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend             = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp               = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha         = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha        = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha          = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+    
+    hr = dev->CreateBlendState(&blendDesc, &mBlendState);
+    if( FAILED(hr) )
+        return 0;
+
+    //devcon->OMSetBlendState(mBlendState, NULL, NULL );
+    float blendFactor[] = {0.0f, 0.0f, 0.0f, 0.0f}; 
+    devcon->OMSetBlendState(mBlendState, blendFactor, 0xffffffff); // restore default
     
 	// initialize camera
 	mCam = new Camera();
@@ -196,7 +216,6 @@ void System::RenderFrame(void)
 
     // set the shader objects
     devcon->VSSetShader(pVS, 0, 0);
-	devcon->GSSetShader(NULL, 0, 0);
     devcon->PSSetShader(pPS, 0, 0);
     devcon->IASetInputLayout(pLayout);
     rendManager->Render();
@@ -208,14 +227,21 @@ void System::RenderFrame(void)
 	scBuffer.Final = mCam->ViewProj();
 	scBuffer.EyePos = mCam->GetPosition();
 
+    // Draw ground
+    
+    //devcon->PSSetShaderResources(0, 1, &groundTexture);
+
+
+    // Draw sprites
 	devcon->VSSetShader(spVS, 0, 0);
     devcon->GSSetShader(spGS, 0, 0);
     devcon->PSSetShader(spPS, 0, 0);
 	devcon->IASetInputLayout(spLayout);
 	devcon->GSSetConstantBuffers(0, 1, &spCBuffer);
-		
+    devcon->PSSetShaderResources(0, 1, &spriteTexture);
 	devcon->UpdateSubresource(spCBuffer, 0, 0, &scBuffer, 0, 0);
 	mApex->Render();
+    devcon->GSSetShader(NULL, 0, 0);
 
     swapchain->Present(0, 0);
 }
@@ -326,6 +352,8 @@ int System::InitPipeline()
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
     result = dev->CreateBuffer(&bd, NULL, &spCBuffer);
+
+    HRESULT hr = D3DX11CreateShaderResourceViewFromFile(dev, "Media/Textures/SoftParticle.dds", 0, 0, &spriteTexture, 0 );
 
 
     return 1;

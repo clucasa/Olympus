@@ -88,7 +88,7 @@ void ApexParticles::CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene)
         emitterActor = static_cast<NxApexEmitterActor*>(emitterAsset->createApexActor(*descParams,*gApexScene));
         if(emitterActor)
         {
-            emitterActor->setCurrentPosition(PxVec3(0.0f, 1.0f, 0.0f));
+            emitterActor->setCurrentPosition(PxVec3(0.0f, 5.0f, 0.0f));
             emitterActor->startEmit( true );
             //emitterActor->setLifetimeRange(physx::apex::NxRange<PxF32>(1,5));
             //emitterActor->setRateRange(physx::apex::NxRange<PxF32>(10, 10));
