@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{0e2a6c75-00ba-439c-9967-a0267f670465}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PhysX">
+      <UniqueIdentifier>{51d853ad-2264-459d-93f3-a55a08326f40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PhysX\Apex">
+      <UniqueIdentifier>{a1a775ca-a0be-4e22-9ff9-ca8e093517e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PhysX\Apex\ApexParticles">
+      <UniqueIdentifier>{ea8de009-e5b4-4078-8019-338d0a7a0837}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PhysX\Apex\RenderResourceManager">
+      <UniqueIdentifier>{0bfd4751-4717-4349-a8c0-d0aa0b18772a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PhysX\Apex\RenderResourceManager\ZeusRenderResource">
+      <UniqueIdentifier>{53c9827c-bcc5-4ef2-b94f-c8c3e307f3a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PhysX\Apex\PhysXHeightField">
+      <UniqueIdentifier>{242a9e9e-07cb-41f7-b5c1-012165e44d7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PhysX\Apex\ResourceCallback">
+      <UniqueIdentifier>{b29e21c1-b331-482e-93e2-2414fa9b2376}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{e32bb8b1-451a-46ab-aa56-66ec756898b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders">
+      <UniqueIdentifier>{8d7c2572-2f53-4144-8b01-b2e5c77cd94b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System">
+      <UniqueIdentifier>{9a5cdafb-2f2d-45eb-b937-888bcf1420b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\GameTimer">
+      <UniqueIdentifier>{e900a75f-7eab-4c85-bca2-83e8a8ba7d0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Helpers">
+      <UniqueIdentifier>{85659c0d-ea84-4842-b196-24e3525042d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Objects">
+      <UniqueIdentifier>{6adda126-4da2-4345-ad9c-ec498933b50c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Objects\Helpers">
+      <UniqueIdentifier>{987fc772-0231-4313-a366-282f6a4e3aa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Objects\Skybox">
+      <UniqueIdentifier>{20e6fff7-11f1-4df3-90a2-469456573428}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="apex.cpp">
+      <Filter>PhysX\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="ApexParticles.cpp">
+      <Filter>PhysX\Apex\ApexParticles</Filter>
+    </ClCompile>
+    <ClCompile Include="ZeusRenderResourceManager.cpp">
+      <Filter>PhysX\Apex\RenderResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="ZeusRenderResources.cpp">
+      <Filter>PhysX\Apex\RenderResourceManager\ZeusRenderResource</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysXHeightField.cpp">
+      <Filter>PhysX\Apex\PhysXHeightField</Filter>
+    </ClCompile>
+    <ClCompile Include="ZeusResourceCallback.cpp">
+      <Filter>PhysX\Apex\ResourceCallback</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Camera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryGenerator.cpp">
+      <Filter>Rendering\Objects\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>Rendering\Objects\Skybox</Filter>
+    </ClCompile>
+    <ClCompile Include="MathHelper.cpp">
+      <Filter>System\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="System.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderManager.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders.hlsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="spriteshader.hlsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="Skybox.hlsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="apex.h">
+      <Filter>PhysX\Apex</Filter>
+    </ClInclude>
+    <ClInclude Include="ApexParticles.h">
+      <Filter>PhysX\Apex\ApexParticles</Filter>
+    </ClInclude>
+    <ClInclude Include="ZeusRenderResourceManager.h">
+      <Filter>PhysX\Apex\RenderResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="ZeusRenderResources.h">
+      <Filter>PhysX\Apex\RenderResourceManager\ZeusRenderResource</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysXHeightField.h">
+      <Filter>PhysX\Apex\PhysXHeightField</Filter>
+    </ClInclude>
+    <ClInclude Include="ZeusResourceCallback.h">
+      <Filter>PhysX\Apex\ResourceCallback</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryGenerator.h">
+      <Filter>Rendering\Objects\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertices.h">
+      <Filter>Rendering\Objects\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBox.h">
+      <Filter>Rendering\Objects\Skybox</Filter>
+    </ClInclude>
+    <ClInclude Include="MathHelper.h">
+      <Filter>System\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderable.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderManager.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Media\ZeusIcon.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
