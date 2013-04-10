@@ -327,29 +327,6 @@ ZeusSpriteBuffer::ZeusSpriteBuffer(const physx::apex::NxUserRenderSpriteBufferDe
         return;
 
     HRESULT hResult = mDevice->CreateBuffer(&d3ddesc, NULL, &mSpriteBuffer);
-
-	D3D11_BUFFER_DESC testbufdesc;
-    testbufdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	testbufdesc.ByteWidth = (sizeof( float ) * 3) * 5;
-    testbufdesc.CPUAccessFlags = 0;
-    testbufdesc.MiscFlags = 0;
-	testbufdesc.Usage = D3D11_USAGE_DEFAULT;
-
-	float data[5][3];
-	data[0][0] = -2.0f; data[0][1] = 1.0f; data[0][2] = 0.0f;
-	data[1][0] = -1.0f; data[1][1] = 1.0f; data[1][2] = 0.0f;
-	data[2][0] = 0.0f; data[2][1] = 1.0f; data[2][2] = 0.0f;
-	data[3][0] = 1.0f; data[3][1] = 1.0f; data[3][2] = 0.0f;
-	data[4][0] = 2.0f; data[4][1] = 1.0f; data[4][2] = 0.0f;
-
-	// Fill in the subresource data.
-	D3D11_SUBRESOURCE_DATA InitData;
-	InitData.pSysMem = data;
-	InitData.SysMemPitch = 0;
-	InitData.SysMemSlicePitch = 0;
-
-
-	hResult = mDevice->CreateBuffer(&testbufdesc, &InitData, &mTestBuffer);
 }
 
 ZeusSpriteBuffer::~ZeusSpriteBuffer(void)
@@ -367,36 +344,47 @@ bool ZeusSpriteBuffer::getInteropResourceHandle(CUgraphicsResource& handle)
 
 void ZeusSpriteBuffer::Render(int start, int count)
 {
-	UINT stride = (UINT)/*mStride*/sizeof(float)*3;
+	UINT stride = (UINT)mStride;
 	UINT offset = 0;
 	mDevcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-	mDevcon->IASetVertexBuffers(0, 1, &/*mSpriteBuffer*/mTestBuffer, &stride, &offset);   // Test buffer
+	mDevcon->IASetVertexBuffers(0, 1, &mSpriteBuffer, &stride, &offset);
 	
 	mDevcon->Draw(count, start);
-
 }
+
+struct VertexType
+{
+	float x,y,z;
+};
 
 void ZeusSpriteBuffer::writeBuffer(const physx::apex::NxApexRenderSpriteBufferData& data, physx::PxU32 firstSprite, physx::PxU32 numSprites)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT result;
-    physx::apex::NxApexRenderSemanticData* verticesPtr;
-    physx::apex::NxApexRenderSemanticData* srcData = (physx::apex::NxApexRenderSemanticData*) malloc(mStride*numSprites);
+
     // Lock the vertex buffer so it can be written to.
-    result = mDevcon->Map(mSpriteBuffer, 0, D3D11_MAP_WRITE, 0, &mappedResource);
+    result = mDevcon->Map(mSpriteBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     if(FAILED(result))
     {
         return;
     }
 
     // Get a pointer to the data in the vertex buffer.
-    verticesPtr = (physx::apex::NxApexRenderSemanticData*)mappedResource.pData + (firstSprite * mStride);
-    
-    // Copy the data into the vertex buffer.
-	
 
+    //const int num = &numSprites;
+    // Copy the data into the vertex buffer.
+	VertexType* vrticesPtr;
+    vrticesPtr = (VertexType*)mappedResource.pData + (firstSprite * mStride);
+
+    VertexType* v = new VertexType();
     for(physx::PxU32 i = 0; i < numSprites; i++)
     {
+		v->x = 0.0f;
+		v->y = 2.0f - (i * .125);
+		v->z = 0.0f;
+		
+		//memcpy( sorcData + (sizeof(v) * i), (void*)v, sizeof(v) );
+		memcpy( vrticesPtr + (mStride * i), (void*)v, (mStride) );
         for (physx::PxU32 j = 0; j < physx::apex::NxRenderSpriteSemantic::NUM_SEMANTICS; j++)
         {
             physx::apex::NxRenderSpriteSemantic::Enum apexSemantic = (physx::apex::NxRenderSpriteSemantic::Enum)j;
@@ -404,15 +392,25 @@ void ZeusSpriteBuffer::writeBuffer(const physx::apex::NxApexRenderSpriteBufferDa
             if (semanticData.data)
             {
 				if(apexSemantic == physx::apex::NxRenderSpriteSemantic::POSITION)
-					memcpy(srcData + (mStride * i), semanticData.data, semanticData.stride);
+				{
+					//memcpy(srcData + (mStride * i), semanticData.data, semanticData.stride);
+					VertexType* srcPtr;
+					srcPtr = (VertexType*)semanticData.data + (mStride * i);
+					//memcpy(vrticesPtr + (mStride * i), (void*)srcPtr, (mStride));
+				}
             }
         }
     }
 
-    memcpy(verticesPtr, srcData, (mStride * numSprites));
-
-    // Unlock the vertex buffer.
+    //memcpy(vrticesPtr, (void*)v, (mStride));
+	
+	// Unlock the vertex buffer.
     mDevcon->Unmap(mSpriteBuffer, 0);
+
+	//free(vrticesPtr);
+	vrticesPtr = 0;
+	delete(v);
+	v = 0;
 }
 
 

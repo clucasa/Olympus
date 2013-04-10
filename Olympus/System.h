@@ -66,6 +66,17 @@ private:
     ID3D11VertexShader  *pVS;               // the pointer to the vertex shader
     ID3D11PixelShader   *pPS;               // the pointer to the pixel shader
 
+    ID3D11InputLayout   *groundLayout;           // the pointer to the input layout
+	ID3D11VertexShader  *groundVS;               // the pointer to the ground vertex shader
+    ID3D11PixelShader   *groundPS;               // the pointer to the ground pixel shader
+	ID3D11Buffer		*groundCBuffer;  
+
+    ID3D11InputLayout   *spLayout;           // the pointer to the input layout
+	ID3D11VertexShader  *spVS;               // the pointer to the sprite vertex shader
+	ID3D11GeometryShader *spGS;				 // the pointer to the sprite geometry shader
+    ID3D11PixelShader   *spPS;               // the pointer to the sprite pixel shader
+	ID3D11Buffer		*spCBuffer;  
+
     HWND                hWnd;               // The main window
     Camera              *mCam;				// the camera
     Apex*               mApex;

@@ -182,6 +182,12 @@ int System::initd3d()
     return InitPipeline();
 }
 
+struct SPRITECBUFFER
+{
+	XMMATRIX Final;
+	XMFLOAT3 EyePos;
+	float buffer;
+};
 
 // this is the function used to render a single frame
 void System::RenderFrame(void)
@@ -190,6 +196,7 @@ void System::RenderFrame(void)
 
     // set the shader objects
     devcon->VSSetShader(pVS, 0, 0);
+	devcon->GSSetShader(NULL, 0, 0);
     devcon->PSSetShader(pPS, 0, 0);
     devcon->IASetInputLayout(pLayout);
     rendManager->Render();
@@ -197,6 +204,18 @@ void System::RenderFrame(void)
     if(fetch)
         mApex->fetch();
 
+	SPRITECBUFFER scBuffer;
+	scBuffer.Final = mCam->ViewProj();
+	scBuffer.EyePos = mCam->GetPosition();
+
+	devcon->VSSetShader(spVS, 0, 0);
+    devcon->GSSetShader(spGS, 0, 0);
+    devcon->PSSetShader(spPS, 0, 0);
+	devcon->IASetInputLayout(spLayout);
+	devcon->GSSetConstantBuffers(0, 1, &spCBuffer);
+		
+	devcon->UpdateSubresource(spCBuffer, 0, 0, &scBuffer, 0, 0);
+	mApex->Render();
 
     swapchain->Present(0, 0);
 }
@@ -246,6 +265,68 @@ int System::InitPipeline()
     hr = dev->CreateInputLayout(ied, 4, VS->GetBufferPointer(), VS->GetBufferSize(), &pLayout);
     if( FAILED(hr) )
         return 0;
+
+
+	// compile the shaders
+    ID3D10Blob *gVS, *gPS, *sVS, *sPS, *sGS;
+    HRESULT result = D3DX11CompileFromFile("shaders.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &gVS, 0, 0);
+    result =  D3DX11CompileFromFile("shaders.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &gPS, 0, 0);
+	
+	result = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &sVS, 0, 0);
+
+    result = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "GShader", "gs_5_0", 0, 0, 0, &sGS, 0, 0);
+
+    result = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &sPS, 0, 0);
+
+
+    // create the shader objects
+    dev->CreateVertexShader(gVS->GetBufferPointer(), gVS->GetBufferSize(), NULL, &groundVS);
+    dev->CreatePixelShader(gPS->GetBufferPointer(), gPS->GetBufferSize(), NULL, &groundPS);
+
+    dev->CreateVertexShader(sVS->GetBufferPointer(), sVS->GetBufferSize(), NULL, &spVS);
+    dev->CreateGeometryShader(sGS->GetBufferPointer(), sGS->GetBufferSize(), NULL, &spGS);
+    dev->CreatePixelShader(sPS->GetBufferPointer(), sPS->GetBufferSize(), NULL, &spPS);
+
+
+    // create the input element object
+    D3D11_INPUT_ELEMENT_DESC gied[] =
+    {
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
+    };
+
+	// create the input element object
+    D3D11_INPUT_ELEMENT_DESC spriteied[] =
+    {
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+
+    // use the input element descriptions to create the input layout
+    dev->CreateInputLayout(gied, 3, gVS->GetBufferPointer(), gVS->GetBufferSize(), &groundLayout);
+
+    dev->CreateInputLayout(spriteied, 1, sVS->GetBufferPointer(), sVS->GetBufferSize(), &spLayout);
+
+
+    // create the constant buffer
+    D3D11_BUFFER_DESC bd;
+    ZeroMemory(&bd, sizeof(bd));
+
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = 176;
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+    dev->CreateBuffer(&bd, NULL, &groundCBuffer);
+
+	// Create sprite constant buffer
+    ZeroMemory(&bd, sizeof(bd));
+
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = 80;    // 4 for each float, float 4x4 = 4 * 4 * 4 + float 3 eyepos
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+    result = dev->CreateBuffer(&bd, NULL, &spCBuffer);
+
 
     return 1;
 }
