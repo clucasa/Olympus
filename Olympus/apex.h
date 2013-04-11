@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef APEX_H
 #define APEX_H
 #define WIN32
@@ -39,17 +41,28 @@ public:
     bool Init(ID3D11Device* dev, ID3D11DeviceContext* devcon);
     bool InitParticles();
 
+	ApexParticles* CreateEmitter(physx::apex::NxUserRenderer* renderer);
+
     bool advance(float dt);
     void fetch();
 
     void Render();
+
+	bool checkErrorCode(NxApexCreateError* err);
 private:
     NxApexSDK*                  gApexSDK;
     NxApexScene*                gApexScene;
     physx::apex::NxUserRenderResourceManager*	m_renderResourceManager;
 
     ApexParticles*				gApexParticles;
-    physx::apex::NxUserRenderer*               gRenderer;
+    
+	NxModuleParticleIos*        mParticleIosModule;
+    NxModuleEmitter*            mEmitterModule;
+    NxModuleIofx*               mIofxModule;
+
+	ID3D11Device* mDev;
+	ID3D11DeviceContext* mDevcon;
+	
 private:
     bool InitPhysX();
 

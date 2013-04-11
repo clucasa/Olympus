@@ -21,9 +21,9 @@ struct Heightfield mHeightfield;
 
 void PhysXHeightfield::InitHeightfield(PxPhysics* physics, PxScene* scene, const char* filename)
 {
-	float xScale = 0.0125f;
-	float yScale = 0.001f;
-	float zScale = 0.00001f;
+	float xScale = 0.0025f;
+	float yScale = 0.0025f;
+	float zScale = 10.00f;
 
 	
 	// NOTE: Assuming that heightfield texture has B8G8R8A8 format.
@@ -42,12 +42,12 @@ void PhysXHeightfield::InitHeightfield(PxPhysics* physics, PxScene* scene, const
 
 		PxHeightField* heightField = physics->createHeightField(heightFieldDesc);
 		// create shape for heightfield		
-		/*PxTransform pose(PxVec3(-((PxReal)nbRows*yScale) / 2.0f, 
+		PxTransform pose(PxVec3(-((PxReal)nbRows*yScale) / 2.0f, 
 								0.0f, 
 								-((PxReal)nbColumns*xScale) / 2.0f),  
-						PxQuat::createIdentity());*/
-        PxTransform pose = PxTransform::createIdentity();
-	    //pose.p = PxVec3(-((nbColumns/2)*xScale),0.0,-((nbColumns/2)*xScale));
+						PxQuat::createIdentity());
+       // PxTransform pose = PxTransform::createIdentity();
+	    pose.p = PxVec3(-((nbColumns/2)*xScale),0.0,-((nbColumns/2)*xScale));
 
 		PxRigidActor* hf = physics->createRigidStatic(pose);
         if(!hf) 

@@ -5,20 +5,44 @@ SkyBox::SkyBox()
 	
 }
 
-SkyBox::SkyBox(ID3D11DeviceContext *devcon, ID3D11Device *dev, GeometryGenerator *geoGen) : 
-	mDevcon(devcon), mDev(dev)
+SkyBox::SkyBox(ID3D11DeviceContext *mDevcon, ID3D11Device *mDev, GeometryGenerator *geoGen) : 
+	mDevcon(mDevcon), mDev(mDev)
 {
 	CreateGeometry(geoGen);
 	SetupBuffer();
+	SetupPipeline();
+}
+void SkyBox::SetupPipeline()
+{
+    // load and compile the two shaders
+	ID3D10Blob *VS, *PS;
+    D3DX11CompileFromFile("Skybox.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
+    D3DX11CompileFromFile("Skybox.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
+
+    // encapsulate both shaders into shader objects
+    mDev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &mVS);
+    
+
+    mDev->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &mPS);
+    
+    
+    // create the input layout object
+    D3D11_INPUT_ELEMENT_DESC ied[] =
+    {
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0}
+    };
+
+    mDev->CreateInputLayout(ied, 4, VS->GetBufferPointer(), VS->GetBufferSize(), &mLayout);
+   
 }
 
 void SkyBox::CreateGeometry(GeometryGenerator *geoGen)
 {
 
 	GeometryGenerator::MeshData skyBoxData;			   // geometry for the sky box
-	GeometryGenerator::MeshData screenQuadData;		   // geometry for the screen aligned quad
-
-	geoGen->CreateFullscreenQuad(screenQuadData);
 	geoGen->CreateBox(25.5f, 25.5f, 25.5f, skyBoxData);
 
 
@@ -85,6 +109,11 @@ void SkyBox::SetupBuffer()
 
 void SkyBox::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 {
+
+	mDevcon->VSSetShader(mVS, 0, 0);
+    mDevcon->PSSetShader(mPS, 0, 0);
+    mDevcon->IASetInputLayout(mLayout);
+
 	 // select which vertex buffer to display
     UINT stride = sizeof(PosNormalTexTan);
     UINT offset = 0;
@@ -98,11 +127,11 @@ void SkyBox::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 	XMMATRIX matTrans;
 	
 	matTrans = XMMatrixTranslation(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z);
+	//matTrans = XMMatrixTranslation(0,0,0);
 	
 	mDevcon->VSSetConstantBuffers(1, 1, &mConstBuffer);
 
 	// set the new values for the constant buffer
-	//mDevcon->UpdateSubresource(sceneBuff, 0, 0, mCam->ViewProj().m , 0, 0);
 	mDevcon->UpdateSubresource(mConstBuffer, 0, 0, matTrans.m, 0, 0);
 
 	mDevcon->PSSetShaderResources(0, 1, &mCubeMap);

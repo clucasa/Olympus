@@ -27,8 +27,6 @@ SamplerState samTriLinearSam
 VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float3 tangent : TANGENT, float2 texcoord : TEXCOORD )
 {
     VOut output;
-	
-	//mul(ViewProj, matFinal)
 
     output.posH = mul(mul(ViewProj, matFinal), float4(position, 1.0f)).xyww;    // transform the vertex from 3D to 2D
     output.posL = position;

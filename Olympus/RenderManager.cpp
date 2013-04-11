@@ -1,11 +1,13 @@
 #include "RenderManager.h"
 #include "GeometryGenerator.h"
+#include "System.h"
 
 RenderManager::RenderManager(ID3D11DeviceContext *devcon, 
 							 ID3D11Device *dev, 
 							 IDXGISwapChain *swapchain,
+							 Apex *apex,
 							 Camera *cam) :
-mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam)
+mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 {
 	ID3D11Texture2D *pBackBuffer;
     swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
@@ -14,15 +16,27 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam)
     dev->CreateRenderTargetView(pBackBuffer, NULL, &mBackbuffer);
     pBackBuffer->Release();
 
+	gRenderer = new ZeusRenderer();
+
 	GeometryGenerator *geoGen = new GeometryGenerator();
-
+	
 	mSkyBox = new SkyBox(mDevcon, mDev, geoGen);
+	
+	ScreenQuad *sq = new ScreenQuad(mDevcon, mDev, geoGen);
 
-	renderables.push_back(mSkyBox);
+	Renderable* particles = (Renderable*)apex->CreateEmitter(gRenderer);
+		
+	//Special "renderable" case, do not add to the vector
+	mScreen = new ScreenQuad(mDevcon, mDev, geoGen);
+	//Special camera, doesn't move
+
+	renderables.push_back(sq);
+	renderables.push_back(particles);
+
+	mScreenCam = new Camera();
+	mScreenCam->UpdateViewMatrix();
 
 	free(geoGen);
-    // set the render target as the back buffer
-    devcon->OMSetRenderTargets(1, &mBackbuffer, NULL);
 
 	
     D3D11_BUFFER_DESC bd;
@@ -43,35 +57,128 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam)
 	pBuffer->Release();
 
 
+	// create the depth buffer texture
+	HRESULT hr;
 
+	ID3D11RasterizerState*		pState;
+	D3D11_RASTERIZER_DESC		raster;
+	ZeroMemory( &raster, sizeof(D3D11_RASTERIZER_DESC));
+
+	raster.FillMode = D3D11_FILL_SOLID;
+	raster.CullMode = D3D11_CULL_BACK;
+	raster.FrontCounterClockwise = FALSE;
+	raster.DepthBias = 0;
+	raster.DepthBiasClamp = 0.0f;
+	raster.SlopeScaledDepthBias = 0.0f;
+	raster.DepthClipEnable = TRUE; //set for testing otherwise true
+	raster.ScissorEnable = FALSE;
+	raster.MultisampleEnable = FALSE;
+	raster.AntialiasedLineEnable = FALSE;
+
+	hr = dev->CreateRasterizerState (&raster, &pState);
+	devcon->RSSetState( pState );
+
+	D3D11_TEXTURE2D_DESC texd;
+	ZeroMemory(&texd, sizeof(texd));
+
+	texd.Width = SCREEN_WIDTH;
+	texd.Height = SCREEN_HEIGHT;
+	texd.ArraySize = 1;
+	texd.MipLevels = 1;
+	texd.SampleDesc.Count = 1;
+	texd.Format = DXGI_FORMAT_R32_TYPELESS;
+	texd.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+
+	dev->CreateTexture2D(&texd, NULL, &mDepthTargetTexture);
+
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
+	ZeroMemory(&dsvd, sizeof(dsvd));
+
+	dsvd.Format = DXGI_FORMAT_D32_FLOAT;
+	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	dsvd.Texture2D.MipSlice = 0;
+
+	dev->CreateDepthStencilView(mDepthTargetTexture, &dsvd, &mZbuffer);
+	
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+
+	// Setup the description of the shader resource view.
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	dev->CreateShaderResourceView(mDepthTargetTexture, &shaderResourceViewDesc, &mDepthShaderResourceView);
+	
+	// Init blending
+    D3D11_BLEND_DESC blendDesc;
+    blendDesc.AlphaToCoverageEnable = FALSE;
+    blendDesc.IndependentBlendEnable = FALSE;
+    blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend              = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend             = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp               = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha         = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha        = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha          = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+    
+    hr = dev->CreateBlendState(&blendDesc, &mBlendState);
+    if( FAILED(hr) )
+        return;
+
+    float blendFactor[] = {0.0f, 0.0f, 0.0f, 0.0f}; 
+    devcon->OMSetBlendState(mBlendState, blendFactor, 0xffffffff); // restore default
 }
 
 void RenderManager::Render()
 {
+	// clear the back buffer to a deep blue
+	mDevcon->ClearDepthStencilView(mZbuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+    mDevcon->ClearRenderTargetView(mBackbuffer, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
+	mDevcon->ClearRenderTargetView(mScreen->mTargetView, D3DXCOLOR(0.0f, 1.0f, 0.4f, 1.0f));
+	
 	mDevcon->VSSetConstantBuffers(0, 1, &sceneCBuffer);
 	mDevcon->UpdateSubresource(sceneCBuffer, 0, 0, mCam->ViewProj().m , 0, 0);
+
+	//Skybox right now doesn't like zbuffers, so dont' set one for it
+	mDevcon->OMSetRenderTargets(1, &mScreen->mTargetView, 0);
+	mSkyBox->Render(sceneCBuffer, mCam, 0);
+
+
+	mDevcon->OMSetRenderTargets(1, &mScreen->mTargetView/*mBackbuffer*/, mZbuffer);
+	float blendFactor[] = {0.0f, 0.0f, 0.0f, 0.0f}; 
+    mDevcon->OMSetBlendState(mBlendState, blendFactor, 0xffffffff); // restore default
 	Render(0);
+
+	
+	//Render the screen quad last
+	mDevcon->OMSetRenderTargets(1, &mBackbuffer, 0);
+	
+	mDevcon->PSSetShaderResources(1, 1, &mDepthShaderResourceView);
+
+	mDevcon->UpdateSubresource(sceneCBuffer, 0, 0, mScreenCam->ViewProj().m , 0, 0);
+	mScreen->Render(sceneCBuffer, mScreenCam, 0);
 }
 
 void RenderManager::Render(int renderType)
 {
-	// clear the back buffer to a deep blue
-    mDevcon->ClearRenderTargetView(mBackbuffer, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
-
-
-	for(int i = 0; i < renderables.size(); i++)
+	for(int i = 0; i < renderables.size() ; i++)
 	{
 		renderables[i]->Render(sceneCBuffer, mCam, renderType);
 	}
-
 }
 
-void RenderToTarget(enum renderTargets target)
+void RenderManager::RenderToTarget(enum renderTargets target)
 {
 	switch(target)
 	{
 	case backbuffer:
-
+		mDevcon->OMSetRenderTargets(0, &mBackbuffer, NULL);
+		break;
+	case postprocess:
+		mDevcon->OMSetRenderTargets(0, &mScreen->mTargetView, mZbuffer);
 		break;
 	}
 }

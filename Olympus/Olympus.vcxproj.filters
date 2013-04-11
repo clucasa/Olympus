@@ -8,27 +8,6 @@
     <Filter Include="Camera">
       <UniqueIdentifier>{0e2a6c75-00ba-439c-9967-a0267f670465}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PhysX">
-      <UniqueIdentifier>{51d853ad-2264-459d-93f3-a55a08326f40}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PhysX\Apex">
-      <UniqueIdentifier>{a1a775ca-a0be-4e22-9ff9-ca8e093517e5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PhysX\Apex\ApexParticles">
-      <UniqueIdentifier>{ea8de009-e5b4-4078-8019-338d0a7a0837}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PhysX\Apex\RenderResourceManager">
-      <UniqueIdentifier>{0bfd4751-4717-4349-a8c0-d0aa0b18772a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PhysX\Apex\RenderResourceManager\ZeusRenderResource">
-      <UniqueIdentifier>{53c9827c-bcc5-4ef2-b94f-c8c3e307f3a8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PhysX\Apex\PhysXHeightField">
-      <UniqueIdentifier>{242a9e9e-07cb-41f7-b5c1-012165e44d7a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PhysX\Apex\ResourceCallback">
-      <UniqueIdentifier>{b29e21c1-b331-482e-93e2-2414fa9b2376}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering">
       <UniqueIdentifier>{e32bb8b1-451a-46ab-aa56-66ec756898b5}</UniqueIdentifier>
     </Filter>
@@ -53,25 +32,67 @@
     <Filter Include="Rendering\Objects\Skybox">
       <UniqueIdentifier>{20e6fff7-11f1-4df3-90a2-469456573428}</UniqueIdentifier>
     </Filter>
+    <Filter Include="System\Text">
+      <UniqueIdentifier>{1171b2d5-56d6-47a3-a7f3-2702ddcb8a77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Objects\Heightfield">
+      <UniqueIdentifier>{4adc14eb-72ae-41ed-b0fd-e72e418999fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Objects\ScreenQuad">
+      <UniqueIdentifier>{6a5bb58f-3904-4425-b977-81fc35361406}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PhysX">
+      <UniqueIdentifier>{51d853ad-2264-459d-93f3-a55a08326f40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PhysX\Apex">
+      <UniqueIdentifier>{a1a775ca-a0be-4e22-9ff9-ca8e093517e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PhysX\Apex\ApexParticles">
+      <UniqueIdentifier>{ea8de009-e5b4-4078-8019-338d0a7a0837}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PhysX\Apex\RenderResourceManager">
+      <UniqueIdentifier>{0bfd4751-4717-4349-a8c0-d0aa0b18772a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PhysX\Apex\RenderResourceManager\ZeusRenderResource">
+      <UniqueIdentifier>{53c9827c-bcc5-4ef2-b94f-c8c3e307f3a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PhysX\Apex\ResourceCallback">
+      <UniqueIdentifier>{b29e21c1-b331-482e-93e2-2414fa9b2376}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PhysX\Apex\ApexCloth">
+      <UniqueIdentifier>{d0f5c6ea-c6cd-44c7-bb1e-edfbfbdbba2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PhysX\Apex\ApexDestruction">
+      <UniqueIdentifier>{5e19b906-d1a3-45db-9d45-33f9b13a9ba1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PhysX\PhysXHeightField">
+      <UniqueIdentifier>{242a9e9e-07cb-41f7-b5c1-012165e44d7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PhysX\PhysXCCT">
+      <UniqueIdentifier>{e328d534-4416-48a0-bc37-078131c68b00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Objects\ApexParticles">
+      <UniqueIdentifier>{ec7be0ab-a79b-4982-ab05-0c8ba7a4ff01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\PhysX\Apex\ApexTurbulence">
+      <UniqueIdentifier>{75139cbe-3fd5-42d0-afd0-508a025caf62}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="apex.cpp">
-      <Filter>PhysX\Apex</Filter>
-    </ClCompile>
-    <ClCompile Include="ApexParticles.cpp">
-      <Filter>PhysX\Apex\ApexParticles</Filter>
+      <Filter>Rendering\PhysX\Apex</Filter>
     </ClCompile>
     <ClCompile Include="ZeusRenderResourceManager.cpp">
-      <Filter>PhysX\Apex\RenderResourceManager</Filter>
+      <Filter>Rendering\PhysX\Apex\RenderResourceManager</Filter>
     </ClCompile>
     <ClCompile Include="ZeusRenderResources.cpp">
-      <Filter>PhysX\Apex\RenderResourceManager\ZeusRenderResource</Filter>
+      <Filter>Rendering\PhysX\Apex\RenderResourceManager\ZeusRenderResource</Filter>
     </ClCompile>
     <ClCompile Include="PhysXHeightField.cpp">
-      <Filter>PhysX\Apex\PhysXHeightField</Filter>
+      <Filter>Rendering\PhysX\PhysXHeightField</Filter>
     </ClCompile>
     <ClCompile Include="ZeusResourceCallback.cpp">
-      <Filter>PhysX\Apex\ResourceCallback</Filter>
+      <Filter>Rendering\PhysX\Apex\ResourceCallback</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Camera.cpp">
@@ -92,6 +113,21 @@
     <ClCompile Include="RenderManager.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="Heightfield.cpp">
+      <Filter>Rendering\Objects\Heightfield</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTimer.cpp">
+      <Filter>System\GameTimer</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenQuad.cpp">
+      <Filter>Rendering\Objects\ScreenQuad</Filter>
+    </ClCompile>
+    <ClCompile Include="Physx.cpp">
+      <Filter>Rendering\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="ApexParticles.cpp">
+      <Filter>Rendering\Objects\ApexParticles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders.hlsl">
@@ -103,25 +139,25 @@
     <None Include="Skybox.hlsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
+    <None Include="ScreenQuad.hlsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="apex.h">
-      <Filter>PhysX\Apex</Filter>
-    </ClInclude>
-    <ClInclude Include="ApexParticles.h">
-      <Filter>PhysX\Apex\ApexParticles</Filter>
+      <Filter>Rendering\PhysX\Apex</Filter>
     </ClInclude>
     <ClInclude Include="ZeusRenderResourceManager.h">
-      <Filter>PhysX\Apex\RenderResourceManager</Filter>
+      <Filter>Rendering\PhysX\Apex\RenderResourceManager</Filter>
     </ClInclude>
     <ClInclude Include="ZeusRenderResources.h">
-      <Filter>PhysX\Apex\RenderResourceManager\ZeusRenderResource</Filter>
+      <Filter>Rendering\PhysX\Apex\RenderResourceManager\ZeusRenderResource</Filter>
     </ClInclude>
     <ClInclude Include="PhysXHeightField.h">
-      <Filter>PhysX\Apex\PhysXHeightField</Filter>
+      <Filter>Rendering\PhysX\PhysXHeightField</Filter>
     </ClInclude>
     <ClInclude Include="ZeusResourceCallback.h">
-      <Filter>PhysX\Apex\ResourceCallback</Filter>
+      <Filter>Rendering\PhysX\Apex\ResourceCallback</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Camera</Filter>
@@ -146,6 +182,21 @@
     </ClInclude>
     <ClInclude Include="RenderManager.h">
       <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Heightfield.h">
+      <Filter>Rendering\Objects\Heightfield</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTimer.h">
+      <Filter>System\GameTimer</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenQuad.h">
+      <Filter>Rendering\Objects\ScreenQuad</Filter>
+    </ClInclude>
+    <ClInclude Include="Physx.h">
+      <Filter>Rendering\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="ApexParticles.h">
+      <Filter>Rendering\Objects\ApexParticles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

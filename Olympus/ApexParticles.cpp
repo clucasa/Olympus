@@ -3,10 +3,7 @@
 //***************************************************************************************
 #include "ApexParticles.h"
 
-ApexParticles::ApexParticles() :
-    mParticleIosModule(0),
-    mEmitterModule(0),
-    mIofxModule(0)
+ApexParticles::ApexParticles()
 {
     return;
 }
@@ -16,54 +13,15 @@ ApexParticles::~ApexParticles()
     return;
 }
 
-void ApexParticles::Init(NxApexSDK* gApexSDK)
+void ApexParticles::CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
+	ID3D11DeviceContext *devcon, ID3D11Device *dev,
+	physx::apex::NxUserRenderer* renderer, NxModuleIofx* iofxModule)
 {
-    PX_ASSERT(gApexSDK);
-    NxApexCreateError            errorCode;
+	mDev = dev;
+	mDevcon = devcon;
+	mIofxModule = iofxModule;
+	gRenderer = renderer;
 
-
-    mParticleIosModule = static_cast<NxModuleParticleIos*>(gApexSDK->createModule("ParticleIOS", &errorCode));
-    checkErrorCode(&errorCode);
-    PX_ASSERT(mParticleIosModule);
-    if(mParticleIosModule)
-    {
-        NxParameterized::Interface* params = mParticleIosModule->getDefaultModuleDesc();
-        mParticleIosModule->init(*params);
-    }
-
-    
-    mIofxModule = static_cast<NxModuleIofx*>(gApexSDK->createModule("IOFX", &errorCode));
-    checkErrorCode(&errorCode);
-    PX_ASSERT(mIofxModule);
-    if (mIofxModule)
-    {
-        NxParameterized::Interface* params = mIofxModule->getDefaultModuleDesc();
-        mIofxModule->init(*params);
-
-        //m_apexIofxModule->disableCudaInterop();
-        //m_apexIofxModule->disableCudaModifiers();
-    }
-
-    mEmitterModule = static_cast<NxModuleEmitter*> ( gApexSDK->createModule("Emitter", &errorCode));
-    checkErrorCode(&errorCode);
-    PX_ASSERT(mEmitterModule);
-    if(mEmitterModule)
-    {
-        NxParameterized::Interface* params = mEmitterModule->getDefaultModuleDesc();
-        mEmitterModule->init(*params);
-        PxU32 numScalables = mEmitterModule->getNbParameters();
-        NxApexParameter** m_emitterModuleScalables = mEmitterModule->getParameters();
-        for (physx::PxU32 i = 0; i < numScalables; i++)
-        {
-            NxApexParameter& p = *m_emitterModuleScalables[i];
-            mEmitterModule->setIntValue(i, p.range.maximum);
-        }
-    }
-
-}
-
-void ApexParticles::CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene)
-{
     NxApexEmitterAsset* emitterAsset;
     physx::apex::NxApexAsset* asset = reinterpret_cast<physx::apex::NxApexAsset*>(gApexSDK->getNamedResourceProvider()->getResource(NX_APEX_EMITTER_AUTHORING_TYPE_NAME, "testSpriteEmitter4ParticleFluidIos"));
     if (asset)
@@ -88,7 +46,7 @@ void ApexParticles::CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene)
         emitterActor = static_cast<NxApexEmitterActor*>(emitterAsset->createApexActor(*descParams,*gApexScene));
         if(emitterActor)
         {
-            emitterActor->setCurrentPosition(PxVec3(0.0f, 5.0f, 0.0f));
+            emitterActor->setCurrentPosition(PxVec3(0.0f, 25.0f, 0.0f));
             emitterActor->startEmit( true );
             //emitterActor->setLifetimeRange(physx::apex::NxRange<PxF32>(1,5));
             //emitterActor->setRateRange(physx::apex::NxRange<PxF32>(10, 10));
@@ -100,36 +58,86 @@ void ApexParticles::CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene)
 
     mRenderVolume = mIofxModule->createRenderVolume(*gApexScene, b, 0, true );
     emitterActor->setPreferredRenderVolume( mRenderVolume );
+
+	InitPipeline();
 }
 
-bool ApexParticles::RenderVolume(physx::apex::NxUserRenderer & renderer)
+void ApexParticles::InitPipeline()
 {
-    mRenderVolume->lockRenderResources();
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/SoftParticle.dds", 0, 0, &spriteTexture, 0 );
+
+	// compile the shaders
+    ID3D10Blob *sVS, *sPS, *sGS;
+
+	hr = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &sVS, 0, 0);
+
+    hr = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "GShader", "gs_5_0", 0, 0, 0, &sGS, 0, 0);
+
+    hr = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &sPS, 0, 0);
+
+
+    // create the shader objects
+
+    mDev->CreateVertexShader(sVS->GetBufferPointer(), sVS->GetBufferSize(), NULL, &mVS);
+    mDev->CreateGeometryShader(sGS->GetBufferPointer(), sGS->GetBufferSize(), NULL, &mGS);
+    mDev->CreatePixelShader(sPS->GetBufferPointer(), sPS->GetBufferSize(), NULL, &mPS);
+
+	// create the input element object
+    D3D11_INPUT_ELEMENT_DESC spriteied[] =
+    {
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+
+    // use the input element descriptions to create the input layout
+
+    mDev->CreateInputLayout(spriteied, 1, sVS->GetBufferPointer(), sVS->GetBufferSize(), &mLayout);
+
+
+    // create the constant buffer
+    D3D11_BUFFER_DESC bd;
+    ZeroMemory(&bd, sizeof(bd));
+
+	// Create sprite constant buffer
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = 80;    // 4 for each float, float 4x4 = 4 * 4 * 4 + float 3 eyepos
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+    hr = mDev->CreateBuffer(&bd, NULL, &mConstBuffer);
+}
+
+struct SPRITECBUFFER
+{
+	XMMATRIX Final;
+	XMFLOAT3 EyePos;
+	float buffer;
+};
+
+void ApexParticles::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
+{
+	SPRITECBUFFER scBuffer;
+	scBuffer.Final = mCam->ViewProj();
+	scBuffer.EyePos = mCam->GetPosition();
+
+	mDevcon->VSSetShader(mVS, 0, 0);
+    mDevcon->GSSetShader(mGS, 0, 0);
+    mDevcon->PSSetShader(mPS, 0, 0);
+	mDevcon->IASetInputLayout(mLayout);
+
+	mDevcon->GSSetConstantBuffers(0, 1, &sceneBuff);
+	mDevcon->GSSetConstantBuffers(1, 1, &mConstBuffer);
+    mDevcon->PSSetShaderResources(0, 1, &spriteTexture);
+	mDevcon->UpdateSubresource(mConstBuffer, 0, 0, &scBuffer, 0, 0);
+
+	mDevcon->VSSetShader(mVS, 0, 0);
+    mDevcon->PSSetShader(mPS, 0, 0);
+    mDevcon->IASetInputLayout(mLayout);
+
+	mRenderVolume->lockRenderResources();
   
-    mRenderVolume->updateRenderResources(false);
-    mRenderVolume->dispatchRenderResources(renderer);
+	mRenderVolume->updateRenderResources(false);
+	mRenderVolume->dispatchRenderResources(*gRenderer);
     
 	mRenderVolume->unlockRenderResources();
-	return true;
-}
 
-bool ApexParticles::checkErrorCode(NxApexCreateError* err)
-{
-    bool retval = false;
-    switch(*err)
-    {
-    case APEX_CE_NO_ERROR:
-        retval =  true;
-        break;
-    case APEX_CE_NOT_FOUND:
-        retval =  false;
-        break;
-    case APEX_CE_WRONG_VERSION:
-        retval = false;
-        break;
-    case APEX_CE_DESCRIPTOR_INVALID:
-        retval = false;
-        break;
-    }
-    return retval;
+	mDevcon->GSSetShader(NULL, 0, 0);
 }

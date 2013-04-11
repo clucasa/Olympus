@@ -110,11 +110,15 @@
     <ClCompile Include="apex.cpp" />
     <ClCompile Include="ApexParticles.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="GeometryGenerator.cpp" />
+    <ClCompile Include="Heightfield.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MathHelper.cpp" />
+    <ClCompile Include="Physx.cpp" />
     <ClCompile Include="PhysXHeightField.cpp" />
     <ClCompile Include="RenderManager.cpp" />
+    <ClCompile Include="ScreenQuad.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="ZeusRenderResources.cpp" />
@@ -122,6 +126,7 @@
     <ClCompile Include="ZeusResourceCallback.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ScreenQuad.hlsl" />
     <None Include="shaders.hlsl" />
     <None Include="Skybox.hlsl" />
     <None Include="spriteshader.hlsl" />
@@ -130,11 +135,15 @@
     <ClInclude Include="apex.h" />
     <ClInclude Include="ApexParticles.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="GameTimer.h" />
     <ClInclude Include="GeometryGenerator.h" />
+    <ClInclude Include="Heightfield.h" />
     <ClInclude Include="MathHelper.h" />
+    <ClInclude Include="Physx.h" />
     <ClInclude Include="PhysXHeightField.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="RenderManager.h" />
+    <ClInclude Include="ScreenQuad.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Vertices.h" />

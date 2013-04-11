@@ -10,10 +10,10 @@
 #include <d3dx11.h>
 #include <d3dx10.h>
 #include <xnamath.h>
+#include "GameTimer.h"
 #include "Camera.h"
 #include "GeometryGenerator.h"
 #include "Vertices.h"
-#include "SkyBox.h"
 #include "RenderManager.h"
 #include "apex.h"
 
@@ -25,9 +25,6 @@
 // define the screen resolution
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
-
-#define RETURNIFFAILED(hr)  ( if( FAILED( (HRESULT)hr ) ) return; ) 
-#define RETURN0IFFAILED(hr) ( if( FAILED( (HRESULT)hr ) ) return 0; ) 
 
 class System
 {
@@ -46,7 +43,7 @@ public:
     struct PERFRAME{D3DXCOLOR Color; FLOAT X, Y, Z;};
 
     // function prototypes
-    void RenderFrame(void);                 // renders a single frame
+    void RenderFrame(float dt);                 // renders a single frame
     void CleanD3D(void);                    // closes Direct3D and releases memory
     int InitPipeline(void);                 // loads and prepares the shaders
 
@@ -62,11 +59,6 @@ private:
     ID3D11Device        *dev;               // the pointer to our Direct3D device interface
     ID3D11DeviceContext *devcon;            // the pointer to our Direct3D device context
 
-    ID3D11BlendState* mBlendState;   // Our blend state
-
-    ID3D11InputLayout   *pLayout;           // the pointer to the input layout
-    ID3D11VertexShader  *pVS;               // the pointer to the vertex shader
-    ID3D11PixelShader   *pPS;               // the pointer to the pixel shader
 
     ID3D11InputLayout   *groundLayout;           // the pointer to the input layout
 	ID3D11VertexShader  *groundVS;               // the pointer to the ground vertex shader
@@ -81,8 +73,9 @@ private:
 	ID3D11Buffer		*spCBuffer;         
     ID3D11ShaderResourceView *spriteTexture;
 
+	bool				mAppPaused;
 
-
+	GameTimer			mTimer;
 
     HWND                hWnd;               // The main window
     Camera              *mCam;				// the camera

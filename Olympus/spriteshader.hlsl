@@ -1,9 +1,20 @@
-cbuffer ConstantBuffer
+cbuffer ViewProjMat	: register(c0)
 {
-    float4x4 final;
+    float4x4 ViewProj;
+}
+
+cbuffer ObjectMat	: register(c1)
+{
 	float3	eyePos;
 	float buffer;
 }
+
+//cbuffer ConstantBuffer
+//{
+//  float4x4 final;
+//	float3	eyePos;
+//	float buffer;
+//}
 
 struct VOut
 {
@@ -45,8 +56,8 @@ void GShader(point VOut input[1], uint primID : SV_PrimitiveID, inout TriangleSt
         //up = cross(look, left);
 
 	// Compute triangle strip vertices of the quad
-	float halfWidth = 0.05;
-	float halfHeight = 0.05;
+	float halfWidth = 0.15;
+	float halfHeight = 0.15;
 
 	float4 bottomLeft	= float4(input[0].Position + halfWidth * left - halfHeight * up, 1.0f);
 	float4 topLeft		= float4(input[0].Position + halfWidth * left + halfHeight * up, 1.0f);
@@ -60,7 +71,7 @@ void GShader(point VOut input[1], uint primID : SV_PrimitiveID, inout TriangleSt
 	[unroll]
 	for(int i = 0; i < 4; i++)
 	{
-		output.Position = mul(final, verts[i]);
+		output.Position = mul(ViewProj, verts[i]);
 		output.primID = primID;		
         output.texcoord = texc[i];
 		triangleStream.Append(output);
@@ -71,5 +82,8 @@ float4 PShader(GOut input) : SV_TARGET
 {
 	float4 color = float4(0.0f, 0.502f, 0.753f, 1.0f);//theTexture.Gather(samTriLinearSam, input.texcoord, int2(0,0));
     color.a = theTexture.GatherAlpha(samTriLinearSam, input.texcoord, int2(0,0), int2(0,0), int2(0,0), int2(0,0));
+	
+	//clip(color.a < 0.1f ? -1:1);
+	//color.a = 1.0f;
     return color;
 }
