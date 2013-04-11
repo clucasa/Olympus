@@ -30,15 +30,28 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	mScreen = new ScreenQuad(mDevcon, mDev, geoGen);
 	//Special camera, doesn't move
 
-	renderables.push_back(sq);
+	//renderables.push_back(sq);
 	renderables.push_back(particles);
+
+    vector<LPSTR> textures;
+	vector<LPSTR> normalMap;
+
+    textures.push_back( "Media/Textures/CommandoArmor_DM.dds" );
+	textures.push_back( "Media/Textures/Commando_DM.dds" );
+	normalMap.push_back( "Media/Textures/CommandoArmor_NM.dds" );
+	normalMap.push_back( "Media/Textures/Commando_NM.dds" );
+
+	Object* obj = new Object();
+	obj->objLoad( "Media/Models/bigbadman.fbx", &textures, &normalMap, dev, devcon);
+
+    renderables.push_back(obj);
 
 	mScreenCam = new Camera();
 	mScreenCam->UpdateViewMatrix();
 
 	free(geoGen);
 
-	
+    
     D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 
@@ -100,6 +113,10 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	dsvd.Texture2D.MipSlice = 0;
 
 	dev->CreateDepthStencilView(mDepthTargetTexture, &dsvd, &mZbuffer);
+
+	texd.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	dev->CreateDepthStencilView(mDepthTargetTexture, &dsvd, &mZbuffer2);
+
 	
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 
@@ -111,9 +128,11 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 
 	dev->CreateShaderResourceView(mDepthTargetTexture, &shaderResourceViewDesc, &mDepthShaderResourceView);
 	
-	// Init blending
+	
+
+    // Init blending
     D3D11_BLEND_DESC blendDesc;
-    blendDesc.AlphaToCoverageEnable = FALSE;
+    blendDesc.AlphaToCoverageEnable = TRUE;
     blendDesc.IndependentBlendEnable = FALSE;
     blendDesc.RenderTarget[0].BlendEnable = TRUE;
 	blendDesc.RenderTarget[0].SrcBlend              = D3D11_BLEND_SRC_ALPHA;
@@ -148,9 +167,8 @@ void RenderManager::Render()
 
 
 	mDevcon->OMSetRenderTargets(1, &mScreen->mTargetView/*mBackbuffer*/, mZbuffer);
-	float blendFactor[] = {0.0f, 0.0f, 0.0f, 0.0f}; 
-    mDevcon->OMSetBlendState(mBlendState, blendFactor, 0xffffffff); // restore default
-	Render(0);
+	
+    Render(0);
 
 	
 	//Render the screen quad last

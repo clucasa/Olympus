@@ -77,6 +77,9 @@
     <Filter Include="Rendering\PhysX\Apex\ApexTurbulence">
       <UniqueIdentifier>{75139cbe-3fd5-42d0-afd0-508a025caf62}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Objects\FBX Loader">
+      <UniqueIdentifier>{5d5dadee-a596-4a07-8e64-3c4e5846cb5f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="apex.cpp">
@@ -122,11 +125,14 @@
     <ClCompile Include="ScreenQuad.cpp">
       <Filter>Rendering\Objects\ScreenQuad</Filter>
     </ClCompile>
-    <ClCompile Include="Physx.cpp">
-      <Filter>Rendering\PhysX</Filter>
-    </ClCompile>
     <ClCompile Include="ApexParticles.cpp">
       <Filter>Rendering\Objects\ApexParticles</Filter>
+    </ClCompile>
+    <ClCompile Include="importer.cpp">
+      <Filter>Rendering\Objects\FBX Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Rendering\Objects\FBX Loader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -140,6 +146,9 @@
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="ScreenQuad.hlsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="models.hlsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>
@@ -192,11 +201,17 @@
     <ClInclude Include="ScreenQuad.h">
       <Filter>Rendering\Objects\ScreenQuad</Filter>
     </ClInclude>
-    <ClInclude Include="Physx.h">
-      <Filter>Rendering\PhysX</Filter>
-    </ClInclude>
     <ClInclude Include="ApexParticles.h">
       <Filter>Rendering\Objects\ApexParticles</Filter>
+    </ClInclude>
+    <ClInclude Include="importer.h">
+      <Filter>Rendering\Objects\FBX Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Rendering\Objects\FBX Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="struct.h">
+      <Filter>Rendering\Objects\FBX Loader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

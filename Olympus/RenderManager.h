@@ -12,6 +12,7 @@
 #include "Camera.h"
 #include "SkyBox.h"
 #include "ScreenQuad.h"
+#include "Object.h"
 
 using namespace std;
 
@@ -44,12 +45,14 @@ public:
 	ID3D11DeviceContext *mDevcon; 
 
 	ID3D11DepthStencilView *mZbuffer;       // the pointer to our depth buffer
+    ID3D11DepthStencilView *mZbuffer2;       // the pointer to our depth buffer
 	ID3D11ShaderResourceView* mDepthShaderResourceView;
 	ID3D11Texture2D* mDepthTargetTexture;
 
 	ID3D11RenderTargetView* mPostProcessRTV;
 	ID3D11RenderTargetView* mEnvironmentRTV;
 	ID3D11RenderTargetView *mBackbuffer;    // the pointer to our back buffer
+
 	ID3D11BlendState* mBlendState;   // Our blend state
 
 	Camera *mCam;
