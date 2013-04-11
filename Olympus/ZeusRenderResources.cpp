@@ -352,11 +352,6 @@ void ZeusSpriteBuffer::Render(int start, int count)
 	mDevcon->Draw(count, start);
 }
 
-struct VertexType
-{
-	float x,y,z;
-};
-
 void ZeusSpriteBuffer::writeBuffer(const physx::apex::NxApexRenderSpriteBufferData& data, physx::PxU32 firstSprite, physx::PxU32 numSprites)
 {
     if (!mSpriteBuffer || !numSprites)

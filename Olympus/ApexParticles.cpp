@@ -107,7 +107,6 @@ void ApexParticles::InitPipeline()
 
 struct SPRITECBUFFER
 {
-	XMMATRIX Final;
 	XMFLOAT3 EyePos;
 	float buffer;
 };
@@ -115,7 +114,6 @@ struct SPRITECBUFFER
 void ApexParticles::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 {
 	SPRITECBUFFER scBuffer;
-	scBuffer.Final = mCam->ViewProj();
 	scBuffer.EyePos = mCam->GetPosition();
 
 	mDevcon->VSSetShader(mVS, 0, 0);

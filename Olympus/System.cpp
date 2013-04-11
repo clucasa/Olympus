@@ -94,6 +94,23 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch(message)
     {
+        // WM_ACTIVATE is sent when the window is activated or deactivated.  
+	    // We pause the game when the window is deactivated and unpause it 
+	    // when it becomes active.  
+	    case WM_ACTIVATE:
+		    if( LOWORD(wParam) == WA_INACTIVE )
+		    {
+			    mAppPaused = true;
+			    mTimer.Stop();
+		    }
+		    else
+		    {
+			    mAppPaused = false;
+			    mTimer.Start();
+		    }
+		    return 0;
+
+	
         case WM_DESTROY:
             {
                 PostQuitMessage(0);

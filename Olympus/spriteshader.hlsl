@@ -56,8 +56,8 @@ void GShader(point VOut input[1], uint primID : SV_PrimitiveID, inout TriangleSt
         //up = cross(look, left);
 
 	// Compute triangle strip vertices of the quad
-	float halfWidth = 0.15;
-	float halfHeight = 0.15;
+	float halfWidth = 0.075;
+	float halfHeight = 0.075;
 
 	float4 bottomLeft	= float4(input[0].Position + halfWidth * left - halfHeight * up, 1.0f);
 	float4 topLeft		= float4(input[0].Position + halfWidth * left + halfHeight * up, 1.0f);
