@@ -4,7 +4,8 @@ Olympus
 The pinnacle of creation.
 
 Features:
-Render to target
+Render to screen quad for post processing:
+    Depth of field
 Skybox
 Apex Particles
 FBX Loader
