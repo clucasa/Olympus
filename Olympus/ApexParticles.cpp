@@ -64,7 +64,7 @@ void ApexParticles::CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 
 void ApexParticles::InitPipeline()
 {
-	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/SoftParticle.dds", 0, 0, &spriteTexture, 0 );
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/popcorn.png"/*SoftParticle.dds"*/, 0, 0, &spriteTexture, 0 );
 
 	// compile the shaders
     ID3D10Blob *sVS, *sPS, *sGS;

@@ -17,11 +17,14 @@
 #include "Vertices.h"
 #include "RenderManager.h"
 #include "apex.h"
+#include <Xinput.h>
+#include "MathHelper.h"
 
 // include the Direct3D Library file
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dx11.lib")
 #pragma comment (lib, "d3dx10.lib")
+#pragma comment (lib, "XInput.lib")
 
 // define the screen resolution
 #define SCREEN_WIDTH  800
@@ -61,6 +64,8 @@ private:
     ID3D11DeviceContext *devcon;            // the pointer to our Direct3D device context
 
 	bool				mAppPaused;
+	bool				mFlyMode;
+	int					mFovFlag;
 
 	GameTimer			mTimer;
 

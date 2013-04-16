@@ -7,7 +7,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 }
 
 System::System(HINSTANCE hInstance, int nCmdShow) :
-	mAppPaused(false)
+	mAppPaused(false), mFlyMode(false), mFovFlag(1)
 {
     gSystem = this;
     WNDCLASSEX wc;
@@ -260,24 +260,145 @@ int System::InitPipeline()
 
 void System::UpdateCamera(float dt)
 {
-	float speed = 10.0f;
+	//////////////////////////////////
+    //    XINPUT Camera Controls    //
+    //////////////////////////////////
 
-    ShowCursor(true);
+    DWORD dwResult;
+    XINPUT_STATE state;
+ 
+    ZeroMemory( &state, sizeof(XINPUT_STATE) );
+ 
+    dwResult = XInputGetState( 0, &state );
+ 
+    if( dwResult == ERROR_SUCCESS ){ // Controller is connected.
+        float speed = 1.0f;
+        if( state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB )
+            speed = 2.0f;
+        
+		ShowCursor(false);
 
-    if( GetAsyncKeyState(0x10) & 0x8000 )
-        speed = 100.0f;
+        // Check to make sure we are not moving during the dead zone
+        if((state.Gamepad.sThumbLX < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
+            state.Gamepad.sThumbLX > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) &&
+           (state.Gamepad.sThumbLY < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
+            state.Gamepad.sThumbLY > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)){    
+                state.Gamepad.sThumbLX = 0;
+                state.Gamepad.sThumbLY = 0;
+        }
+ 
+        if((state.Gamepad.sThumbRX < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE &&
+            state.Gamepad.sThumbRX > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) &&
+           (state.Gamepad.sThumbRY < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE &&
+            state.Gamepad.sThumbRY > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)){
+                state.Gamepad.sThumbRX = 0;
+                state.Gamepad.sThumbRY = 0;
+        }
 
-    if( GetAsyncKeyState('W') & 0x8000 )
-        mCam->Walk(speed*dt);
+        float leftThumbY = state.Gamepad.sThumbLY;
+        float leftThumbX = state.Gamepad.sThumbLX;
+        float rightThumbY = state.Gamepad.sThumbRY;
+        float rightThumbX = state.Gamepad.sThumbRX;
 
-    if( GetAsyncKeyState('S') & 0x8000 )
-        mCam->Walk(-speed*dt);
+		if(mFovFlag == 1){
+			mCam->SetLens(0.25f*MathHelper::Pi, 1.0f, 1.0f, 1000.0f);
+			mFovFlag = 0;
+		}
 
-    if( GetAsyncKeyState('A') & 0x8000 )
-        mCam->Strafe(-speed*dt);
+        // Aiming with left trigger
+        if(state.Gamepad.bLeftTrigger && state.Gamepad.bRightTrigger < 256){ // 256 disables the right trigger
+			mCam->SetLens(0.1f*MathHelper::Pi, 1.0f, 1.0f, 1000.0f);
+			mFovFlag = 1;
+            mCam->Walk((leftThumbY / 30000.0f) * dt * speed);
+            mCam->Strafe((leftThumbX / 30000.0f) * dt * speed);
+            mCam->Pitch((-rightThumbY / 102000.0f) * dt);
+            mCam->RotateY((rightThumbX / 105000.0f) * dt);
+        }
+        else{
+            mCam->Walk((leftThumbY / 3000.0f) * dt * speed);
+            mCam->Strafe((leftThumbX / 3000.0f) * dt * speed);
+			
+			XMFLOAT3 mLook = mCam->GetLook();
+			if(mLook.y < -0.98){ // looking down limit
+				if(-rightThumbY < 0){
+					mCam->Pitch((-rightThumbY / 12000.0f) * dt);
+				}
+			}
+			else if(mLook.y > 0.98){ // looking up limit
+				if(-rightThumbY > 0){
+					mCam->Pitch((-rightThumbY / 12000.0f) * dt);
+				}
+			}
+			else{
+		        mCam->Pitch((-rightThumbY / 12000.0f) * dt);
+			}
 
-    if( GetAsyncKeyState('D') & 0x8000 )
-        mCam->Strafe(speed*dt);
+			mCam->RotateY((rightThumbX / 8500.0f) * dt);
+        }
+		XMFLOAT3 camPos = mCam->GetPosition();
+		if(mFlyMode == false){
+			
+			mCam->SetPosition(camPos.x, 2.0f, camPos.z);
+	
+			//crouch
+			if(state.Gamepad.wButtons & XINPUT_GAMEPAD_B)
+				mCam->SetPosition(camPos.x, 1.0f, camPos.z);
+
+			//jump
+			if(state.Gamepad.wButtons & XINPUT_GAMEPAD_A)
+				mCam->SetPosition(camPos.x, 5.0f, camPos.z);
+		}
+		else{
+			mCam->SetPosition(camPos.x, camPos.y, camPos.z);
+		}
+
+        /*// Shoot block with right trigger     
+        if( state.Gamepad.bRightTrigger && state.Gamepad.bLeftTrigger < 256 )
+        {
+            shootspeed = (state.Gamepad.bRightTrigger / 255) * 40.0f;
+            if(shootBox)
+            {
+                mPhysX->CreateBox( mCam.GetPosition().x, mCam.GetPosition().y, mCam.GetPosition().z,
+					    	       mCam.GetLook().x, mCam.GetLook().y, mCam.GetLook().z, shootspeed);
+            }
+            else
+            {
+                mPhysX->CreateBox( 0., 10.0f, 0., 0., 0., 0., 0.);
+            }
+        }*/
+		
+    }
+    else{ // Controller is disconnected, oh balls
+        float speed = 10.0f;
+        ShowCursor(true);
+        if( GetAsyncKeyState(0x10) & 0x8000 )
+            speed = 20.0f;
+
+        if( GetAsyncKeyState('W') & 0x8000 )
+            mCam->Walk(speed*dt);
+
+        if( GetAsyncKeyState('S') & 0x8000 )
+            mCam->Walk(-speed*dt);
+
+        if( GetAsyncKeyState('A') & 0x8000 )
+            mCam->Strafe(-speed*dt);
+
+        if( GetAsyncKeyState('D') & 0x8000 )
+            mCam->Strafe(speed*dt);
+    }
+	
+
+	if(GetAsyncKeyState('F') & 0x8000 ) // Fly Mode
+          mFlyMode = true;
+	
+	if(GetAsyncKeyState('G') & 0x8000 )
+		  mFlyMode = false;
+
+
+	if( GetAsyncKeyState('P') & 0x8000 ){ // Super Zoom
+          mCam->SetLens(0.01f*MathHelper::Pi, 1.0f, 1.0f, 1000.0f); 
+		  mFovFlag = 1;
+	}
 
 	mCam->UpdateViewMatrix();
 }

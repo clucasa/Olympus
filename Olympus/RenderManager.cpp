@@ -33,7 +33,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	//Special camera, doesn't move
 
 	//renderables.push_back(sq);
-	renderables.push_back(particles);
+	
 
     vector<LPSTR> textures;
 	vector<LPSTR> normalMap;
@@ -53,6 +53,8 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 
 	free(geoGen);
 
+
+	renderables.push_back(particles);
     
     D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));

@@ -86,7 +86,7 @@ VOut VShader( Vin input )
 
     output.posH = mul( mul(matFinal, matWorld), input.Pos );
 
-	output.norm = mul(matWorld, input.Normal);
+	output.norm = normalize(mul(matWorld, input.Normal));
 
     output.posL = input.Pos;
 	output.Tex = input.Tex;

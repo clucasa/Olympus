@@ -141,7 +141,7 @@ void Object::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 		devcon1->VSSetShader(opVS, 0, 0);
 		devcon1->PSSetShader(opPS, 0, 0);
 
-		XMStoreFloat4x4(&mWorldMat, XMMatrixTranslation(0, 0, 0));
+		XMStoreFloat4x4(&mWorldMat, XMMatrixScaling(3.0f,3.0f,3.0f));
 
 		devcon1->VSSetConstantBuffers(1, 1, &worldCBuffer);
 
