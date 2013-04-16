@@ -24,21 +24,36 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	
 	ScreenQuad *sq = new ScreenQuad(mDevcon, mDev, geoGen);
 
+
+
 	Renderable* particles = (Renderable*)apex->CreateEmitter(gRenderer);
 		
 	//Special "renderable" case, do not add to the vector
 	mScreen = new ScreenQuad(mDevcon, mDev, geoGen);
 	//Special camera, doesn't move
 
-	renderables.push_back(sq);
+	//renderables.push_back(sq);
 	renderables.push_back(particles);
+
+    vector<LPSTR> textures;
+	vector<LPSTR> normalMap;
+
+    textures.push_back( "Media/Textures/CommandoArmor_DM.dds" );
+	textures.push_back( "Media/Textures/Commando_DM.dds" );
+	normalMap.push_back( "Media/Textures/CommandoArmor_NM.dds" );
+	normalMap.push_back( "Media/Textures/Commando_NM.dds" );
+
+	Object* obj = new Object();
+	obj->objLoad( "Media/Models/bigbadman.fbx", &textures, &normalMap, dev, devcon);
+
+    renderables.push_back(obj);
 
 	mScreenCam = new Camera();
 	mScreenCam->UpdateViewMatrix();
 
 	free(geoGen);
 
-	
+    
     D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 
@@ -100,6 +115,10 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	dsvd.Texture2D.MipSlice = 0;
 
 	dev->CreateDepthStencilView(mDepthTargetTexture, &dsvd, &mZbuffer);
+
+	texd.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	dev->CreateDepthStencilView(mDepthTargetTexture, &dsvd, &mZbuffer2);
+
 	
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 
@@ -111,9 +130,11 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 
 	dev->CreateShaderResourceView(mDepthTargetTexture, &shaderResourceViewDesc, &mDepthShaderResourceView);
 	
-	// Init blending
+	
+
+    // Init blending
     D3D11_BLEND_DESC blendDesc;
-    blendDesc.AlphaToCoverageEnable = FALSE;
+    blendDesc.AlphaToCoverageEnable = TRUE;
     blendDesc.IndependentBlendEnable = FALSE;
     blendDesc.RenderTarget[0].BlendEnable = TRUE;
 	blendDesc.RenderTarget[0].SrcBlend              = D3D11_BLEND_SRC_ALPHA;
@@ -130,7 +151,47 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 
     float blendFactor[] = {0.0f, 0.0f, 0.0f, 0.0f}; 
     devcon->OMSetBlendState(mBlendState, blendFactor, 0xffffffff); // restore default
+
+	//Set the directional light
+	ZeroMemory(&bd, sizeof(bd));
+
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = sizeof(DirectionalLight);
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+    mDev->CreateBuffer(&bd, NULL, &dirLightCBuffer);
+
+	mDirLight.Ambient =  XMFLOAT4(.3f, .3f, .3f, 1);
+	mDirLight.Diffuse =  XMFLOAT4(.6f, .6f, .6f, 1);
+	mDirLight.Direction =  XMFLOAT4(5, 0, 0, 1);
+	mDirLight.Specular =  XMFLOAT4(1, 1, 1, 1);
+	mDirLight.SpecPower = 10.0f;
+
+
+	//Set the point light
+	ZeroMemory(&bd, sizeof(bd));
+
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = sizeof(PointLight) * 2;
+    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+    mDev->CreateBuffer(&bd, NULL, &pointLightCBuffer);
+
+	mPointLight[0].Ambient = XMFLOAT4(.3f, .1f, .1f, 1);
+	mPointLight[0].Att     = XMFLOAT3(.4f, .4f, .4f);
+	mPointLight[0].Diffuse = XMFLOAT4(.6f, .0f, .0f, 1);
+	mPointLight[0].Specular = XMFLOAT4(1, 1, 1, 1);
+	mPointLight[0].Range    = 2.0f;
+	mPointLight[0].Position = XMFLOAT3(3, 0, 0);
+
+	mPointLight[1].Ambient = XMFLOAT4(.3f, .1f, .1f, 1);
+	mPointLight[1].Att     = XMFLOAT3(.4f, .4f, .4f);
+	mPointLight[1].Diffuse = XMFLOAT4(.0f, .6f, .0f, 1);
+	mPointLight[1].Specular = XMFLOAT4(1, 1, 1, 1);
+	mPointLight[1].Range    = 2.0f;
+	mPointLight[1].Position = XMFLOAT3(-3, 0, 0);
 }
+
 
 void RenderManager::Render()
 {
@@ -139,8 +200,12 @@ void RenderManager::Render()
     mDevcon->ClearRenderTargetView(mBackbuffer, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
 	mDevcon->ClearRenderTargetView(mScreen->mTargetView, D3DXCOLOR(0.0f, 1.0f, 0.4f, 1.0f));
 	
+	XMStoreFloat4x4(&sceneBuff.viewProj, mCam->ViewProj());
+
+	sceneBuff.camPos = mCam->GetPosition();
+
 	mDevcon->VSSetConstantBuffers(0, 1, &sceneCBuffer);
-	mDevcon->UpdateSubresource(sceneCBuffer, 0, 0, mCam->ViewProj().m , 0, 0);
+	mDevcon->UpdateSubresource(sceneCBuffer, 0, 0, &sceneBuff , 0, 0);
 
 	//Skybox right now doesn't like zbuffers, so dont' set one for it
 	mDevcon->OMSetRenderTargets(1, &mScreen->mTargetView, 0);
@@ -148,9 +213,14 @@ void RenderManager::Render()
 
 
 	mDevcon->OMSetRenderTargets(1, &mScreen->mTargetView/*mBackbuffer*/, mZbuffer);
-	float blendFactor[] = {0.0f, 0.0f, 0.0f, 0.0f}; 
-    mDevcon->OMSetBlendState(mBlendState, blendFactor, 0xffffffff); // restore default
-	Render(0);
+	
+	mDevcon->PSSetConstantBuffers(2, 1, &dirLightCBuffer);
+	mDevcon->UpdateSubresource(dirLightCBuffer, 0, 0, &mDirLight, 0, 0);
+
+	mDevcon->PSSetConstantBuffers(3, 1, &pointLightCBuffer);
+	mDevcon->UpdateSubresource(pointLightCBuffer, 0, 0, &mPointLight, 0, 0);
+
+    Render(0);
 
 	
 	//Render the screen quad last

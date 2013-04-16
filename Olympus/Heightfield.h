@@ -1,12 +1,41 @@
-//#ifndef HEIGHTFIELD_H
-//#define HEIGHTFIELD_H
-//
-//#include "Renderable.h"
-//
-//class Heightfield : public Renderable
-//{
-//public:
-//
-//}
-//
-//#endif
+#pragma once
+
+#ifndef HEIGHTFIELD_H
+#define HEIGHTFIELD_H
+
+#include "d3dUtil.h"
+#include "xnamath.h"
+#include "GeometryGenerator.h"
+#include "Camera.h"
+#include "Vertices.h"
+#include "Renderable.h"
+
+class Heightfield : public Renderable
+{
+public:
+	Heightfield();
+	Heightfield(ID3D11DeviceContext *devcon, ID3D11Device *dev, GeometryGenerator *geoGen);
+
+	void UpdateSkyBox(Camera *cam);
+	void CreateGeometry(GeometryGenerator *geoGen);
+	void SetupBuffer();
+	void SetupPipeline();
+
+	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
+	//XMMatrix skyTrans;
+	ID3D11Buffer *skyBoxVertBuffer;               
+	ID3D11Buffer *skyBoxIndBuffer;
+	UINT indices[36];
+	PosNormalTexTan vertices[24];
+	ID3D11Buffer* mConstBuffer;
+
+	ID3D11DeviceContext *mDevcon;
+	ID3D11Device *mDev;
+	ID3D11ShaderResourceView* mGroundTexture;
+
+	ID3D11InputLayout   *mLayout;           // the pointer to the input layout
+    ID3D11VertexShader  *mVS;               // the pointer to the vertex shader
+    ID3D11PixelShader   *mPS;               // the pointer to the pixel shader
+};
+
+#endif
