@@ -41,7 +41,7 @@ VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float3 tangent 
 
 float4 PShader(VOut input) : SV_TARGET
 {
-	return float4(0.8f,0.8f,0.8f,1.0f);
+	return float4(0.6f,0.6f,0.6f,1.0f);
 }
 //float4 PShader(VOut input) : SV_TARGET
 //{   

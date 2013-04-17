@@ -203,7 +203,7 @@ int System::initd3d()
 	mLastMousePos.x = 0;
 	mLastMousePos.y = 0;
     mCam->SetPosition(0.0f, 5.0f, -10.0f);
-	
+	mCam->SetLens(0.25f*MathHelper::Pi, (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 1.0f, 1000.0f);
 
     mApex = new Apex();
     mApex->Init(dev, devcon);

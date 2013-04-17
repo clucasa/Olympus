@@ -1,0 +1,8 @@
+# object bigbadman
+m Models/bigbadman.fbx
+t Textures/CommandoArmor_DM.dds
+t Textures/Commando_DM.dds
+n Textures/CommandoArmor_NM.dds
+n Textures/Commando_NM.dds
+i -32.0 0.0 -12.0 4.0 4.0 4.0 0.0 0.0 0.0
+i 32.0 0.0 15.0 4.0 4.0 4.0 0.0 0.0 0.0
