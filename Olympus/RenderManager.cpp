@@ -48,7 +48,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 
     renderables.push_back(obj);
 
-	mGrid = new GroundPlane(mDevcon, mDev, geoGen, 100, 10);
+	mGrid = new GroundPlane(mDevcon, mDev, geoGen, 200, 10);
 	renderables.push_back(mGrid);
 
 	HRESULT hr;
@@ -223,15 +223,15 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	mPointLight[0].Att     = XMFLOAT3(.4f, .4f, .4f);
 	mPointLight[0].Diffuse = XMFLOAT4(.6f, .0f, .0f, 1);
 	mPointLight[0].Specular = XMFLOAT4(1, 1, 1, 1);
-	mPointLight[0].Range    = 2.0f;
+	mPointLight[0].Range    = 6.0f;
 	mPointLight[0].Position = XMFLOAT3(3, 0, 0);
 
 	mPointLight[1].Ambient = XMFLOAT4(.3f, .1f, .1f, 1);
 	mPointLight[1].Att     = XMFLOAT3(.4f, .4f, .4f);
 	mPointLight[1].Diffuse = XMFLOAT4(.0f, .6f, .0f, 1);
 	mPointLight[1].Specular = XMFLOAT4(1, 1, 1, 1);
-	mPointLight[1].Range    = 2.0f;
-	mPointLight[1].Position = XMFLOAT3(-3, 0, 0);
+	mPointLight[1].Range    = 4.0f;
+	mPointLight[1].Position = XMFLOAT3(0, 0, -3);
 }
 
 

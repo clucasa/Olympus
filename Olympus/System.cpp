@@ -213,12 +213,23 @@ int System::initd3d()
     return InitPipeline();
 }
 
+
+float timePassed = 0.0f;
 // this is the function used to render a single frame
 void System::RenderFrame(float dt)
 {
-    bool fetch = mApex->advance(dt);
+	
+	bool fetch = mApex->advance(dt);
 
+	
+	timePassed += dt;
 	// Other animation?
+	float x,y,z;
+	x = 20.f * (float)sin((float)timePassed);
+	y = abs(20.f * (float)sin((float)timePassed/1.33f));
+	z = 20.f * (float)cos((float)timePassed);
+
+	rendManager->SetPosition(x,y,z);
 	UpdateCamera(dt);
 
 	if(fetch)
