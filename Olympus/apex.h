@@ -8,6 +8,7 @@
 #include "PxVisualDebuggerExt.h"
 #include "PvdNetworkStreams.h"
 
+#include < PxToolkit.h >
 #include "PhysXHeightField.h"
 
 #include "NxApex.h"
@@ -30,10 +31,13 @@ using namespace debugger;
 #pragma comment(lib, "PhysX3ExtensionsCHECKED.lib")
 #pragma comment(lib, "PhysXVisualDebuggerSDKCHECKED.lib")
 
+#pragma comment(lib, "PxToolkitDEBUG.lib")
+
 #pragma comment(lib ,"ApexFrameworkCHECKED_x86")
 
 class Apex
 {
+	// APEX
 public:
     Apex();
     ~Apex();
@@ -63,8 +67,13 @@ private:
 	ID3D11Device* mDev;
 	ID3D11DeviceContext* mDevcon;
 	
+// PhysX
+public:
+	void LoadTriangleMesh(int numVerts, PxVec3* verts, float scale);
+
 private:
     bool InitPhysX();
+	
 
     PxFoundation*               mFoundation;
     PxPhysics*                  mPhysics;

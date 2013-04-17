@@ -44,7 +44,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	normalMap.push_back( "Media/Textures/Commando_NM.dds" );
 
 	Object* obj = new Object();
-	obj->objLoad( "Media/Models/bigbadman.fbx", &textures, &normalMap, dev, devcon);
+	obj->objLoad( "Media/Models/bigbadman.fbx", &textures, &normalMap, dev, devcon, apex);
 
     renderables.push_back(obj);
 
@@ -56,10 +56,10 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	//mFont;// = new FontSheet();
 	//mText;//  = OnScreen();
 
-	hr = mFont.Initialize(mDev, L"Times New Roman", 100.0f, FontSheet::FontStyleRegular, false);
+	hr = mFont.Initialize(mDev, L"Times New Roman", 30.0f, FontSheet::FontStyleRegular, false);
 	hr = mText.Initialize(mDev);
 
-	sText = L"Patrick";
+	sText = L"Dragon Slayer";
 
 	// Calculate the text width.
 	int textWidth = 0;
@@ -219,15 +219,15 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 
     mDev->CreateBuffer(&bd, NULL, &pointLightCBuffer);
 
-	mPointLight[0].Ambient = XMFLOAT4(.3f, .1f, .1f, 1);
-	mPointLight[0].Att     = XMFLOAT3(.4f, .4f, .4f);
+	mPointLight[0].Ambient = XMFLOAT4(.1f, .1f, .1f, 1);
+	mPointLight[0].Att     = XMFLOAT3(1.0f, .05f, .0075f);
 	mPointLight[0].Diffuse = XMFLOAT4(.6f, .0f, .0f, 1);
 	mPointLight[0].Specular = XMFLOAT4(1, 1, 1, 1);
 	mPointLight[0].Range    = 6.0f;
-	mPointLight[0].Position = XMFLOAT3(3, 0, 0);
+	mPointLight[0].Position = XMFLOAT3(5, 0, 0);
 
-	mPointLight[1].Ambient = XMFLOAT4(.3f, .1f, .1f, 1);
-	mPointLight[1].Att     = XMFLOAT3(.4f, .4f, .4f);
+	mPointLight[1].Ambient = XMFLOAT4(.1f, .1f, .1f, 1);
+	mPointLight[1].Att     = XMFLOAT3(1.0f, .05f, .0075f);
 	mPointLight[1].Diffuse = XMFLOAT4(.0f, .6f, .0f, 1);
 	mPointLight[1].Specular = XMFLOAT4(1, 1, 1, 1);
 	mPointLight[1].Range    = 4.0f;

@@ -312,13 +312,13 @@ void System::UpdateCamera(float dt)
         float rightThumbX = state.Gamepad.sThumbRX;
 
 		if(mFovFlag == 1){
-			mCam->SetLens(0.25f*MathHelper::Pi, 1.0f, 1.0f, 1000.0f);
+			mCam->SetLens(0.25f*MathHelper::Pi, (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 1.0f, 1000.0f);
 			mFovFlag = 0;
 		}
 
         // Aiming with left trigger
         if(state.Gamepad.bLeftTrigger && state.Gamepad.bRightTrigger < 256){ // 256 disables the right trigger
-			mCam->SetLens(0.1f*MathHelper::Pi, 1.0f, 1.0f, 1000.0f);
+			mCam->SetLens(0.1f*MathHelper::Pi, (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 1.0f, 1000.0f);
 			mFovFlag = 1;
             mCam->Walk((leftThumbY / 30000.0f) * dt * speed);
             mCam->Strafe((leftThumbX / 30000.0f) * dt * speed);
@@ -407,7 +407,7 @@ void System::UpdateCamera(float dt)
 
 
 	if( GetAsyncKeyState('P') & 0x8000 ){ // Super Zoom
-          mCam->SetLens(0.01f*MathHelper::Pi, 1.0f, 1.0f, 1000.0f); 
+          mCam->SetLens(0.01f*MathHelper::Pi, (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 1.0f, 1000.0f); 
 		  mFovFlag = 1;
 	}
 

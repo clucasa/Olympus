@@ -203,6 +203,40 @@ bool Apex::InitPhysX()
     return true;
 }
 
+void Apex::LoadTriangleMesh(int numVerts, PxVec3* verts, float scale)
+{
+	PxRigidStatic* meshActor = mPhysics->createRigidStatic(PxTransform::createIdentity());
+	PxShape* meshShape;
+	if(meshActor)
+	{
+			PxTriangleMeshDesc meshDesc;
+			meshDesc.points.count           = numVerts;
+			meshDesc.points.stride          = sizeof(PxVec3);
+			meshDesc.points.data            = verts;
+
+			//meshDesc.triangles.count        = numInds/3.;
+			//meshDesc.triangles.stride       = 3*sizeof(int);
+			//meshDesc.triangles.data         = inds;
+
+			PxToolkit::MemoryOutputStream writeBuffer;
+			bool status = mCooking->cookTriangleMesh(meshDesc, writeBuffer);
+			if(!status)
+				return;
+
+			PxToolkit::MemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+
+			PxTriangleMeshGeometry triGeom;
+			triGeom.triangleMesh = mPhysics->createTriangleMesh(readBuffer);
+			triGeom.scale = PxMeshScale(PxVec3(scale,scale,scale),physx::PxQuat::createIdentity());
+
+			meshShape = meshActor->createShape(triGeom, *defaultMaterial);
+			meshShape->setLocalPose(PxTransform(PxVec3(0,0,0))); //x,y,z)));
+			meshShape->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
+
+			mScene->addActor(*meshActor);
+	}
+}
+
 bool Apex::InitParticles()
 {
     PX_ASSERT(gApexSDK);

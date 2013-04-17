@@ -7,7 +7,7 @@ Object::Object()
 //---------------------------------------------------------------------------------------
 // Character Loader here
 //---------------------------------------------------------------------------------------
-void Object::objLoad( char* filename, vector<LPSTR> *textures, vector<LPSTR> *NormTextures, ID3D11Device* devv, ID3D11DeviceContext *devcon )
+void Object::objLoad( char* filename, vector<LPSTR> *textures, vector<LPSTR> *NormTextures, ID3D11Device* devv, ID3D11DeviceContext *devcon, Apex* apex )
 {
 	dev1 = devv;
 	devcon1 = devcon;
@@ -25,10 +25,11 @@ void Object::objLoad( char* filename, vector<LPSTR> *textures, vector<LPSTR> *No
 
 	for( int i = 0; i < numMeshes; i++ )
 	{
+		int numVerts = vertexes[i].size();
 		D3D11_BUFFER_DESC bd;
 		ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
 		bd.Usage = D3D11_USAGE_DEFAULT;
-		bd.ByteWidth = sizeof( Vertex ) * vertexes[i].size();
+		bd.ByteWidth = sizeof( Vertex ) * numVerts;
 		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		bd.CPUAccessFlags = 0;
 		bd.MiscFlags = 0;
@@ -39,6 +40,16 @@ void Object::objLoad( char* filename, vector<LPSTR> *textures, vector<LPSTR> *No
 			return;
 
 		vertexBuffer.push_back( tempVB );
+
+		PxVec3* vertices = new PxVec3[numVerts];
+		for(int j = 0; j < numVerts; j++)
+		{
+			vertices[j].x = vertexes[i][j].Pos.x;
+			vertices[j].y = vertexes[i][j].Pos.y;
+			vertices[j].z = vertexes[i][j].Pos.z;
+		}
+
+		apex->LoadTriangleMesh(numVerts, vertices,5.0f);
 	}
 	// Save the Vertex Buffer for easy access
 	//vertexBuffer = pVBuffer1;
@@ -55,7 +66,7 @@ void Object::objLoad( char* filename, vector<LPSTR> *textures, vector<LPSTR> *No
 	//	return;
 
 	// Save the Index Buffer for easy access
-//	indexBuffer = g_pIndexBuffer;
+	//	indexBuffer = g_pIndexBuffer;
 
 	for( int i = 0; i < textures->size(); i++ )
 	{
@@ -141,7 +152,7 @@ void Object::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 		devcon1->VSSetShader(opVS, 0, 0);
 		devcon1->PSSetShader(opPS, 0, 0);
 
-		XMStoreFloat4x4(&mWorldMat, XMMatrixScaling(3.0f,3.0f,3.0f));
+		XMStoreFloat4x4(&mWorldMat, XMMatrixScaling(5.0f,5.0f,5.0f));
 
 		devcon1->VSSetConstantBuffers(1, 1, &worldCBuffer);
 

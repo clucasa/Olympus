@@ -10,6 +10,7 @@
 #include <string>
 #include "importer.h"
 #include "Renderable.h"
+#include "apex.h"
 //#include "struct.h"
 
 using namespace std;
@@ -38,7 +39,7 @@ public:
 	XMFLOAT4X4 mWorldMat;
 
 	Object();
-	void objLoad( char* filename, vector<LPSTR > *textures, vector<LPSTR > *NormTextures, ID3D11Device* devv, ID3D11DeviceContext *devcon );
+	void objLoad( char* filename, vector<LPSTR > *textures, vector<LPSTR > *NormTextures, ID3D11Device* devv, ID3D11DeviceContext *devcon, Apex* apex );
 	void renderO(ID3D11DeviceContext *devcon);
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
 

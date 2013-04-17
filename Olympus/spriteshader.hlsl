@@ -86,8 +86,8 @@ void GShader(point VOut input[1], uint primID : SV_PrimitiveID, inout TriangleSt
     //up = cross(left, look);
 
 	// Compute triangle strip vertices of the quad
-	float halfWidth = 0.15;
-	float halfHeight = 0.15;
+	float halfWidth = 0.25;
+	float halfHeight = 0.25;
 
 	float4 bottomLeft	= float4(input[0].Position + halfWidth * left - halfHeight * up, 1.0f);
 	float4 topLeft		= float4(input[0].Position + halfWidth * left + halfHeight * up, 1.0f);
@@ -184,7 +184,7 @@ float4 PShader(GOut input) : SV_TARGET
 
 
 	color *= totalDiffuse + totalAmbient;///(5.0f-numLightsHit);
-	color = saturate(color);
+	//color = saturate(color);
 	color.a = theTexture.GatherAlpha(samTriLinearSam, input.texcoord, int2(0,0), int2(0,0), int2(0,0), int2(0,0));
 
 	clip(color.a < 0.999999f ? -1:1 );
