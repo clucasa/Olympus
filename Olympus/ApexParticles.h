@@ -48,6 +48,9 @@ public:
 
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
 
+	void SetPosition(float x, float y, float z);
+	void SetEmit(bool on);
+
 private:
 	ID3D11Device *mDev;
 	ID3D11DeviceContext *mDevcon;
@@ -59,6 +62,7 @@ private:
 	ID3D11Buffer*		mConstBuffer;
 	ID3D11ShaderResourceView *spriteTexture;
 
+	NxApexEmitterActor* emitterActor;
     physx::apex::NxApexRenderVolume*  mRenderVolume;
 
     NxModuleIofx* mIofxModule;

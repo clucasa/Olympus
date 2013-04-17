@@ -40,7 +40,7 @@ void ApexParticles::CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 
     // Set Actor pose
     //NxParameterized::setParamMat44( *descParams, "initialPose", pose );
-    NxApexEmitterActor* emitterActor;
+    
     if(descParams->areParamsOK())
     {
         emitterActor = static_cast<NxApexEmitterActor*>(emitterAsset->createApexActor(*descParams,*gApexScene));
@@ -64,7 +64,7 @@ void ApexParticles::CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 
 void ApexParticles::InitPipeline()
 {
-	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/popcorn.png"/*SoftParticle.dds"*/, 0, 0, &spriteTexture, 0 );
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/popcorn.png"/*SoftParticle.dds"/**/, 0, 0, &spriteTexture, 0 );
 
 	// compile the shaders
     ID3D10Blob *sVS, *sPS, *sGS;
@@ -138,4 +138,20 @@ void ApexParticles::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType
 	mRenderVolume->unlockRenderResources();
 
 	mDevcon->GSSetShader(NULL, 0, 0);
+}
+
+void ApexParticles::SetPosition(float x, float y, float z)
+{
+	if(emitterActor)
+    {
+        emitterActor->setCurrentPosition(PxVec3(x, y, z));
+    }
+}
+
+void ApexParticles::SetEmit(bool on)
+{
+	if(emitterActor)
+    {
+        emitterActor->startEmit( on );
+    }
 }

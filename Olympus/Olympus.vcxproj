@@ -91,7 +91,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalDependencies>fbxsdk-2013.3d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;fbxsdk-2013.3d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -111,13 +111,16 @@
     <ClCompile Include="apex.cpp" />
     <ClCompile Include="ApexParticles.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="FontSheet.cpp" />
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="GeometryGenerator.cpp" />
+    <ClCompile Include="GroundPlane.cpp" />
     <ClCompile Include="Heightfield.cpp" />
     <ClCompile Include="importer.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="OnScreen.cpp" />
     <ClCompile Include="PhysXHeightField.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="ScreenQuad.cpp" />
@@ -128,7 +131,9 @@
     <ClCompile Include="ZeusResourceCallback.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="GroundPlane.hlsl" />
     <None Include="models.hlsl" />
+    <None Include="OnScreen.hlsl" />
     <None Include="ScreenQuad.hlsl" />
     <None Include="shaders.hlsl" />
     <None Include="Skybox.hlsl" />
@@ -138,12 +143,15 @@
     <ClInclude Include="apex.h" />
     <ClInclude Include="ApexParticles.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="FontSheet.h" />
     <ClInclude Include="GameTimer.h" />
     <ClInclude Include="GeometryGenerator.h" />
+    <ClInclude Include="GroundPlane.h" />
     <ClInclude Include="Heightfield.h" />
     <ClInclude Include="importer.h" />
     <ClInclude Include="MathHelper.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="OnScreen.h" />
     <ClInclude Include="PhysXHeightField.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="RenderManager.h" />
@@ -151,6 +159,7 @@
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="struct.h" />
     <ClInclude Include="System.h" />
+    <ClInclude Include="TextHelper.h" />
     <ClInclude Include="Vertices.h" />
     <ClInclude Include="ZeusRenderResources.h" />
     <ClInclude Include="ZeusRenderResourceManager.h" />

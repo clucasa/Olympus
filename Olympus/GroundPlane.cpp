@@ -1,13 +1,13 @@
-#include "ScreenQuad.h"
+#include "GroundPlane.h"
 #include "System.h"
 
-ScreenQuad::ScreenQuad()
+GroundPlane::GroundPlane()
 {
 	
 }
 
-ScreenQuad::ScreenQuad(ID3D11DeviceContext *mDevcon, ID3D11Device *mDev, GeometryGenerator *geoGen) : 
-	mDevcon(mDevcon), mDev(mDev)
+GroundPlane::GroundPlane(ID3D11DeviceContext *mDevcon, ID3D11Device *mDev, GeometryGenerator *geoGen, int planeSize, int increment) : 
+	mDevcon(mDevcon), mDev(mDev), size(planeSize), inc(increment)
 {
 	cb = new cbuff();
 	cb->viewInvProj;
@@ -19,7 +19,7 @@ ScreenQuad::ScreenQuad(ID3D11DeviceContext *mDevcon, ID3D11Device *mDev, Geometr
 	SetupRenderTarget();
 }
 
-void ScreenQuad::SetupRenderTarget()
+void GroundPlane::SetupRenderTarget()
 {
 	D3D11_TEXTURE2D_DESC textureDesc;
 	HRESULT result;
@@ -64,12 +64,12 @@ void ScreenQuad::SetupRenderTarget()
 	result = mDev->CreateShaderResourceView(mTargetTexture, &shaderResourceViewDesc, &mShaderResourceView);
 
 }
-void ScreenQuad::SetupPipeline()
+void GroundPlane::SetupPipeline()
 {
     // load and compile the two shaders
 	ID3D10Blob *VS, *PS;
-    D3DX11CompileFromFile("ScreenQuad.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
-    D3DX11CompileFromFile("ScreenQuad.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
+    D3DX11CompileFromFile("GroundPlane.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
+    D3DX11CompileFromFile("GroundPlane.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
 
     // encapsulate both shaders into shader objects
     mDev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &mVS);
@@ -91,29 +91,30 @@ void ScreenQuad::SetupPipeline()
    
 }
 
-void ScreenQuad::CreateGeometry(GeometryGenerator *geoGen)
+void GroundPlane::CreateGeometry(GeometryGenerator *geoGen)
 {
 
-	GeometryGenerator::MeshData ScreenQuadData;			   // geometry for the sky box
-	geoGen->CreateFullscreenQuad(ScreenQuadData);
+	GeometryGenerator::MeshData GroundPlaneData;			   // geometry for the sky box
+	geoGen->CreateGrid(size, size, inc, inc, GroundPlaneData);
 
-
-	for(size_t i = 0; i < ScreenQuadData.Vertices.size(); i++)
+	PosNormalTexTan temp;
+	for(size_t i = 0; i < GroundPlaneData.Vertices.size(); i++)
     {
-        vertices[i].Pos      = ScreenQuadData.Vertices[i].Position;
-        vertices[i].Normal   = ScreenQuadData.Vertices[i].Normal;
-        vertices[i].Tex      = ScreenQuadData.Vertices[i].TexC;
-        vertices[i].TangentU = ScreenQuadData.Vertices[i].TangentU;
+		temp.Pos		= GroundPlaneData.Vertices[i].Position;
+        temp.Normal		= GroundPlaneData.Vertices[i].Normal;
+		temp.Tex		= GroundPlaneData.Vertices[i].TexC;
+        temp.TangentU	= GroundPlaneData.Vertices[i].TangentU;
+		vertices.push_back( temp );
     }
 
-	for(size_t i = 0; i < ScreenQuadData.Indices.size(); i++)
+	for(size_t i = 0; i < GroundPlaneData.Indices.size(); i++)
 	{
-		indices[i] = ScreenQuadData.Indices[i];
+		indices.push_back( GroundPlaneData.Indices[i] );
 	}
 
 }
 
-void ScreenQuad::SetupBuffer()
+void GroundPlane::SetupBuffer()
 {
 	
     // create the vertex buffer
@@ -121,31 +122,31 @@ void ScreenQuad::SetupBuffer()
     ZeroMemory(&bd, sizeof(bd));
 
     bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU
-    bd.ByteWidth = sizeof(PosNormalTexTan) * 4;             // size is the VERTEX struct * 3
+    bd.ByteWidth = sizeof(PosNormalTexTan) * vertices.size();             // size is the VERTEX struct * 3
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
     bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
 
-    mDev->CreateBuffer(&bd, NULL, &ScreenQuadVertBuffer);       // create the buffer
+    mDev->CreateBuffer(&bd, NULL, &GroundPlaneVertBuffer);       // create the buffer
 
 
     // copy the vertices into the buffer
     D3D11_MAPPED_SUBRESOURCE ms;
-    mDevcon->Map(ScreenQuadVertBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer
-	memcpy(ms.pData, &vertices, sizeof(PosNormalTexTan) * 4);                 // copy the data
-    mDevcon->Unmap(ScreenQuadVertBuffer, NULL);                                      // unmap the buffer
+    mDevcon->Map(GroundPlaneVertBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer
+	memcpy(ms.pData, &vertices[0], sizeof(PosNormalTexTan) * vertices.size());                 // copy the data
+    mDevcon->Unmap(GroundPlaneVertBuffer, NULL);                                      // unmap the buffer
 
 	// create the index buffer
     bd.Usage = D3D11_USAGE_DYNAMIC;
-    bd.ByteWidth = sizeof(UINT) * 6;    // 3 per triangle, 12 triangles
+    bd.ByteWidth = sizeof(UINT) * indices.size();    // 3 per triangle, 12 triangles
     bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
     bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     bd.MiscFlags = 0;
 
-    mDev->CreateBuffer(&bd, NULL, &ScreenQuadIndBuffer);
+    mDev->CreateBuffer(&bd, NULL, &GroundPlaneIndBuffer);
 
-    mDevcon->Map(ScreenQuadIndBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);      // map the buffer
-	memcpy(ms.pData, &indices, sizeof(UINT) * 6);                     // copy the data
-    mDevcon->Unmap(ScreenQuadIndBuffer, NULL);
+    mDevcon->Map(GroundPlaneIndBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);      // map the buffer
+	memcpy(ms.pData, &indices[0], sizeof(UINT) * indices.size());                     // copy the data
+    mDevcon->Unmap(GroundPlaneIndBuffer, NULL);
 
 
     ZeroMemory(&bd, sizeof(bd));
@@ -158,7 +159,7 @@ void ScreenQuad::SetupBuffer()
 
 }
 
-void ScreenQuad::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
+void GroundPlane::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 {
 
 	mDevcon->VSSetShader(mVS, 0, 0);
@@ -169,13 +170,18 @@ void ScreenQuad::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 	cb->farZ = mCam->GetFarZ();
 	cb->nearZ = mCam->GetNearZ();
 
+	XMStoreFloat4x4( &cb->viewInvProj, mCam->ViewProj() );
+	//XMStoreFloat4x4(&cb->viewInvProj, XMMatrixInverse( &XMMatrixDeterminant( XMLoadFloat4x4( &cb->viewInvProj ) ), XMLoadFloat4x4( &cb->viewInvProj ) ) );
+
+//	XMStoreFloat4x4( &cb->viewInvProj, XMMatrixTranspose( XMLoadFloat4x4( &cb->viewInvProj ) ) );
+//	XMStoreFloat4x4( &cb->viewPrevProj, XMMatrixTranspose( XMLoadFloat4x4( &cb->viewPrevProj ) ) );
 
 	 // select which vertex buffer to display
     UINT stride = sizeof(PosNormalTexTan);
     UINT offset = 0;
-    mDevcon->IASetVertexBuffers(0, 1, &ScreenQuadVertBuffer, &stride, &offset);
+    mDevcon->IASetVertexBuffers(0, 1, &GroundPlaneVertBuffer, &stride, &offset);
 
-	mDevcon->IASetIndexBuffer(ScreenQuadIndBuffer, DXGI_FORMAT_R32_UINT, 0);
+	mDevcon->IASetIndexBuffer(GroundPlaneIndBuffer, DXGI_FORMAT_R32_UINT, 0);
 
     // select which primtive type we are using
     mDevcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -193,5 +199,7 @@ void ScreenQuad::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 	mDevcon->UpdateSubresource(mConstBuffer, 0, 0, cb, 0, 0);
 
 	 // draw the vertex buffer to the back buffer
-    mDevcon->DrawIndexed(6, 0, 0);
+    mDevcon->DrawIndexed(indices.size(), 0, 0);
+
+	XMStoreFloat4x4( &cb->viewPrevProj, mCam->ViewProj() );
 }

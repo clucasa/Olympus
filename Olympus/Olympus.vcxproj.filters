@@ -80,6 +80,15 @@
     <Filter Include="Rendering\Objects\FBX Loader">
       <UniqueIdentifier>{5d5dadee-a596-4a07-8e64-3c4e5846cb5f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Objects\OnScreen">
+      <UniqueIdentifier>{c12629cf-dc77-4b00-915e-0a3127db85ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Objects\GroundPlane">
+      <UniqueIdentifier>{03936741-ba6f-47d1-800f-0ca4a16474d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Objects\OnScreen\FontSheet">
+      <UniqueIdentifier>{6224932f-5073-418b-a1a4-78bffd54d06b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="apex.cpp">
@@ -134,22 +143,37 @@
     <ClCompile Include="Object.cpp">
       <Filter>Rendering\Objects\FBX Loader</Filter>
     </ClCompile>
+    <ClCompile Include="OnScreen.cpp">
+      <Filter>Rendering\Objects\OnScreen</Filter>
+    </ClCompile>
+    <ClCompile Include="GroundPlane.cpp">
+      <Filter>Rendering\Objects\GroundPlane</Filter>
+    </ClCompile>
+    <ClCompile Include="FontSheet.cpp">
+      <Filter>Rendering\Objects\OnScreen\FontSheet</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders.hlsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="spriteshader.hlsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="Skybox.hlsl">
-      <Filter>Resource Files\shaders</Filter>
+    <None Include="OnScreen.hlsl">
+      <Filter>Rendering\Objects\OnScreen</Filter>
     </None>
     <None Include="ScreenQuad.hlsl">
-      <Filter>Resource Files\shaders</Filter>
+      <Filter>Rendering\Objects\ScreenQuad</Filter>
+    </None>
+    <None Include="Skybox.hlsl">
+      <Filter>Rendering\Objects\Skybox</Filter>
+    </None>
+    <None Include="spriteshader.hlsl">
+      <Filter>Rendering\Objects\ApexParticles</Filter>
+    </None>
+    <None Include="GroundPlane.hlsl">
+      <Filter>Rendering\Objects\GroundPlane</Filter>
     </None>
     <None Include="models.hlsl">
-      <Filter>Resource Files\shaders</Filter>
+      <Filter>Rendering\Objects\FBX Loader</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -212,6 +236,18 @@
     </ClInclude>
     <ClInclude Include="struct.h">
       <Filter>Rendering\Objects\FBX Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="OnScreen.h">
+      <Filter>Rendering\Objects\OnScreen</Filter>
+    </ClInclude>
+    <ClInclude Include="GroundPlane.h">
+      <Filter>Rendering\Objects\GroundPlane</Filter>
+    </ClInclude>
+    <ClInclude Include="FontSheet.h">
+      <Filter>Rendering\Objects\OnScreen\FontSheet</Filter>
+    </ClInclude>
+    <ClInclude Include="TextHelper.h">
+      <Filter>Rendering\Objects\OnScreen\FontSheet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

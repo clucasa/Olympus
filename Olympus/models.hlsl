@@ -23,7 +23,7 @@ struct DirectionalLight
 
 cbuffer DirectionalLight : register(b2)
 {
-	struct DirectionalLight dirLight;
+	struct DirectionalLight dirLight[2];
 };
 
 struct PointLight
@@ -113,92 +113,89 @@ float4 PShader(VOut input) : SV_TARGET
 	float3 ambient;
 	float3 halfway;
 
+	float4 totalAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 totalDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 totalSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
 
 	textureColor = diffuseTexture[0].Sample( samLinear, input.Tex );
 
-	ambient = dirLight.Ambient.xyz;
+	[unroll]
+	for(int i = 0; i < 2; i++)
+	{
+		ambient = dirLight[i].Ambient.xyz;
 
-	//Compute directional lighting
-	diffuse = dirLight.Diffuse * saturate(dot(input.norm.xyz, -dirLight.Direction.xyz));
+		//Compute directional lighting
+		diffuse = dirLight[i].Diffuse * saturate(dot(input.norm.xyz, -dirLight[i].Direction.xyz));
 	
-	halfway = normalize(-dirLight.Direction.xyz + input.viewDirection);
+		halfway = normalize(-dirLight[i].Direction.xyz + input.viewDirection);
 
-	specular.xyz = pow(saturate(dot(input.norm.xyz, halfway)), dirLight.SpecPower) * dirLight.Specular;
+		specular.xyz = pow(saturate(dot(input.norm.xyz, halfway)), dirLight[i].SpecPower) * dirLight[i].Specular;
 
+		totalAmbient.xyz +=  ambient.xyz;
+		totalDiffuse.xyz +=  diffuse.xyz;
+		totalSpec.xyz	 +=  specular.xyz;
 
-	color.xyz = saturate(dirLight.Ambient + diffuse) * textureColor + specular;
-
-
+	}
+	
 	//Compute point lighting
 	float4 pAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 pDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 pSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	// The vector from the surface to the light.
-	float3 lightVec = pLight[0].Position - input.posW;
-
-	float d = length(lightVec);
-
-	if( d > pLight[0].Range )
+	[unroll]
+	for(int i = 0; i < 2; i++)
 	{
+
+		// The vector from the surface to the light.
+		float3 lightVec = pLight[i].Position - input.posW;
+
+		float d = length(lightVec);
+
+		if( d > pLight[i].Range)
+		{
+			continue;	
+		}
+
+		lightVec /= d; 
+
+		pAmbient += pLight[i].Ambient;
+
+		float diffuseFactor = dot(lightVec, input.norm);
+
+		[flatten]
+		if( diffuseFactor > 0.0f )
+		{
+			float3 v         = reflect(-lightVec, input.norm);
+
+			pDiffuse += diffuseFactor * pLight[i].Diffuse;
+		}
+
+		float att = 1.0f / dot(pLight[i].Att, float3(1.0f, d, d*d));
+
+		pDiffuse *= att*(d / pLight[i].Range );
+
+	
+		float softie = .75;
+
+		if( d < softie*pLight[i].Range )
+			pAmbient  *= 1/((d/pLight[i].Range+1)*(d/pLight[i].Range+1));
+		if( d > softie*pLight[i].Range )
+		{
+			pAmbient *= 1/((softie*pLight[i].Range/pLight[i].Range+1)*(softie*pLight[i].Range/pLight[i].Range+1));
+			pAmbient *= (pLight[i].Range-d)/(pLight[i].Range-softie*pLight[i].Range);
+		}
+
+
 		
-		color.a = 1.0;
-		return color;
-	}
 
-	lightVec /= d; 
+	}	
 
-	pAmbient = pLight[0].Ambient;
-
-	float diffuseFactor = dot(lightVec, input.norm);
-
-	[flatten]
-	if( diffuseFactor > 0.0f )
-	{
-
-
-		float3 v         = reflect(-lightVec, input.norm);
-
-		//float specFactor = pow(max(dot(v, input.viewDirection), 0.0f), 100);
-
-		pDiffuse = diffuseFactor * pLight[0].Diffuse;
-
-		//pSpec    = specFactor * pLight[0].Specular;
-	}
-
-	float att = 1.0f / dot(pLight[0].Att, float3(1.0f, d, d*d));
-
-	pDiffuse *= att*(d / pLight[0].Range );
-	//pSpec    *= att*(d / pLight[0].Range );
-
-	
-	float softie = .75;
-
-	if( d < softie*pLight[0].Range )
-		pAmbient  *= 1/((d/pLight[0].Range+1)*(d/pLight[0].Range+1));
-	if( d > softie*pLight[0].Range )
-	{
-		pAmbient *= 1/((softie*pLight[0].Range/pLight[0].Range+1)*(softie*pLight[0].Range/pLight[0].Range+1));
-		pAmbient *= (pLight[0].Range-d)/(pLight[0].Range-softie*pLight[0].Range);
-	}
-
-	//Calcuate directional + point lighting
-	
-	float4 totalAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 totalDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 totalSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
-
-	color.xyz = textureColor.xyz;
-
-	totalAmbient.xyz +=  ambient.xyz;
 	totalAmbient.xyz +=  pAmbient.xyz;
-
-	totalDiffuse.xyz +=  diffuse.xyz;
+		
 	totalDiffuse.xyz +=  pDiffuse.xyz;
-
-	totalSpec.xyz	 +=  specular.xyz;
+		
 	totalSpec.xyz	 +=  pSpec.xyz;
-
 
 	color = textureColor*(totalAmbient + totalDiffuse) + totalSpec;
 

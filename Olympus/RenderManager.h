@@ -13,7 +13,9 @@
 #include "SkyBox.h"
 #include "ScreenQuad.h"
 #include "Object.h"
-#include "Lighting.h"
+#include "OnScreen.h"
+#include "FontSheet.h"
+#include "GroundPlane.h"
 
 using namespace std;
 
@@ -75,6 +77,10 @@ public:
 	void Render();
 	void RenderToTarget(enum renderTargets);
 
+	//DEBUG
+	void RenderManager::SetPosition(float x, float y, float z);
+	void RenderManager::SetEmit(bool on);
+
 	//void InitObjects();
 
 	IDXGISwapChain *mSwapchain;             // the pointer to the swap chain interface
@@ -94,6 +100,7 @@ public:
 
 	Camera *mCam;
 	Camera *mScreenCam;
+	GroundPlane *mGrid;
 
 	ID3D11Buffer *sceneCBuffer;
 	ID3D11Buffer *dirLightCBuffer;
@@ -101,6 +108,8 @@ public:
 
 	SkyBox *mSkyBox;
 	ScreenQuad *mScreen;
+
+	ApexParticles* particles;
 	
 	vector<Renderable*> renderables;
 
@@ -109,8 +118,13 @@ public:
 	Apex                           *mApex;
 	physx::apex::NxUserRenderer*    gRenderer;
 
-	DirectionalLight mDirLight;
+	DirectionalLight mDirLight[2];
 	PointLight		 mPointLight[2];
+
+	FontSheet mFont;
+	OnScreen mText;
+	POINT textPos;
+	wstring sText;
 };
 
 

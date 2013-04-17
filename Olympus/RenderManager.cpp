@@ -24,9 +24,9 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	
 	ScreenQuad *sq = new ScreenQuad(mDevcon, mDev, geoGen);
 
+	ApexParticles* emitter = apex->CreateEmitter(gRenderer);
 
-
-	Renderable* particles = (Renderable*)apex->CreateEmitter(gRenderer);
+	particles = apex->CreateEmitter(gRenderer);
 		
 	//Special "renderable" case, do not add to the vector
 	mScreen = new ScreenQuad(mDevcon, mDev, geoGen);
@@ -48,12 +48,46 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 
     renderables.push_back(obj);
 
+	mGrid = new GroundPlane(mDevcon, mDev, geoGen, 100, 10);
+	renderables.push_back(mGrid);
+
+	HRESULT hr;
+
+	//mFont;// = new FontSheet();
+	//mText;//  = OnScreen();
+
+	hr = mFont.Initialize(mDev, L"Times New Roman", 100.0f, FontSheet::FontStyleRegular, false);
+	hr = mText.Initialize(mDev);
+
+	sText = L"Patrick";
+
+	// Calculate the text width.
+	int textWidth = 0;
+	for(UINT i = 0; i < sText.size(); ++i)
+	{
+		WCHAR character = sText[i];
+		if(character == ' ') 
+		{
+			textWidth += mFont.GetSpaceWidth();
+		}
+		else{
+			const CD3D11_RECT& r = mFont.GetCharRect(sText[i]);
+			textWidth += (r.right - r.left + 1);
+		}
+	}
+
+        textPos.x = (SCREEN_WIDTH - textWidth) - 2.0;
+        textPos.y = 0;//SCREEN_HEIGHT;
+
+	//hr = D3DX11CreateShaderResourceViewFromFile(dev, "Textures/WoodCrate01.dds", 0, 0, &mImageSRV, 0 );
+
+
 	mScreenCam = new Camera();
 	mScreenCam->UpdateViewMatrix();
 
 	free(geoGen);
 
-
+	renderables.push_back(emitter);
 	renderables.push_back(particles);
     
     D3D11_BUFFER_DESC bd;
@@ -75,7 +109,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 
 
 	// create the depth buffer texture
-	HRESULT hr;
+	
 
 	ID3D11RasterizerState*		pState;
 	D3D11_RASTERIZER_DESC		raster;
@@ -158,16 +192,22 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	ZeroMemory(&bd, sizeof(bd));
 
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(DirectionalLight);
+    bd.ByteWidth = sizeof(DirectionalLight)*2;
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
     mDev->CreateBuffer(&bd, NULL, &dirLightCBuffer);
+	
+	mDirLight[0].Ambient =		XMFLOAT4(.1f, .1f, .1f, 1);
+	mDirLight[0].Diffuse =		XMFLOAT4(.6f, .6f, .6f, 1);
+	mDirLight[0].Direction =	XMFLOAT4(0, 5, 0, 1);
+	mDirLight[0].Specular =		XMFLOAT4(1, 1, 1, 1);
+	mDirLight[0].SpecPower =	10.0f;
 
-	mDirLight.Ambient =  XMFLOAT4(.3f, .3f, .3f, 1);
-	mDirLight.Diffuse =  XMFLOAT4(.6f, .6f, .6f, 1);
-	mDirLight.Direction =  XMFLOAT4(5, 0, 0, 1);
-	mDirLight.Specular =  XMFLOAT4(1, 1, 1, 1);
-	mDirLight.SpecPower = 10.0f;
+	mDirLight[1].Ambient =		XMFLOAT4(.3f, .3f, .3f, 1);
+	mDirLight[1].Diffuse =		XMFLOAT4(.6f, .6f, .6f, 1);
+	mDirLight[1].Direction =	XMFLOAT4(5, 0, 0, 1);
+	mDirLight[1].Specular =		XMFLOAT4(1, 1, 1, 1);
+	mDirLight[1].SpecPower =	10.0f;
 
 
 	//Set the point light
@@ -232,6 +272,8 @@ void RenderManager::Render()
 
 	mDevcon->UpdateSubresource(sceneCBuffer, 0, 0, mScreenCam->ViewProj().m , 0, 0);
 	mScreen->Render(sceneCBuffer, mScreenCam, 0);
+
+	mText.DrawString(mDevcon, mFont, sText, textPos, XMCOLOR(0xffffffff));
 }
 
 void RenderManager::Render(int renderType)
@@ -253,4 +295,16 @@ void RenderManager::RenderToTarget(enum renderTargets target)
 		mDevcon->OMSetRenderTargets(0, &mScreen->mTargetView, mZbuffer);
 		break;
 	}
+}
+
+
+//DEBUG
+void RenderManager::SetPosition(float x, float y, float z)
+{
+	particles->SetPosition(x,y,z);
+}
+
+void RenderManager::SetEmit(bool on)
+{
+	particles->SetEmit(on);
 }

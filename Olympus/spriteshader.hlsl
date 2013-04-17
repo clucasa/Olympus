@@ -9,7 +9,7 @@ cbuffer ObjectMat	: register(c1)
 	float buffer;
 }
 
-cbuffer DirectionalLight : register(b2)
+struct DirectionalLight
 {
 	float4 Ambient;
 	float4 Diffuse;
@@ -17,6 +17,11 @@ cbuffer DirectionalLight : register(b2)
 	float4 Direction;
 	float  SpecPower;
 	float3 pad;
+};
+
+cbuffer DirectionalLight : register(b2)
+{
+	struct DirectionalLight dirLight[2];
 };
 
 struct PointLight
@@ -118,84 +123,71 @@ float4 PShader(GOut input) : SV_TARGET
 	float3 ambient;
 	float3 halfway;
 
+	float4 totalAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 totalDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	float4 color = theTexture.Sample( samTriLinearSam, input.texcoord );///*float4(0.3f, 0.502f, 0.753f, 1.0f);*/theTexture.Gather(samTriLinearSam, input.texcoord, int2(0,0));
 	
 
-	ambient = Ambient;
+	for(int i = 0; i < 2; i++)
+	{
+		ambient = dirLight[i].Ambient.xyz;
 
-	diffuse = Diffuse;// * saturate(dot(input.lookAt.xyz, -Direction.xyz));
-	
-	//halfway = normalize(-Direction.xyz + input.lookAt);
+		diffuse = dirLight[i].Diffuse.xyz;// * saturate(dot(input.lookAt.xyz, -Direction.xyz));
 
-	//specular.xyz = pow(saturate(dot(input.lookAt.xyz, halfway)), SpecPower*3) * Specular/2;
-
+		totalAmbient.xyz += ambient;
+		totalDiffuse.xyz += diffuse;
+	}	
 	
 
 
 	float4 pAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 pDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 pSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
-
-	float3 lightVec = pLight[0].Position - input.posW;
-	float d = length(lightVec);
-
-	if(d > pLight[0].Range)
-	{
-		color.xyz = saturate(diffuse.xyz) * color.xyz;
-		color.a = theTexture.GatherAlpha(samTriLinearSam, input.texcoord, int2(0,0), int2(0,0), int2(0,0), int2(0,0));
-		//return 1;
-		return color;
-	}
-
-	lightVec /= d; 
-
-	pAmbient = pLight[0].Ambient;
-
-	float diffuseFactor = dot(-lightVec, input.lookAt);
-
-	//if( diffuseFactor > 0.0f )
-	//{
-		//float3 v         = reflect(-lightVec, normal);
-		//float specFactor = pow(max(dot(v, toEye), 0.0f), mat.Specular.w);
-
-		pDiffuse = pLight[0].Diffuse;
-		//spec    = specFactor * mat.Specular * L.Specular;
-	//}
-
-	float att = 1.0f / dot(pLight[0].Att, float3(1.0f, d, d*d));
-
-	pDiffuse *= att*(d / pLight[0].Range );
-
-	float softie = .75;
-
-	if( d < softie*pLight[0].Range )
-		pAmbient  *= 1/((d/pLight[0].Range+1)*(d/pLight[0].Range+1));
-	if( d > softie*pLight[0].Range )
-	{
-		pAmbient *= 1/((softie*pLight[0].Range/pLight[0].Range+1)*(softie*pLight[0].Range/pLight[0].Range+1));
-		pAmbient *= (pLight[0].Range-d)/(pLight[0].Range-softie*pLight[0].Range);
-	}
-
-	float4 totalAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 totalDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	//float4 totalSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
-
-	//totalAmbient.xyz +=  ambient.xyz;
-	totalAmbient.xyz +=  pAmbient.xyz;
-
-	//totalDiffuse.xyz +=  diffuse.xyz;
-	totalDiffuse.xyz +=  pDiffuse.xyz;
-
-	//totalSpec.xyz	 +=  specular.xyz;
-	//totalSpec.xyz	 +=  pSpec.xyz;
-
-
-	color = saturate(totalAmbient + totalDiffuse);
 	
+	for(int i = 0; i < 2; i++)
+	{
+		float3 lightVec = pLight[i].Position - input.posW;
+
+		float d = length(lightVec);
+
+		if(d > pLight[i].Range)
+			continue;
+
+		lightVec /= d; 
+
+		pAmbient = pLight[i].Ambient;
+
+		float diffuseFactor = dot(-lightVec, input.lookAt);
+
+
+		pDiffuse = pLight[i].Diffuse;
+
+		float att = 1.0f / dot(pLight[i].Att, float3(1.0f, d, d*d));
+
+		pDiffuse *= att*(d / pLight[i].Range );
+
+		float softie = .75;
+
+		if( d < softie*pLight[i].Range )
+			pAmbient  *= 1/((d/pLight[i].Range+1)*(d/pLight[i].Range+1));
+		if( d > softie*pLight[i].Range )
+		{
+			pAmbient *= 1/((softie*pLight[i].Range/pLight[i].Range+1)*(softie*pLight[i].Range/pLight[i].Range+1));
+			pAmbient *= (pLight[i].Range-d)/(pLight[0].Range-softie*pLight[0].Range);
+		}
+
+
+		totalAmbient.xyz +=  pAmbient.xyz;
+		totalDiffuse.xyz +=  pDiffuse.xyz;
+	}
+
+
+
+	color *= totalDiffuse + totalAmbient;///(5.0f-numLightsHit);
+	color = saturate(color);
 	color.a = theTexture.GatherAlpha(samTriLinearSam, input.texcoord, int2(0,0), int2(0,0), int2(0,0), int2(0,0));
 
-	clip(color.a < 0.9999f ? -1:1 );
+	clip(color.a < 0.999999f ? -1:1 );
 
 	return color;
 
