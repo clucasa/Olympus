@@ -15,6 +15,7 @@
 //#include "NxApexSDK.h"
 #include "ZeusRenderResourceManager.h"
 #include "ApexParticles.h"
+//#include "Object.h"
 #include "ZeusResourceCallback.h"
 #include <d3d11.h>
 #include <d3dx11.h>
@@ -34,6 +35,16 @@ using namespace debugger;
 #pragma comment(lib, "PxToolkitDEBUG.lib")
 
 #pragma comment(lib ,"ApexFrameworkCHECKED_x86")
+
+#ifndef OBJECT_INFO
+#define OBJECT_INFO
+struct ObjectInfo
+{
+	float x,y,z;
+	float sx,sy,sz;
+	float rx, ry, rz;
+};
+#endif
 
 class Apex
 {
@@ -69,7 +80,7 @@ private:
 	
 // PhysX
 public:
-	void LoadTriangleMesh(int numVerts, PxVec3* verts, float scale);
+	void LoadTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info);
 
 private:
     bool InitPhysX();

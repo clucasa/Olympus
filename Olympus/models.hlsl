@@ -144,7 +144,7 @@ float4 PShader(VOut input) : SV_TARGET
 	float4 pSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	[unroll]
-	for(int i = 0; i < 2; i++)
+	for(int i = 1; i < 2; i++)
 	{
 
 		// The vector from the surface to the light.
@@ -176,7 +176,7 @@ float4 PShader(VOut input) : SV_TARGET
 		pDiffuse *= att*(d / pLight[i].Range );
 
 	
-		float softie = .75;
+		float softie = .25;
 
 		if( d < softie*pLight[i].Range )
 			pAmbient  *= 1/((d/pLight[i].Range+1)*(d/pLight[i].Range+1));

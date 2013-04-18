@@ -203,7 +203,7 @@ bool Apex::InitPhysX()
     return true;
 }
 
-void Apex::LoadTriangleMesh(int numVerts, PxVec3* verts, float scale)
+void Apex::LoadTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 {
 	PxRigidStatic* meshActor = mPhysics->createRigidStatic(PxTransform::createIdentity());
 	PxShape* meshShape;
@@ -227,10 +227,10 @@ void Apex::LoadTriangleMesh(int numVerts, PxVec3* verts, float scale)
 
 			PxTriangleMeshGeometry triGeom;
 			triGeom.triangleMesh = mPhysics->createTriangleMesh(readBuffer);
-			triGeom.scale = PxMeshScale(PxVec3(scale,scale,scale),physx::PxQuat::createIdentity());
-
+			triGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
+		
 			meshShape = meshActor->createShape(triGeom, *defaultMaterial);
-			meshShape->setLocalPose(PxTransform(PxVec3(0,0,0))); //x,y,z)));
+			meshShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
 			meshShape->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
 
 			mScene->addActor(*meshActor);

@@ -123,6 +123,7 @@
     <ClCompile Include="OnScreen.cpp" />
     <ClCompile Include="PhysXHeightField.cpp" />
     <ClCompile Include="RenderManager.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ScreenQuad.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="System.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="PhysXHeightField.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="RenderManager.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="ScreenQuad.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="struct.h" />
