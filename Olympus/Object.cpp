@@ -7,8 +7,10 @@ Object::Object()
 //---------------------------------------------------------------------------------------
 // Character Loader here
 //---------------------------------------------------------------------------------------
-void Object::objLoad( char* filename, vector<LPSTR> *textures, vector<LPSTR> *NormTextures, ID3D11Device* devv, ID3D11DeviceContext *devcon, Apex* apex )
+void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *NormTextures, ID3D11Device* devv, ID3D11DeviceContext *devcon, Apex* apex )
 {
+	mApex = apex;
+	
 	dev1 = devv;
 	devcon1 = devcon;
 	vector<XMFLOAT3> vertexices;
@@ -41,15 +43,9 @@ void Object::objLoad( char* filename, vector<LPSTR> *textures, vector<LPSTR> *No
 
 		vertexBuffer.push_back( tempVB );
 
-		PxVec3* vertices = new PxVec3[numVerts];
-		for(int j = 0; j < numVerts; j++)
-		{
-			vertices[j].x = vertexes[i][j].Pos.x;
-			vertices[j].y = vertexes[i][j].Pos.y;
-			vertices[j].z = vertexes[i][j].Pos.z;
-		}
+		
 
-		apex->LoadTriangleMesh(numVerts, vertices,5.0f);
+		
 	}
 	// Save the Vertex Buffer for easy access
 	//vertexBuffer = pVBuffer1;
@@ -72,6 +68,9 @@ void Object::objLoad( char* filename, vector<LPSTR> *textures, vector<LPSTR> *No
 	{
 		hr1 = D3DX11CreateShaderResourceViewFromFile( dev1, textures[0][i], NULL, NULL, &g_pTextureRV1, NULL );
 		texArray.push_back( g_pTextureRV1 );
+	}
+	for( int i = 0; i < NormTextures->size(); i++ )
+	{
 		hr1 = D3DX11CreateShaderResourceViewFromFile( dev1, NormTextures[0][i], NULL, NULL, &g_pTextureRV1, NULL );
 		NormArray.push_back( g_pTextureRV1 );
 	}
@@ -144,36 +143,62 @@ void Object::renderO( ID3D11DeviceContext * devcon)
 		}
 }
 
+void Object::AddInstance(ObjectInfo info)
+{
+	XMFLOAT4X4 final;
+	XMMATRIX scale, trans, rot;
+
+	scale = XMMatrixScaling(info.sx,info.sy,info.sz);
+
+	trans = XMMatrixTranslation(info.x,info.y,info.z);
+
+	rot = XMMatrixRotationY(info.ry);
+	rot *= XMMatrixRotationX(info.rx);
+	rot *= XMMatrixRotationZ(info.rz);
+
+	XMStoreFloat4x4(&final, XMMatrixMultiply(scale,  XMMatrixMultiply(trans, rot) ) );
+
+	mWorldMats.push_back(final);
+	for( int i = 0; i < numMeshes; i++ )
+	{
+		int numVerts = vertexes[i].size();
+		PxVec3* vertices = new PxVec3[numVerts];
+		for(int j = 0; j < numVerts; j++)
+		{
+			vertices[j].x = vertexes[i][j].Pos.x;
+			vertices[j].y = vertexes[i][j].Pos.y;
+			vertices[j].z = vertexes[i][j].Pos.z;
+		}
+		mApex->LoadTriangleMesh(numVerts, vertices, info);
+	}
+}
+
+
 void Object::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 {
-	    UINT stride = sizeof(Vertex);
-        UINT offset = 0;
+	UINT stride = sizeof(Vertex);
+    UINT offset = 0;
 
-		devcon1->VSSetShader(opVS, 0, 0);
-		devcon1->PSSetShader(opPS, 0, 0);
+	devcon1->VSSetShader(opVS, 0, 0);
+	devcon1->PSSetShader(opPS, 0, 0);
+	
+	devcon1->VSSetConstantBuffers(1, 1, &worldCBuffer);
 
-		XMStoreFloat4x4(&mWorldMat, XMMatrixScaling(5.0f,5.0f,5.0f));
+	for( int i = 0; i < numMeshes; i++ )
+	{
+		devcon1->IASetInputLayout(objLayout);
+		devcon1->PSSetShaderResources(0, 1, &texArray[i] );
+		devcon1->PSSetShaderResources(1, 1, &NormArray[i] );
 
-		devcon1->VSSetConstantBuffers(1, 1, &worldCBuffer);
+		devcon1->IASetVertexBuffers(0, 1, &vertexBuffer[i], &stride, &offset);
 
-		devcon1->UpdateSubresource(worldCBuffer, 0, 0, &mWorldMat, 0, 0);
+		// select which primtive type we are using
+		devcon1->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		for( int i = 0; i < numMeshes; i++ )
+		for( int j = 0; j < mWorldMats.size(); j++)
 		{
-			devcon1->IASetInputLayout(objLayout);
-			devcon1->PSSetShaderResources(0, 1, &texArray[i] );
-			devcon1->PSSetShaderResources(1, 1, &NormArray[i] );
-
-			devcon1->IASetVertexBuffers(0, 1, &vertexBuffer[i], &stride, &offset);
-
-			//devcon->IASetIndexBuffer(pIBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-			// select which primtive type we are using
-			devcon1->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-			// draw the vertex buffer to the back buffer
-		   // devcon->DrawIndexed(36, 0, 0);
-
+			devcon1->UpdateSubresource(worldCBuffer, 0, 0, &mWorldMats[j], 0, 0);
 			devcon1->Draw( vertexes[i].size(),0);
 		}
+	}
 }

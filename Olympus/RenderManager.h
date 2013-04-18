@@ -11,6 +11,7 @@
 #include "Renderable.h"
 #include "Camera.h"
 #include "SkyBox.h"
+#include "Scene.h"
 #include "ScreenQuad.h"
 #include "Object.h"
 #include "OnScreen.h"

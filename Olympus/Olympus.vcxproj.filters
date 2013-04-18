@@ -152,6 +152,9 @@
     <ClCompile Include="FontSheet.cpp">
       <Filter>Rendering\Objects\OnScreen\FontSheet</Filter>
     </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Rendering\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders.hlsl">
@@ -248,6 +251,9 @@
     </ClInclude>
     <ClInclude Include="TextHelper.h">
       <Filter>Rendering\Objects\OnScreen\FontSheet</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Rendering\Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

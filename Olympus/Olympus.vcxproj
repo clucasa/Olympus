@@ -53,7 +53,7 @@
     <IncludePath>PhysX\Include\extensions;PhysX\Include\pvd;PhysX\Include;PhysX\Include\physxvisualdebuggersdk;Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">
-    <IncludePath>PhysX\Include\extensions;PhysX\Include;PhysX\Include\pvd;PhysX\Include\physxvisualdebuggersdk;Include;$(IncludePath)</IncludePath>
+    <IncludePath>PhysX\Source\foundation\include;PhysX\Include\RepX;PhysX\Include\extensions;PhysX\Include;PhysX\Include\pvd;PhysX\Include\physxvisualdebuggersdk;Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>Lib\x86;PhysX\Lib\win32;$(LibraryPath)</LibraryPath>
@@ -123,6 +123,7 @@
     <ClCompile Include="OnScreen.cpp" />
     <ClCompile Include="PhysXHeightField.cpp" />
     <ClCompile Include="RenderManager.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ScreenQuad.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="System.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="PhysXHeightField.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="RenderManager.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="ScreenQuad.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="struct.h" />

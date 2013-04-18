@@ -35,19 +35,21 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	//renderables.push_back(sq);
 	
 
-    vector<LPSTR> textures;
-	vector<LPSTR> normalMap;
+ //   vector<LPSTR> textures;
+	//vector<LPSTR> normalMap;
 
-    textures.push_back( "Media/Textures/CommandoArmor_DM.dds" );
-	textures.push_back( "Media/Textures/Commando_DM.dds" );
-	normalMap.push_back( "Media/Textures/CommandoArmor_NM.dds" );
-	normalMap.push_back( "Media/Textures/Commando_NM.dds" );
+ //   textures.push_back( "Media/Textures/CommandoArmor_DM.dds" );
+	//textures.push_back( "Media/Textures/Commando_DM.dds" );
+	//normalMap.push_back( "Media/Textures/CommandoArmor_NM.dds" );
+	//normalMap.push_back( "Media/Textures/Commando_NM.dds" );
 
-	Object* obj = new Object();
-	obj->objLoad( "Media/Models/bigbadman.fbx", &textures, &normalMap, dev, devcon, apex);
+	//Object* obj = new Object();
+	//obj->objLoad( "Media/Models/bigbadman.fbx", &textures, &normalMap, dev, devcon, apex);
 
-    renderables.push_back(obj);
+ //   renderables.push_back(obj);
 
+	Scene* scene = new Scene(&renderables, dev, devcon, apex);
+	
 	mGrid = new GroundPlane(mDevcon, mDev, geoGen, 200, 10);
 	renderables.push_back(mGrid);
 
