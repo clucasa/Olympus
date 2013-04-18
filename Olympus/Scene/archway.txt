@@ -1,7 +1,7 @@
 # object archway
-m Models/archway.fbx
-t Textures/PRP_Ornatearch_A_DM.bmp
-n Textures/PRP_Ornatearch_A_NM.bmp
-i 322.0 0.0 -256.0 0.1 0.1 0.1 0.0 0.0 0.0
-i 185.0 0.0 40.0 0.15 0.15 0.15 0.0 0.0 0.0
-i 115.0 0.0 185.0 0.1 0.1 0.1 0.0 0.0 0.0
+m Media/Models/archway.fbx
+t Media/Textures/PRP_Ornatearch_A_DM.png
+n Media/Textures/PRP_Ornatearch_A_NM.png
+i 50.0 0.0 -50.0 0.1 0.1 0.1 0.0 0.0 0.0
+i 50.0 0.0 0.0 0.1 0.1 0.1 0.0 0.0 0.0
+i 50.0 0.0 50.0 0.1 0.1 0.1 0.0 0.0 0.0

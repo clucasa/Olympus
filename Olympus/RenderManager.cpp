@@ -50,7 +50,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 
 	Scene* scene = new Scene(&renderables, dev, devcon, apex);
 	
-	mGrid = new GroundPlane(mDevcon, mDev, geoGen, 200, 10);
+	mGrid = new GroundPlane(mDevcon, mDev, geoGen, 400, 10);
 	renderables.push_back(mGrid);
 
 	HRESULT hr;

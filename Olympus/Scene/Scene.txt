@@ -1,4 +1,4 @@
 # scene
-o Placement/archway.txt
-o Placement/bigbadman.txt
-o Placement/trees.txt
+o Scene/archway.txt
+o Scene/bigbadman.txt
+o Scene/trees.txt

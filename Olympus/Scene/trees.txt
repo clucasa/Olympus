@@ -1,8 +1,9 @@
 # object trees
-m Models/tree1.fbx
-t Textures/PRP_Log_A_DM.dds
-t Textures/PRP_TreeLeaves_A.dds
-n Textures/PRP_Log_A_NM.bmp
+m Media/Models/tree1.fbx
+t Media/Textures/PRP_Log_A_DM.dds
+t Media/Textures/PRP_TreeLeaves_A.dds
+n Media/Textures/PRP_Log_A_NM.png
+n Media/Textures/PRP_Log_A_NM.png
 i 10.0 0.0 50.0 0.09 0.09 0.09 0.0 0.0 0.0
 i 0.0 0.0 30.0 0.08 0.08 0.08 0.0 0.0 0.0
 i -10.0 0.0 75.0 0.1 0.1 0.1 0.0 0.0 0.0

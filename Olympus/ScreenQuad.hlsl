@@ -43,7 +43,7 @@ VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float3 tangent 
 float4 PShader(VOut input) : SV_TARGET
 {   
 
-	return tex.Sample(samLinear, input.texcoord);
+	//return tex.Sample(samLinear, input.texcoord);
 
 	float4 color = depth.Sample( samLinear, input.texcoord );
 	color.r = 2*zFar*zNear / (zFar + zNear - (zFar - zNear)*(2*color.r -1));
@@ -52,7 +52,7 @@ float4 PShader(VOut input) : SV_TARGET
 	float midDepth = 2*zFar*zNear / (zFar + zNear - (zFar - zNear)*(2*z_b -1));
 	float blurFactor = 1.0;
 
-	float depthRange = .001 * (zFar - zNear );
+	float depthRange = .008 * (zFar - zNear );
 
 	if( color.r > midDepth - depthRange && color.r < midDepth + depthRange )
 	{
