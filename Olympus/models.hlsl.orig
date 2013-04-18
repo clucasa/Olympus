@@ -8,6 +8,10 @@ cbuffer ConstantBuffer : register(b0)
 cbuffer worldBuffer	   : register(b1)
 {
     float4x4 matWorld;
+<<<<<<< HEAD
+=======
+	float4x4 matWorldInvTrans;
+>>>>>>> chris/master
 }
 
 struct DirectionalLight
@@ -58,6 +62,11 @@ struct VOut
 	float2 Tex	: TEXCOORD;
 	float4 norm : NORMAL;
 	float3 viewDirection :VIEWDIRECTION;
+<<<<<<< HEAD
+=======
+	float4 Tangent	: TANGENT;
+	float4 BiNormal	: BINORMAL;
+>>>>>>> chris/master
 	int  Texnum : TEXNUM;
 };
 
@@ -86,13 +95,23 @@ VOut VShader( Vin input )
 
     output.posH = mul( mul(matFinal, matWorld), input.Pos );
 
+<<<<<<< HEAD
 	output.norm = normalize(mul(matWorld, input.Normal));
+=======
+	output.norm = normalize(mul(input.Normal, matWorldInvTrans));
+>>>>>>> chris/master
 
     output.posL = input.Pos;
 	output.Tex = input.Tex;
 	output.Texnum = input.TexNum;
 
+<<<<<<< HEAD
 	
+=======
+	output.BiNormal =	normalize(mul(matWorld, input.BiNormal));
+	output.Tangent	=	normalize(mul(matWorld, input.Tangent));
+
+>>>>>>> chris/master
 	output.posW = mul(input.Pos, matWorld);
 
 	output.viewDirection = normalize(cameraPos.xyz - output.posW.xyz);
@@ -104,6 +123,10 @@ VOut VShader( Vin input )
 float4 PShader(VOut input) : SV_TARGET
 {
 	float4 textureColor;
+<<<<<<< HEAD
+=======
+	float4 normalColor;
+>>>>>>> chris/master
     float3 lightDir;
     float lightIntensity;
     float4 color;
@@ -120,31 +143,64 @@ float4 PShader(VOut input) : SV_TARGET
 
 	textureColor = diffuseTexture[0].Sample( samLinear, input.Tex );
 
+<<<<<<< HEAD
+=======
+	normalColor  = normalTexture[0].Sample( samLinear, input.Tex );
+
+	//normal mapping
+
+	// Uncompress each component from [0,1] to [-1,1].
+	float3 normalT = 2.0f*normalColor - 1.0f;
+
+	// Build orthonormal basis.
+	float3 N = input.norm;
+	float3 T = normalize(input.Tangent - dot(input.Tangent, N)*N);
+	float3 B = cross(N, T);
+
+	float3x3 TBN = float3x3(T, B, N);
+
+	// Transform from tangent space to world space.
+	float3 bumpedNormalW = normalize(mul(normalT, TBN));
+
+
+>>>>>>> chris/master
 	[unroll]
-	for(int i = 1; i < 2; i++)
+	for(int i = 0; i < 2; i++)
 	{
 		ambient = dirLight[i].Ambient.xyz;
 
 		//Compute directional lighting
-		diffuse = dirLight[i].Diffuse * saturate(dot(input.norm.xyz, -normalize(dirLight[i].Direction.xyz)));
+<<<<<<< HEAD
+		diffuse = dirLight[i].Diffuse * saturate(dot(input.norm.xyz, -dirLight[i].Direction.xyz));
 	
-		halfway = normalize( -dirLight[i].Direction.xyz + input.viewDirection);
+		halfway = normalize(-dirLight[i].Direction.xyz + input.viewDirection);
 
 		specular.xyz = pow(saturate(dot(input.norm.xyz, halfway)), dirLight[i].SpecPower) * dirLight[i].Specular;
+=======
+		diffuse = dirLight[i].Diffuse * saturate(dot(bumpedNormalW, -dirLight[i].Direction.xyz));
+
+		halfway = normalize(-dirLight[i].Direction.xyz + input.viewDirection);
+
+		specular.xyz = pow(saturate(dot(bumpedNormalW, halfway)), dirLight[i].SpecPower) * dirLight[i].Specular;
+>>>>>>> chris/master
 
 		totalAmbient.xyz +=  ambient.xyz;
 		totalDiffuse.xyz +=  diffuse.xyz;
 		totalSpec.xyz	 +=  specular.xyz;
 
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> chris/master
 	//Compute point lighting
 	float4 pAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 pDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 pSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	[unroll]
-	for(int i = 0; i < 0; i++)
+	for(int i = 0; i < 2; i++)
 	{
 
 		// The vector from the surface to the light.
@@ -161,12 +217,20 @@ float4 PShader(VOut input) : SV_TARGET
 
 		pAmbient += pLight[i].Ambient;
 
+<<<<<<< HEAD
 		float diffuseFactor = dot(lightVec, input.norm);
+=======
+		float diffuseFactor = dot(lightVec, bumpedNormalW);
+>>>>>>> chris/master
 
 		[flatten]
 		if( diffuseFactor > 0.0f )
 		{
+<<<<<<< HEAD
 			float3 v         = reflect(-lightVec, input.norm);
+=======
+			float3 v         = reflect(-lightVec, bumpedNormalW);
+>>>>>>> chris/master
 
 			pDiffuse += diffuseFactor * pLight[i].Diffuse;
 		}
@@ -175,8 +239,13 @@ float4 PShader(VOut input) : SV_TARGET
 
 		pDiffuse *= att*(d / pLight[i].Range );
 
+<<<<<<< HEAD
 	
+		float softie = .25;
+=======
+
 		float softie = .75;
+>>>>>>> chris/master
 
 		if( d < softie*pLight[i].Range )
 			pAmbient  *= 1/((d/pLight[i].Range+1)*(d/pLight[i].Range+1));
@@ -187,14 +256,24 @@ float4 PShader(VOut input) : SV_TARGET
 		}
 
 
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> chris/master
 
 	}	
 
 	totalAmbient.xyz +=  pAmbient.xyz;
+<<<<<<< HEAD
 		
 	totalDiffuse.xyz +=  pDiffuse.xyz;
 		
+=======
+
+	totalDiffuse.xyz +=  pDiffuse.xyz;
+
+>>>>>>> chris/master
 	totalSpec.xyz	 +=  pSpec.xyz;
 
 	color = textureColor*(totalAmbient + totalDiffuse) + totalSpec;
@@ -203,7 +282,9 @@ float4 PShader(VOut input) : SV_TARGET
 
     return color;
 }
+<<<<<<< HEAD
 
 
 
-
+=======
+>>>>>>> chris/master

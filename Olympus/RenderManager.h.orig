@@ -11,7 +11,10 @@
 #include "Renderable.h"
 #include "Camera.h"
 #include "SkyBox.h"
+<<<<<<< HEAD
 #include "Scene.h"
+=======
+>>>>>>> chris/master
 #include "ScreenQuad.h"
 #include "Object.h"
 #include "OnScreen.h"
@@ -24,8 +27,7 @@ enum renderTargets
 	{
 		backbuffer,
 		postprocess,
-		environment,
-        depth
+		environment
 	};
 
 struct SceneBuff
@@ -94,8 +96,11 @@ public:
 	ID3D11ShaderResourceView* mDepthShaderResourceView;
 	ID3D11Texture2D* mDepthTargetTexture;
 
+<<<<<<< HEAD
 	ID3D11RenderTargetView* mPostProcessRTV;
 	ID3D11RenderTargetView* mEnvironmentRTV;
+=======
+>>>>>>> chris/master
 	ID3D11RenderTargetView *mBackbuffer;    // the pointer to our back buffer
 
 	ID3D11BlendState* mBlendState;   // Our blend state

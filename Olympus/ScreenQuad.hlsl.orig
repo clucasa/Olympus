@@ -15,7 +15,6 @@ cbuffer ObjectMat	: register(c1)
 
 Texture2D tex : register(t0);
 Texture2D depth : register(t1);
-Texture2D shadow : register(t6);
 
 struct VOut
 {
@@ -43,9 +42,12 @@ VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float3 tangent 
 
 float4 PShader(VOut input) : SV_TARGET
 {   
-    //return depth.Sample(samLinear, input.texcoord).r;
+
+<<<<<<< HEAD
+	//return tex.Sample(samLinear, input.texcoord);
+=======
 	return tex.Sample(samLinear, input.texcoord);
-    //return shadow.Sample(samLinear, input.texcoord);
+>>>>>>> chris/master
 
 	float4 color = depth.Sample( samLinear, input.texcoord );
 	color.r = 2*zFar*zNear / (zFar + zNear - (zFar - zNear)*(2*color.r -1));
@@ -54,7 +56,11 @@ float4 PShader(VOut input) : SV_TARGET
 	float midDepth = 2*zFar*zNear / (zFar + zNear - (zFar - zNear)*(2*z_b -1));
 	float blurFactor = 1.0;
 
+<<<<<<< HEAD
 	float depthRange = .008 * (zFar - zNear );
+=======
+	float depthRange = .001 * (zFar - zNear );
+>>>>>>> chris/master
 
 	if( color.r > midDepth - depthRange && color.r < midDepth + depthRange )
 	{
