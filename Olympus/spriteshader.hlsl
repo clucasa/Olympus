@@ -184,7 +184,7 @@ float4 PShader(GOut input) : SV_TARGET
 
 
 	color *= totalDiffuse + totalAmbient;///(5.0f-numLightsHit);
-	//color = saturate(color);
+	color = saturate(color);
 	color.a = theTexture.GatherAlpha(samTriLinearSam, input.texcoord, int2(0,0), int2(0,0), int2(0,0), int2(0,0));
 
 	clip(color.a < 0.999999f ? -1:1 );

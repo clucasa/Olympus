@@ -32,7 +32,10 @@ public:
 	void SetupBuffer();
 	void SetupPipeline();
 	void SetupRenderTarget();
+<<<<<<< HEAD
+=======
 	void SetupRenderTarget(int width, int height);
+>>>>>>> chris/master
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
 	
 	ID3D11Buffer *ScreenQuadVertBuffer;               

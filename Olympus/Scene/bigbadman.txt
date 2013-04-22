@@ -5,7 +5,4 @@ t Media/Textures/Commando_DM.dds
 n Media/Textures/CommandoArmor_NM.dds
 n Media/Textures/Commando_NM.dds
 i 0.0 0.0 0.0 5.0 5.0 5.0 0.0 0.0 0.0
-i 22.0 0.0 10.0 8.0 8.0 8.0 0.0 0.0 0.0
-i -5.0 0.0 10.0 3.0 3.0 3.0 0.0 0.0 0.0
-i -13.0 0.0 -7.0 6.0 6.0 6.0 0.0 0.0 0.0
-i 8.0 0.0 -11.0 4.0 4.0 4.0 0.0 0.0 0.0
+i 12.0 0.0 11.0 4.0 4.0 4.0 0.0 0.0 0.0

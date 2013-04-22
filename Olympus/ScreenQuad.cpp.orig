@@ -64,6 +64,8 @@ void ScreenQuad::SetupRenderTarget()
 	result = mDev->CreateShaderResourceView(mTargetTexture, &shaderResourceViewDesc, &mShaderResourceView);
 
 }
+<<<<<<< HEAD
+=======
 
 void ScreenQuad::SetupRenderTarget(int width, int height)
 {
@@ -111,6 +113,8 @@ void ScreenQuad::SetupRenderTarget(int width, int height)
 
 }
 
+
+>>>>>>> chris/master
 void ScreenQuad::SetupPipeline()
 {
     // load and compile the two shaders
