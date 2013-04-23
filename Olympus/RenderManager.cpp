@@ -6,8 +6,9 @@ RenderManager::RenderManager(ID3D11DeviceContext *devcon,
 							 ID3D11Device *dev, 
 							 IDXGISwapChain *swapchain,
 							 Apex *apex,
-							 Camera *cam) :
-mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
+							 Camera *cam,
+							 D3D11_VIEWPORT *viewport) :
+mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mViewport(viewport)
 {
 	ID3D11Texture2D *pBackBuffer;
     swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
@@ -241,9 +242,9 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	mPointLight[1].Range    = 6.0f;
 	mPointLight[1].Position = XMFLOAT3(0, 0, -3);
 
-	mSphere = new Sphere(mDevcon, mDev, geoGen, apex, 3, 30, 30);
+	mSphere = new Sphere(mDevcon, mDev, geoGen, apex, 4, 60, 60);
 	renderables.push_back(mSphere);
-	mSphere->SetupReflective(&renderables, mSkyBox, mScreen, mZbuffer);
+	mSphere->SetupReflective(&renderables, mSkyBox, mScreen, mZbuffer, mViewport);
 }
 
 

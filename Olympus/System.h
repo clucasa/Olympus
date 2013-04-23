@@ -63,6 +63,7 @@ private:
     IDXGISwapChain      *swapchain;         // the pointer to the swap chain interface
     ID3D11Device        *dev;               // the pointer to our Direct3D device interface
     ID3D11DeviceContext *devcon;            // the pointer to our Direct3D device context
+	D3D11_VIEWPORT mViewport;
 
 	bool				mFlyMode;
 	int					mFovFlag;

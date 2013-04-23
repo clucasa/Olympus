@@ -55,7 +55,8 @@ public:
 	void SetupRenderTarget();
 
 	void SetupReflective(vector<Renderable*> *renderables, Renderable *skyBox,
-						ScreenQuad *screenQuad, ID3D11DepthStencilView *zbuff);
+						ScreenQuad *screenQuad, ID3D11DepthStencilView *zbuff,
+						D3D11_VIEWPORT *screenViewport);
 	void BuildCubeFaceCamera(float x, float y, float z);
 	void BuildDynamicCubeMapViewsSphere();
 	bool reflective;
@@ -74,6 +75,7 @@ public:
 	Renderable *mSkyBox;
 	ScreenQuad *mScreen;
 	ID3D11DepthStencilView *mZbuffer;
+
 
 	ID3D11Buffer* mConstBuffer;
 
@@ -94,6 +96,8 @@ public:
 	ID3D11RenderTargetView* mDynamicCubeMapRTVSphere[6];
 	ID3D11ShaderResourceView* mDynamicCubeMapSRVSphere;
 	D3D11_VIEWPORT mCubeMapViewport;
+
+	D3D11_VIEWPORT *mScreenViewport;
 	
 	SceneBuff sphereBuff;
 
@@ -102,6 +106,10 @@ public:
 	int radius;
 	int slices;
 	int stacks;
+
+	float mX;
+	float mY;
+	float mZ;
 };
 
 #endif

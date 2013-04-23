@@ -40,6 +40,11 @@ System::System(HINSTANCE hInstance, int nCmdShow) :
                           hInstance,
                           NULL);
 
+	mAppPaused = false;
+	mMinimized = false;
+	mMaximized = false;
+	mResizing  = false;
+
     ShowWindow(hWnd, nCmdShow);
 
 }
@@ -196,6 +201,22 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}
 			}
 			return 0;
+
+			// WM_EXITSIZEMOVE is sent when the user grabs the resize bars.
+			case WM_ENTERSIZEMOVE:
+				mAppPaused = true;
+				mResizing  = true;
+				mTimer.Stop();
+				return 0;
+
+			// WM_EXITSIZEMOVE is sent when the user releases the resize bars.
+			// Here we reset everything based on the new window dimensions.
+			case WM_EXITSIZEMOVE:
+				mAppPaused = false;
+				mResizing  = false;
+				mTimer.Start();
+				OnResize();
+				return 0;
     }
 
     return DefWindowProc (hWnd, message, wParam, lParam);
@@ -241,17 +262,16 @@ int System::initd3d()
         return 0;
 
     // Set the viewport
-    D3D11_VIEWPORT viewport;
-    ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+    ZeroMemory(&mViewport, sizeof(D3D11_VIEWPORT));
 
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-    viewport.Width = SCREEN_WIDTH;
-    viewport.Height = SCREEN_HEIGHT;
-	viewport.MaxDepth = 1;
-	viewport.MinDepth = 0;
+    mViewport.TopLeftX = 0;
+    mViewport.TopLeftY = 0;
+    mViewport.Width = SCREEN_WIDTH;
+    mViewport.Height = SCREEN_HEIGHT;
+	mViewport.MaxDepth = 1;
+	mViewport.MinDepth = 0;
 	
-    devcon->RSSetViewports(1, &viewport);
+    devcon->RSSetViewports(1, &mViewport);
 
     
 	// initialize camera
@@ -265,7 +285,7 @@ int System::initd3d()
     mApex->Init(dev, devcon);
     mApex->InitParticles();
 
-	rendManager = new RenderManager(devcon, dev, swapchain, mApex, mCam);
+	rendManager = new RenderManager(devcon, dev, swapchain, mApex, mCam, &mViewport);
     return InitPipeline();
 }
 
@@ -567,7 +587,7 @@ void System::OnResize()
 
 	dev->CreateDepthStencilView(rendManager->mDepthTargetTexture, &dsvd, &rendManager->mZbuffer);
 
-
+	rendManager->mSphere->mZbuffer = rendManager->mZbuffer;
 	
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 
@@ -581,16 +601,16 @@ void System::OnResize()
 
 
 	// Set the viewport
-    D3D11_VIEWPORT viewport;
-    ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+    
+    ZeroMemory(&mViewport, sizeof(D3D11_VIEWPORT));
 
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-    viewport.Width = mClientWidth;
-    viewport.Height = mClientHeight;
-	viewport.MaxDepth = 1;
-	viewport.MinDepth = 0;
+    mViewport.TopLeftX = 0;
+    mViewport.TopLeftY = 0;
+    mViewport.Width = mClientWidth;
+    mViewport.Height = mClientHeight;
+	mViewport.MaxDepth = 1;
+	mViewport.MinDepth = 0;
 	
-    devcon->RSSetViewports(1, &viewport);
+    devcon->RSSetViewports(1, &mViewport);
 }
  

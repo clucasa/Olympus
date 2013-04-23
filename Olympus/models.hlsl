@@ -103,6 +103,7 @@ VOut VShader( Vin input )
 
 float4 PShader(VOut input) : SV_TARGET
 {
+
 	float3 lightVec;
 	float diffuseFactor;
 	float specFactor;
@@ -135,7 +136,7 @@ float4 PShader(VOut input) : SV_TARGET
 		ambient	+= saturate(dirLight[i].Ambient);
 
 		lightVec = -dirLight[i].Direction.xyz;
-
+		lightVec = normalize(lightVec);
 		diffuseFactor = dot(lightVec, bumpedNormalW);
 
 
@@ -147,7 +148,7 @@ float4 PShader(VOut input) : SV_TARGET
 
 			specFactor	 = pow(max(dot(v, toEye), 0.0f), dirLight[i].SpecPower);
 			
-			//spec    = saturate(specFactor * dirLight[i].Specular);
+			spec    = saturate(specFactor * dirLight[i].Specular);
 		}
 	
 	}

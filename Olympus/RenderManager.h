@@ -92,7 +92,8 @@ public:
 				  ID3D11Device *dev, 
 				  IDXGISwapChain *swapchain,
 				  Apex *apex,
-				  Camera *cam);
+				  Camera *cam,
+				  D3D11_VIEWPORT *viewport);
 
 	
 	void Render(int renderType);
@@ -109,6 +110,7 @@ public:
 	IDXGISwapChain *mSwapchain;             // the pointer to the swap chain interface
 	ID3D11Device *mDev;                     // the pointer to our Direct3D device interface
 	ID3D11DeviceContext *mDevcon; 
+	D3D11_VIEWPORT *mViewport;
 
 	ID3D11DepthStencilView *mZbuffer;       // the pointer to our depth buffer
     ID3D11DepthStencilView *mZbuffer2;       // the pointer to our depth buffer

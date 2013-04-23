@@ -10,6 +10,9 @@ Sphere::Sphere()
 Sphere::Sphere(ID3D11DeviceContext *mDevcon, ID3D11Device *mDev, GeometryGenerator *geoGen, Apex* apex, int radius, int slices, int stacks) : 
 	mDevcon(mDevcon), mDev(mDev), radius(radius), slices(slices), stacks(stacks), reflective(false)
 {
+	mX = -20.0f;
+	mY = 4.0f;
+	mZ = 25.0f;
 	cb = new cbuffs();
 	cb->viewInvProj;
 	cb->viewPrevProj;
@@ -173,7 +176,8 @@ void Sphere::SetupBuffer()
 }
 
 void Sphere::SetupReflective(vector<Renderable*> *renderables, Renderable *skyBox,
-						ScreenQuad *screenQuad, ID3D11DepthStencilView *zbuff)
+						ScreenQuad *screenQuad, ID3D11DepthStencilView *zbuff,
+						D3D11_VIEWPORT *screenViewport)
 {
 	reflective = true;
 
@@ -181,9 +185,10 @@ void Sphere::SetupReflective(vector<Renderable*> *renderables, Renderable *skyBo
 	mSkyBox = skyBox;
 	mScreen = screenQuad;
 	mZbuffer = zbuff;
-
+	mScreenViewport = screenViewport;
+	
 	BuildDynamicCubeMapViewsSphere();
-	BuildCubeFaceCamera(-25.0f, 4.0f, 20.0f);
+	BuildCubeFaceCamera(mX, mY, mZ);
 }
 
 void Sphere::BuildCubeFaceCamera(float x, float y, float z)
@@ -319,7 +324,7 @@ void Sphere::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 	if(reflective)
 	{
 		 // Sphere position
-
+		mDevcon->RSSetViewports(1, &mCubeMapViewport);
 		for(int i = 0; i < 6; ++i) // for mirror, just do (int i = 0; i < 1; ++i) for 1 camera mapped to mirror surface
 		{
 			// Clear cube map face and depth buffer.
@@ -342,6 +347,7 @@ void Sphere::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 		mDevcon->GenerateMips(mDynamicCubeMapSRVSphere);
 
 		mDevcon->OMSetRenderTargets(1, &mScreen->mTargetView/*mBackbuffer*/, mZbuffer);
+		mDevcon->RSSetViewports(1, mScreenViewport);
 	}
 
 	mDevcon->VSSetShader(mVS, 0, 0);
@@ -366,10 +372,13 @@ void Sphere::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 	XMMATRIX matTrans;
 	
 	//matTrans = XMMatrixTranslation(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z);
-	matTrans = XMMatrixTranslation(-25,4,20);
+	matTrans = XMMatrixTranslation(mX,mY,mZ);
 
-	XMFLOAT4X4 mWorldMat;
-	XMStoreFloat4x4(&mWorldMat, matTrans);
+	XMFLOAT4X4 mWorldMat[2];
+	XMStoreFloat4x4(&mWorldMat[0], matTrans);
+
+	XMStoreFloat4x4(&mWorldMat[1], XMMatrixInverse(&XMMatrixDeterminant(matTrans), matTrans));
+
 	mDevcon->VSSetConstantBuffers(1, 1, &mConstBuffer);
 	//mDevcon->PSSetConstantBuffers(0, 1, &sceneBuff);
 	mDevcon->UpdateSubresource(mConstBuffer, 0, 0, &mWorldMat, 0, 0);
