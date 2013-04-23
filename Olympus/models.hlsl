@@ -1,3 +1,5 @@
+float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, float3 tangentW);
+
 cbuffer ConstantBuffer : register(b0)
 {
     float4x4 matFinal;
@@ -8,6 +10,7 @@ cbuffer ConstantBuffer : register(b0)
 cbuffer worldBuffer	   : register(b1)
 {
     float4x4 matWorld;
+	float4x4 matWorldInvTrans;
 }
 
 struct DirectionalLight
@@ -47,18 +50,18 @@ cbuffer PointLight : register(b3)
 };
 
 
-Texture2D diffuseTexture[3];
-Texture2D normalTexture[3];
+Texture2D diffuseTexture : register(t0);
+Texture2D normalTexture : register(t1);
 
 struct VOut
 {
-    float4 posH : SV_POSITION;
-    float3 posL : POSITION;
-	float3 posW : WORLDPOS;
-	float2 Tex	: TEXCOORD;
-	float4 norm : NORMAL;
-	float3 viewDirection :VIEWDIRECTION;
-	int  Texnum : TEXNUM;
+    float4 PosH       : SV_POSITION;
+    float3 PosW       : POSITION;
+    float3 NormalW    : NORMAL;
+	float3 TangentW   : TANGENT;
+	float3 BiNormalW  : BINORM;
+	float2 Tex        : TEXCOORD0;
+	float3 CamPos     : CAMPOS;
 };
 
 struct Vin
@@ -82,20 +85,17 @@ SamplerState samLinear
 VOut VShader( Vin input )
 {
     VOut output;
-
-
-    output.posH = mul( mul(matFinal, matWorld), input.Pos );
-
-	output.norm = normalize(mul(matWorld, input.Normal));
-
-    output.posL = input.Pos;
-	output.Tex = input.Tex;
-	output.Texnum = input.TexNum;
-
 	
-	output.posW = mul(input.Pos, matWorld);
+	output.PosW		= mul(matWorld, input.Pos);
+	output.NormalW  = normalize(mul((float3x3)matWorld, input.Normal));
+	output.TangentW = normalize(mul((float3x3)matWorld, cross(input.Pos, input.Normal)));
+	output.BiNormalW = normalize(mul((float3x3)matWorld, input.BiNormal));
 
-	output.viewDirection = normalize(cameraPos.xyz - output.posW.xyz);
+	output.PosH		= mul( mul(matFinal, matWorld), input.Pos);
+	
+	output.Tex		= input.Tex;
+	
+	output.CamPos = cameraPos;
 
     return output;
 }
@@ -103,107 +103,81 @@ VOut VShader( Vin input )
 
 float4 PShader(VOut input) : SV_TARGET
 {
-	float4 textureColor;
-    float3 lightDir;
-    float lightIntensity;
-    float4 color;
-    float3 reflection;
-    float4 specular;
-	float3 diffuse;
-	float3 ambient;
-	float3 halfway;
 
-	float4 totalAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 totalDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 totalSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float3 lightVec;
+	float diffuseFactor;
+	float specFactor;
+	float3 v ;
 
+	input.NormalW = normalize(input.NormalW);
 
-	textureColor = diffuseTexture[0].Sample( samLinear, input.Tex );
+	float3 toEye = cameraPos - input.PosW;
+	float distToEye = length(toEye);
+	toEye /= distToEye;
 
-	[unroll]
-	for(int i = 1; i < 2; i++)
-	{
-		ambient = dirLight[i].Ambient.xyz;
-
-		//Compute directional lighting
-		diffuse = dirLight[i].Diffuse * saturate(dot(input.norm.xyz, -normalize(dirLight[i].Direction.xyz)));
 	
-		halfway = normalize( -dirLight[i].Direction.xyz + input.viewDirection);
+	
 
-		specular.xyz = pow(saturate(dot(input.norm.xyz, halfway)), dirLight[i].SpecPower) * dirLight[i].Specular;
+	float3 normalColor  = normalTexture.Sample( samLinear, input.Tex ).rgb;
+	
+	//return float4(normalColor.xyz, 1.0f);
 
-		totalAmbient.xyz +=  ambient.xyz;
-		totalDiffuse.xyz +=  diffuse.xyz;
-		totalSpec.xyz	 +=  specular.xyz;
+	float3 bumpedNormalW = normalize(NormalSampleToWorldSpace(normalColor, input.NormalW, input.TangentW));
 
+	
+	float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 spec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	for(int i = 0; i < 1; i++)
+	{
+		ambient	+= saturate(dirLight[i].Ambient);
+
+		lightVec = -dirLight[i].Direction.xyz;
+		lightVec = normalize(lightVec);
+		diffuseFactor = dot(lightVec, bumpedNormalW);
+
+
+		if(diffuseFactor > 0.0f)
+		{
+			diffuse += saturate(diffuseFactor * dirLight[i].Diffuse);
+			
+			v = reflect(-lightVec, bumpedNormalW);
+
+			specFactor	 = pow(max(dot(v, toEye), 0.0f), dirLight[i].SpecPower);
+			
+			spec    = saturate(specFactor * dirLight[i].Specular);
+		}
+	
 	}
-	
-	//Compute point lighting
-	float4 pAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 pDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 pSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	[unroll]
-	for(int i = 0; i < 0; i++)
-	{
-
-		// The vector from the surface to the light.
-		float3 lightVec = pLight[i].Position - input.posW;
-
-		float d = length(lightVec);
-
-		if( d > pLight[i].Range)
-		{
-			continue;	
-		}
-
-		lightVec /= d; 
-
-		pAmbient += pLight[i].Ambient;
-
-		float diffuseFactor = dot(lightVec, input.norm);
-
-		[flatten]
-		if( diffuseFactor > 0.0f )
-		{
-			float3 v         = reflect(-lightVec, input.norm);
-
-			pDiffuse += diffuseFactor * pLight[i].Diffuse;
-		}
-
-		float att = 1.0f / dot(pLight[i].Att, float3(1.0f, d, d*d));
-
-		pDiffuse *= att*(d / pLight[i].Range );
-
-	
-		float softie = .75;
-
-		if( d < softie*pLight[i].Range )
-			pAmbient  *= 1/((d/pLight[i].Range+1)*(d/pLight[i].Range+1));
-		if( d > softie*pLight[i].Range )
-		{
-			pAmbient *= 1/((softie*pLight[i].Range/pLight[i].Range+1)*(softie*pLight[i].Range/pLight[i].Range+1));
-			pAmbient *= (pLight[i].Range-d)/(pLight[i].Range-softie*pLight[i].Range);
-		}
-
-
-		
-
-	}	
-
-	totalAmbient.xyz +=  pAmbient.xyz;
-		
-	totalDiffuse.xyz +=  pDiffuse.xyz;
-		
-	totalSpec.xyz	 +=  pSpec.xyz;
-
-	color = textureColor*(totalAmbient + totalDiffuse) + totalSpec;
+	float4 textureColor = float4(1.0f,1.0f,0.0f,1.0f);//float4(0.0f, 0.0f, 0.0f, 1.0f);
+	textureColor = diffuseTexture.Sample( samLinear, input.Tex );
+	//return float4(textureColor.rgb,1.0f);
+	color = saturate(textureColor*(ambient + diffuse) + spec);
+	//clip(color.a < 0.999999f ? -1:1 );
 
 	color.a = 1.0;
 
     return color;
 }
 
+float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, float3 tangentW)
+{
+	// Uncompress each component from [0,1] to [-1,1].
+	float3 normalT = 2.0f*normalMapSample - 1.0f;
 
+	// Build orthonormal basis.
+	float3 N = unitNormalW;
+	float3 T = normalize(tangentW - dot(tangentW, N)*N);
+	float3 B = cross(N, T);
 
+	float3x3 TBN = float3x3(T, B, N);
 
+	// Transform from tangent space to world space.
+	float3 bumpedNormalW = mul(normalT,TBN);
+
+	return bumpedNormalW;
+}

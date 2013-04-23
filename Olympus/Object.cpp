@@ -202,3 +202,18 @@ void Object::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 		}
 	}
 }
+
+void Object::RecompileShader()
+{
+
+	ID3D10Blob *VS, *PS;
+    D3DX11CompileFromFile("models.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
+    D3DX11CompileFromFile("models.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
+	HRESULT hr;
+	hr = dev1->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &opVS);
+    if( FAILED(hr) )
+		return ;
+	dev1->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &opPS);
+	if( FAILED(hr) )
+		return ;
+}

@@ -242,3 +242,19 @@ void ScreenQuad::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 	 // draw the vertex buffer to the back buffer
     mDevcon->DrawIndexed(6, 0, 0);
 }
+
+void ScreenQuad::RecompileShader()
+{
+	// load and compile the two shaders
+	ID3D10Blob *VS, *PS;
+    D3DX11CompileFromFile("ScreenQuad.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
+    D3DX11CompileFromFile("ScreenQuad.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
+
+    // encapsulate both shaders into shader objects
+    mDev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &mVS);
+    
+
+    mDev->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &mPS);
+    
+
+}

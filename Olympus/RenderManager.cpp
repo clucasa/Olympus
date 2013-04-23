@@ -6,8 +6,9 @@ RenderManager::RenderManager(ID3D11DeviceContext *devcon,
 							 ID3D11Device *dev, 
 							 IDXGISwapChain *swapchain,
 							 Apex *apex,
-							 Camera *cam) :
-mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
+							 Camera *cam,
+							 D3D11_VIEWPORT *viewport) :
+mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mViewport(viewport)
 {
 	ID3D11Texture2D *pBackBuffer;
     swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
@@ -22,9 +23,9 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	
 	mSkyBox = new SkyBox(mDevcon, mDev, geoGen);
 	
-	ScreenQuad *sq = new ScreenQuad(mDevcon, mDev, geoGen);
+	//ScreenQuad *sq = new ScreenQuad(mDevcon, mDev, geoGen);
 
-	ApexParticles* emitter = apex->CreateEmitter(gRenderer);
+	emitter = apex->CreateEmitter(gRenderer);
 
 	particles = apex->CreateEmitter(gRenderer);
 		
@@ -50,6 +51,8 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 
 	Scene* scene = new Scene(&renderables, dev, devcon, apex);
 	
+	
+
 	mGrid = new GroundPlane(mDevcon, mDev, geoGen, 400, 10);
 	renderables.push_back(mGrid);
 
@@ -97,10 +100,12 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	ZeroMemory(&bd, sizeof(bd));
 
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = 64;
+    bd.ByteWidth = sizeof(SceneBuff);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
     mDev->CreateBuffer(&bd, NULL, &sceneCBuffer);
+
+
 
 	////CREATE POST PROCESS RTV
 	//ID3D11Texture2D* pBuffer;
@@ -200,15 +205,16 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 
     mDev->CreateBuffer(&bd, NULL, &dirLightCBuffer);
 	
-	mDirLight[0].Ambient =		XMFLOAT4(.1f, .1f, .1f, 1);
-	mDirLight[0].Diffuse =		XMFLOAT4(.6f, .6f, .6f, 1);
-	mDirLight[0].Direction =	XMFLOAT4(0, 0, -5, 1);
-	mDirLight[0].Specular =		XMFLOAT4(1, 1, 1, 1);
+	mDirLight[0].Ambient =		XMFLOAT4(.2f, .2f, .2f, 1);
+	mDirLight[0].Diffuse =		XMFLOAT4(.4f, .4f, .4f, 1);
+	//mDirLight[0].Direction =	XMFLOAT4(-0.57735f, -0.57735f, 0.57735f, 1.0);
+	mDirLight[0].Direction =	XMFLOAT4(0, 0, 5.0f, 1.0);
+	mDirLight[0].Specular =		XMFLOAT4(0.8f, 0.8f, 0.7f, 1);
 	mDirLight[0].SpecPower =	8.0f;
 
 	mDirLight[1].Ambient =		XMFLOAT4(.3f, .3f, .3f, 1);
 	mDirLight[1].Diffuse =		XMFLOAT4(.6f, .6f, .6f, 1);
-	mDirLight[1].Direction =	XMFLOAT4(5, 0, 0, 1);
+	mDirLight[1].Direction =	XMFLOAT4(10, 0, 0, 1);
 	mDirLight[1].Specular =		XMFLOAT4(1, 1, 1, 1);
 	mDirLight[1].SpecPower =	8.0f;
 
@@ -235,6 +241,10 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	mPointLight[1].Specular = XMFLOAT4(1, 1, 1, 1);
 	mPointLight[1].Range    = 6.0f;
 	mPointLight[1].Position = XMFLOAT3(0, 0, -3);
+
+	mSphere = new Sphere(mDevcon, mDev, geoGen, apex, 4, 60, 60);
+	renderables.push_back(mSphere);
+	mSphere->SetupReflective(&renderables, mSkyBox, mScreen, mZbuffer, mViewport);
 }
 
 
@@ -245,11 +255,19 @@ void RenderManager::Render()
     mDevcon->ClearRenderTargetView(mBackbuffer, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
 	mDevcon->ClearRenderTargetView(mScreen->mTargetView, D3DXCOLOR(0.0f, 1.0f, 0.4f, 1.0f));
 	
+	particles->Update();
+	emitter->Update();
+	mDevcon->RSSetState(0);
+
+	//mSphere->getShit(/*mDynamicCubeMapSRVSphere*/mSkyBox->mCubeMap);
+
+
 	XMStoreFloat4x4(&sceneBuff.viewProj, mCam->ViewProj());
-
 	sceneBuff.camPos = mCam->GetPosition();
-
+	sceneBuff.pad = 1.0f;
 	mDevcon->VSSetConstantBuffers(0, 1, &sceneCBuffer);
+	mDevcon->PSSetConstantBuffers(0, 1, &sceneCBuffer);
+
 	mDevcon->UpdateSubresource(sceneCBuffer, 0, 0, &sceneBuff , 0, 0);
 
 	//Skybox right now doesn't like zbuffers, so dont' set one for it
@@ -287,6 +305,8 @@ void RenderManager::Render(int renderType)
 	}
 }
 
+
+
 void RenderManager::RenderToTarget(enum renderTargets target)
 {
 	switch(target)
@@ -310,4 +330,14 @@ void RenderManager::SetPosition(float x, float y, float z)
 void RenderManager::SetEmit(bool on)
 {
 	particles->SetEmit(on);
+}
+
+void RenderManager::RecompShaders()
+{
+	mScreen->RecompileShader();
+
+	for(int i = 0; i < renderables.size() ; i++)
+	{
+		renderables[i]->RecompileShader();
+	}
 }

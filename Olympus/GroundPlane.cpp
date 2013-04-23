@@ -195,7 +195,7 @@ void GroundPlane::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 	
 	// set the new values for the constant buffer
 	//mDevcon->UpdateSubresource(sceneBuff, 0, 0, mCam->ViewProj().m , 0, 0);
-	mDevcon->PSSetConstantBuffers(0, 1, &mConstBuffer);
+	mDevcon->PSSetConstantBuffers(1, 1, &mConstBuffer);
 	mDevcon->UpdateSubresource(mConstBuffer, 0, 0, cb, 0, 0);
 
 	 // draw the vertex buffer to the back buffer

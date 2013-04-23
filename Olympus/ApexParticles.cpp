@@ -111,6 +111,13 @@ struct SPRITECBUFFER
 	float buffer;
 };
 
+void ApexParticles::Update()
+{
+	mRenderVolume->lockRenderResources();
+	mRenderVolume->updateRenderResources(false);
+	mRenderVolume->unlockRenderResources();
+}
+
 void ApexParticles::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 {
 	SPRITECBUFFER scBuffer;
@@ -129,14 +136,9 @@ void ApexParticles::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType
 	mDevcon->VSSetShader(mVS, 0, 0);
     mDevcon->PSSetShader(mPS, 0, 0);
     mDevcon->IASetInputLayout(mLayout);
-
-	mRenderVolume->lockRenderResources();
-  
-	mRenderVolume->updateRenderResources(false);
+		
 	mRenderVolume->dispatchRenderResources(*gRenderer);
     
-	mRenderVolume->unlockRenderResources();
-
 	mDevcon->GSSetShader(NULL, 0, 0);
 }
 

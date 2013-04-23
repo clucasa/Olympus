@@ -55,6 +55,7 @@ public:
 	void objLoad( char* filename, vector<LPCSTR > *textures, vector<LPCSTR > *NormTextures, ID3D11Device* devv, ID3D11DeviceContext *devcon, Apex* apex );
 	void renderO(ID3D11DeviceContext *devcon);
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
+	virtual void RecompileShader();
 
 	void AddInstance(ObjectInfo info);
 

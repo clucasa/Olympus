@@ -34,6 +34,7 @@ public:
 	void SetupRenderTarget();
 	void SetupRenderTarget(int width, int height);
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
+	virtual void RecompileShader();
 	
 	ID3D11Buffer *ScreenQuadVertBuffer;               
 	ID3D11Buffer *ScreenQuadIndBuffer;
