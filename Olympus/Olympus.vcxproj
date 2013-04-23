@@ -126,6 +126,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ScreenQuad.cpp" />
     <ClCompile Include="SkyBox.cpp" />
+    <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="ZeusRenderResources.cpp" />
     <ClCompile Include="ZeusRenderResourceManager.cpp" />
@@ -138,6 +139,7 @@
     <None Include="ScreenQuad.hlsl" />
     <None Include="shaders.hlsl" />
     <None Include="Skybox.hlsl" />
+    <None Include="Sphere.hlsl" />
     <None Include="spriteshader.hlsl" />
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +161,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ScreenQuad.h" />
     <ClInclude Include="SkyBox.h" />
+    <ClInclude Include="Sphere.h" />
     <ClInclude Include="struct.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="TextHelper.h" />

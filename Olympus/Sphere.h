@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef ScreenQuad_H
-#define ScreenQuad_H
+#ifndef Sphere_H
+#define Sphere_H
 
 #include "d3dUtil.h"
 #include "xnamath.h"
@@ -9,8 +9,9 @@
 #include "Camera.h"
 #include "Vertices.h"
 #include "Renderable.h"
+#include "apex.h"
 
-struct cbuff
+struct cbuffs
 {
 	D3DXMATRIX viewInvProj;
 	D3DXMATRIX viewPrevProj;
@@ -21,26 +22,26 @@ struct cbuff
 	float pad;
 };
 
-class ScreenQuad : public Renderable
+class Sphere : public Renderable
 {
 public:
-	ScreenQuad();
-	ScreenQuad(ID3D11DeviceContext *devcon, ID3D11Device *dev, GeometryGenerator *geoGen);
+	Sphere();
+	Sphere(ID3D11DeviceContext *devcon, ID3D11Device *dev, GeometryGenerator *geoGen, Apex* apex, int radius, int slices, int stacks);
 
-	void UpdateScreenQuad(Camera *cam);
+	void UpdateSphere(Camera *cam);
 	void CreateGeometry(GeometryGenerator *geoGen);
 	void SetupBuffer();
 	void SetupPipeline();
 	void SetupRenderTarget();
-	void SetupRenderTarget(int width, int height);
+	void getShit(ID3D11ShaderResourceView* mDynamicCubeMapSRVSphere);
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
 	virtual void RecompileShader();
 	
-	ID3D11Buffer *ScreenQuadVertBuffer;               
-	ID3D11Buffer *ScreenQuadIndBuffer;
+	ID3D11Buffer *SphereVertBuffer;               
+	ID3D11Buffer *SphereIndBuffer;
 
-	UINT indices[6];
-	PosNormalTexTan vertices[4];
+	vector<UINT> indices;
+	vector<PosNormalTexTan> vertices;
 
 	ID3D11Buffer* mConstBuffer;
 
@@ -55,8 +56,13 @@ public:
 	ID3D11RenderTargetView* mTargetView;
 	ID3D11ShaderResourceView* mShaderResourceView;
 
-	struct cbuff *cb;
+	ID3D11ShaderResourceView* mDynamicCubeMap;
 
+	struct cbuffs *cb;
+
+	int radius;
+	int slices;
+	int stacks;
 };
 
 #endif

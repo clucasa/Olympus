@@ -17,6 +17,7 @@
 #include "OnScreen.h"
 #include "FontSheet.h"
 #include "GroundPlane.h"
+#include "Sphere.h"
 
 using namespace std;
 
@@ -64,6 +65,21 @@ struct PointLight
 	float Pad; // Pad the last float so we can set an array of lights if we wanted.
 };
 
+namespace Colors
+{
+	XMGLOBALCONST XMVECTORF32 White     = {1.0f, 1.0f, 1.0f, 1.0f};
+	XMGLOBALCONST XMVECTORF32 Black     = {0.0f, 0.0f, 0.0f, 1.0f};
+	XMGLOBALCONST XMVECTORF32 Red       = {1.0f, 0.0f, 0.0f, 1.0f};
+	XMGLOBALCONST XMVECTORF32 Green     = {0.0f, 1.0f, 0.0f, 1.0f};
+	XMGLOBALCONST XMVECTORF32 Blue      = {0.0f, 0.0f, 1.0f, 1.0f};
+	XMGLOBALCONST XMVECTORF32 Yellow    = {1.0f, 1.0f, 0.0f, 1.0f};
+	XMGLOBALCONST XMVECTORF32 Cyan      = {0.0f, 1.0f, 1.0f, 1.0f};
+	XMGLOBALCONST XMVECTORF32 Magenta   = {1.0f, 0.0f, 1.0f, 1.0f};
+
+	XMGLOBALCONST XMVECTORF32 Silver    = {0.75f, 0.75f, 0.75f, 1.0f};
+	XMGLOBALCONST XMVECTORF32 LightSteelBlue = {0.69f, 0.77f, 0.87f, 1.0f};
+}
+
 class RenderManager
 {
 public:
@@ -75,6 +91,7 @@ public:
 				  Apex *apex,
 				  Camera *cam);
 
+	void DynamicCubeMapRender(int renderType, Camera mCubeMapCamera);
 	void Render(int renderType);
 	void Render();
 	void RenderToTarget(enum renderTargets);
@@ -83,6 +100,10 @@ public:
 	void RenderManager::SetPosition(float x, float y, float z);
 	void RenderManager::SetEmit(bool on);
 
+	void RenderManager::BuildCubeFaceCamera(float x, float y, float z);
+	void RenderManager::BuildDynamicCubeMapViewsSphere();
+
+	void RecompShaders();
 	//void InitObjects();
 
 	IDXGISwapChain *mSwapchain;             // the pointer to the swap chain interface
@@ -103,6 +124,21 @@ public:
 	Camera *mCam;
 	Camera *mScreenCam;
 	GroundPlane *mGrid;
+	Sphere *mSphere;
+
+	Camera mCubeMapCamera[6];
+	static const int CubeMapSizeSphere = 512;
+	ID3D11DepthStencilView* mDynamicCubeMapDSVSphere;
+	ID3D11RenderTargetView* mDynamicCubeMapRTVSphere[6];
+	ID3D11ShaderResourceView* mDynamicCubeMapSRVSphere;
+	D3D11_VIEWPORT mCubeMapViewport;
+	//Material mSphereMat;
+	// Define transformations from local spaces to world space.
+    XMFLOAT4X4 mSphereWorld;
+	int mSphereVertexOffset;
+	UINT mSphereIndexOffset;
+	UINT mSphereIndexCount;
+	int cameraCount;
 
 	ID3D11Buffer *sceneCBuffer;
 	ID3D11Buffer *dirLightCBuffer;
@@ -112,6 +148,7 @@ public:
 	ScreenQuad *mScreen;
 
 	ApexParticles* particles;
+	ApexParticles* emitter;
 	
 	vector<Renderable*> renderables;
 

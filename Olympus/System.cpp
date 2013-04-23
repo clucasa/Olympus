@@ -19,7 +19,7 @@ System::System(HINSTANCE hInstance, int nCmdShow) :
     wc.lpfnWndProc  = WindowProc;
     wc.hInstance    = hInstance;
     wc.hIcon        = ::LoadIcon(hInstance, "ZeusIcon");
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hCursor		= LoadCursor(NULL, IDC_ARROW);
     wc.lpszClassName = "WindowClass";
 
     RegisterClassEx(&wc);
@@ -31,7 +31,7 @@ System::System(HINSTANCE hInstance, int nCmdShow) :
                           "WindowClass",
                           "Olympus Engine",
                           WS_OVERLAPPEDWINDOW,
-                          200,
+                          100,
                           100,
                           wr.right - wr.left,
                           wr.bottom - wr.top,
@@ -219,7 +219,7 @@ int System::initd3d()
     scd.BufferDesc.Height = SCREEN_HEIGHT;                 // set the back buffer height
     scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;     // how swap chain is to be used
     scd.OutputWindow = hWnd;                               // the window to be used
-    scd.SampleDesc.Count = 4;                              // how many multisamples
+    scd.SampleDesc.Count = 1;                              // how many multisamples
     scd.Windowed = TRUE;                                   // windowed/full-screen mode
     scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;    // allow full-screen switching
 	
@@ -341,7 +341,7 @@ void System::UpdateCamera(float dt)
     if( dwResult == ERROR_SUCCESS ){ // Controller is connected.
         float speed = 1.0f;
         if( state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB )
-            speed = 2.0f;
+            speed = 4.0f;
         
 		ShowCursor(false);
 
@@ -461,6 +461,8 @@ void System::UpdateCamera(float dt)
 	if(GetAsyncKeyState('G') & 0x8000 )
 		  mFlyMode = false;
 
+	if(GetAsyncKeyState('R') & 0x8000 )
+		rendManager->RecompShaders();
 
 	if( GetAsyncKeyState('P') & 0x8000 ){ // Super Zoom
           mCam->SetLens(0.01f*MathHelper::Pi, (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 1.0f, 1000.0f); 

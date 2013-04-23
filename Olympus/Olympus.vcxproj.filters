@@ -89,6 +89,9 @@
     <Filter Include="Rendering\Objects\OnScreen\FontSheet">
       <UniqueIdentifier>{6224932f-5073-418b-a1a4-78bffd54d06b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Objects\Sphere">
+      <UniqueIdentifier>{d953064f-e284-4532-b96d-9de252a8418c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="apex.cpp">
@@ -155,6 +158,9 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Rendering\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>Rendering\Objects\Sphere</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders.hlsl">
@@ -177,6 +183,9 @@
     </None>
     <None Include="models.hlsl">
       <Filter>Rendering\Objects\FBX Loader</Filter>
+    </None>
+    <None Include="Sphere.hlsl">
+      <Filter>Rendering\Objects\Sphere</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -254,6 +263,9 @@
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Rendering\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>Rendering\Objects\Sphere</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
