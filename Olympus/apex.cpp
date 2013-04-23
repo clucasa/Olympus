@@ -293,30 +293,31 @@ ApexParticles* Apex::CreateEmitter(physx::apex::NxUserRenderer* renderer)
 
 bool Apex::InitClothing()
 {
-    PX_ASSERT(gApexSDK);
-    NxApexCreateError            errorCode;
-    mApexClothingModule = static_cast<physx::apex::NxModuleClothing*>(gApexSDK->createModule("Clothing", &errorCode));
+  
+    //PX_ASSERT(gApexSDK);
+    //NxApexCreateError            errorCode;
+    //mApexClothingModule = static_cast<physx::apex::NxModuleClothing*>(gApexSDK->createModule("Clothing", &errorCode));
 
-    if (mApexClothingModule != NULL)
-    {
-        NxParameterized::Interface* moduleDesc = mApexClothingModule->getDefaultModuleDesc();
+    //if (mApexClothingModule != NULL)
+    //{
+    //    NxParameterized::Interface* moduleDesc = mApexClothingModule->getDefaultModuleDesc();
 
-        // Know what you're doing when playing with these values!
+    //    // Know what you're doing when playing with these values!
 
-        // should not be 0 for every platform except PC.
-        NxParameterized::setParamU32(*moduleDesc, "maxNumCompartments", 3);
+    //    // should not be 0 for every platform except PC.
+    //    NxParameterized::setParamU32(*moduleDesc, "maxNumCompartments", 3);
 
-        // Can be tuned for switching between more memory and more spikes.
-        NxParameterized::setParamU32(*moduleDesc, "maxUnusedPhysXResources", 5);
+    //    // Can be tuned for switching between more memory and more spikes.
+    //    NxParameterized::setParamU32(*moduleDesc, "maxUnusedPhysXResources", 5);
 
-        mApexClothingModule->init(*moduleDesc);
-    }
+    //    mApexClothingModule->init(*moduleDesc);
+    //}
 
-    physx::apex::NxApexAsset* asset = reinterpret_cast<physx::apex::NxApexAsset*>(gApexSDK->getNamedResourceProvider()->getResource(NX_CLOTHING_AUTHORING_TYPE_NAME, "curtain.mesh"));
-    if( asset )
-    {
-        gApexSDK->getNamedResourceProvider()->setResource(NX_CLOTHING_AUTHORING_TYPE_NAME, "c", asset, true);
-    }
+    //physx::apex::NxApexAsset* asset = reinterpret_cast<physx::apex::NxApexAsset*>(gApexSDK->getNamedResourceProvider()->getResource(NX_CLOTHING_AUTHORING_TYPE_NAME, "curtain.mesh"));
+    //if( asset )
+    //{
+    //    gApexSDK->getNamedResourceProvider()->setResource(NX_CLOTHING_AUTHORING_TYPE_NAME, "c", asset, true);
+    //}
 
 
     return true;

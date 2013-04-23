@@ -92,11 +92,11 @@
     <Filter Include="Rendering\Objects\ApexCloth">
       <UniqueIdentifier>{caf44aec-17c4-4f57-8524-9417a9b0f407}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Objects\DynamicSphere">
-      <UniqueIdentifier>{1fb2f87d-4323-48e9-90b3-ace34f856a58}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Objects\ApexDestructable">
       <UniqueIdentifier>{87835560-c4c6-4b39-a21d-5fba403a6904}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Objects\Sphere">
+      <UniqueIdentifier>{1fb2f87d-4323-48e9-90b3-ace34f856a58}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -168,7 +168,7 @@
       <Filter>Rendering\Objects\ApexCloth</Filter>
     </ClCompile>
     <ClCompile Include="Sphere.cpp">
-      <Filter>Rendering\Objects\DynamicSphere</Filter>
+      <Filter>Rendering\Objects\Sphere</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -194,7 +194,7 @@
       <Filter>Rendering\Objects\FBX Loader</Filter>
     </None>
     <None Include="Sphere.hlsl">
-      <Filter>Rendering\Objects\DynamicSphere</Filter>
+      <Filter>Rendering\Objects\Sphere</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -277,7 +277,7 @@
       <Filter>Rendering\Objects\ApexCloth</Filter>
     </ClInclude>
     <ClInclude Include="Sphere.h">
-      <Filter>Rendering\Objects\DynamicSphere</Filter>
+      <Filter>Rendering\Objects\Sphere</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
