@@ -7,6 +7,7 @@
 #include "xnamath.h"
 #include "GeometryGenerator.h"
 #include "Camera.h"
+#include "ScreenQuad.h"
 #include "Vertices.h"
 #include "Renderable.h"
 #include "apex.h"
@@ -22,6 +23,25 @@ struct cbuffs
 	float pad;
 };
 
+#ifndef SCENEBUFF
+#define SCENEBUFF
+struct SceneBuff
+{
+	XMFLOAT4X4 viewProj;
+	XMFLOAT3   camPos;
+	float	   pad;
+};
+#endif
+
+struct EnvironBuff
+{
+    XMFLOAT4X4 ViewProj;
+	XMFLOAT3 cameraPos;
+	XMFLOAT3 eyePos;
+	XMFLOAT2 padding;
+};
+
+
 class Sphere : public Renderable
 {
 public:
@@ -33,15 +53,27 @@ public:
 	void SetupBuffer();
 	void SetupPipeline();
 	void SetupRenderTarget();
-	void getShit(ID3D11ShaderResourceView* mDynamicCubeMapSRVSphere);
+
+	void SetupReflective(vector<Renderable*> *renderables, Renderable *skyBox,
+						ScreenQuad *screenQuad, ID3D11DepthStencilView *zbuff);
+	void BuildCubeFaceCamera(float x, float y, float z);
+	void BuildDynamicCubeMapViewsSphere();
+	bool reflective;
+	void DynamicCubeMapRender(int renderType, Camera mCubeMapCamera);
+
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
 	virtual void RecompileShader();
 	
 	ID3D11Buffer *SphereVertBuffer;               
 	ID3D11Buffer *SphereIndBuffer;
+	ID3D11Buffer *envCBuffer;
 
 	vector<UINT> indices;
 	vector<PosNormalTexTan> vertices;
+	vector<Renderable*> *mRenderables;
+	Renderable *mSkyBox;
+	ScreenQuad *mScreen;
+	ID3D11DepthStencilView *mZbuffer;
 
 	ID3D11Buffer* mConstBuffer;
 
@@ -56,7 +88,14 @@ public:
 	ID3D11RenderTargetView* mTargetView;
 	ID3D11ShaderResourceView* mShaderResourceView;
 
-	ID3D11ShaderResourceView* mDynamicCubeMap;
+	Camera mCubeMapCamera[6];
+	static const int CubeMapSizeSphere = 512;
+	ID3D11DepthStencilView* mDynamicCubeMapDSVSphere;
+	ID3D11RenderTargetView* mDynamicCubeMapRTVSphere[6];
+	ID3D11ShaderResourceView* mDynamicCubeMapSRVSphere;
+	D3D11_VIEWPORT mCubeMapViewport;
+	
+	SceneBuff sphereBuff;
 
 	struct cbuffs *cb;
 

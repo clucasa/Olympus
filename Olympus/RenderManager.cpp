@@ -22,7 +22,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	
 	mSkyBox = new SkyBox(mDevcon, mDev, geoGen);
 	
-	ScreenQuad *sq = new ScreenQuad(mDevcon, mDev, geoGen);
+	//ScreenQuad *sq = new ScreenQuad(mDevcon, mDev, geoGen);
 
 	emitter = apex->CreateEmitter(gRenderer);
 
@@ -50,8 +50,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 
 	Scene* scene = new Scene(&renderables, dev, devcon, apex);
 	
-	mSphere = new Sphere(mDevcon, mDev, geoGen, apex, 3, 30, 30);
-	renderables.push_back(mSphere);
+	
 
 	mGrid = new GroundPlane(mDevcon, mDev, geoGen, 400, 10);
 	renderables.push_back(mGrid);
@@ -100,10 +99,12 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	ZeroMemory(&bd, sizeof(bd));
 
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = 64;
+    bd.ByteWidth = sizeof(SceneBuff);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
     mDev->CreateBuffer(&bd, NULL, &sceneCBuffer);
+
+
 
 	////CREATE POST PROCESS RTV
 	//ID3D11Texture2D* pBuffer;
@@ -203,7 +204,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 
     mDev->CreateBuffer(&bd, NULL, &dirLightCBuffer);
 	
-	mDirLight[0].Ambient =		XMFLOAT4(.55f, .55f, .55f, 1);
+	mDirLight[0].Ambient =		XMFLOAT4(.2f, .2f, .2f, 1);
 	mDirLight[0].Diffuse =		XMFLOAT4(.4f, .4f, .4f, 1);
 	//mDirLight[0].Direction =	XMFLOAT4(-0.57735f, -0.57735f, 0.57735f, 1.0);
 	mDirLight[0].Direction =	XMFLOAT4(0, 0, 5.0f, 1.0);
@@ -240,7 +241,9 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex)
 	mPointLight[1].Range    = 6.0f;
 	mPointLight[1].Position = XMFLOAT3(0, 0, -3);
 
-	BuildDynamicCubeMapViewsSphere();
+	mSphere = new Sphere(mDevcon, mDev, geoGen, apex, 3, 30, 30);
+	renderables.push_back(mSphere);
+	mSphere->SetupReflective(&renderables, mSkyBox, mScreen, mZbuffer);
 }
 
 
@@ -253,46 +256,17 @@ void RenderManager::Render()
 	
 	particles->Update();
 	emitter->Update();
-	mDevcon->RSSetState(0);
-    ID3D11RenderTargetView* renderTargets[1];
+	//mDevcon->RSSetState(0);
 
-	BuildCubeFaceCamera(-25.0f, 4.0f, 20.0f); // Sphere position
-    
-	cameraCount = 0;
-
-    for(int i = cameraCount = 0; i < 6; ++i, ++cameraCount) // for mirror, just do (int i = 0; i < 1; ++i) for 1 camera mapped to mirror surface
-    {
-		// Clear cube map face and depth buffer.
-		mDevcon->ClearRenderTargetView(mDynamicCubeMapRTVSphere[i], reinterpret_cast<const float*>(&Colors::Silver));
-        mDevcon->ClearDepthStencilView(mDynamicCubeMapDSVSphere, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-        // Bind cube map face as render target.
-        renderTargets[0] = mDynamicCubeMapRTVSphere[i];
-        mDevcon->OMSetRenderTargets(1, renderTargets, mDynamicCubeMapDSVSphere);
-
-		XMStoreFloat4x4(&sceneBuff.viewProj, mCubeMapCamera[cameraCount].ViewProj());
-		sceneBuff.camPos = XMFLOAT3(0.5,0,0);
-		mDevcon->UpdateSubresource(sceneCBuffer, 0, 0, &sceneBuff , 0, 0);
-
-		mDevcon->VSSetConstantBuffers(0, 1, &sceneCBuffer);
-		mDevcon->PSSetConstantBuffers(0, 1, &sceneCBuffer);
-
-        // Draw the scene with the exception of the center sphere to this cube map face
-		//mSkyBox->Render(sceneCBuffer, &mCubeMapCamera[cameraCount], 0);
-	
-        DynamicCubeMapRender(0, mCubeMapCamera[cameraCount]);
-		//mDevcon->ClearRenderTargetView(mDynamicCubeMapRTVSphere[i], reinterpret_cast<const float*>(&Colors::Silver));
-        //mDevcon->ClearDepthStencilView(mDynamicCubeMapDSVSphere, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
-		//DynamicCubeMapRender(0, mCubeMapCamera[cameraCount]);
-		//++cameraCount;
-    }
-	mDevcon->GenerateMips(mDynamicCubeMapSRVSphere);
-	mSphere->getShit(mDynamicCubeMapSRVSphere);//mSkyBox->mCubeMap
+	//mSphere->getShit(/*mDynamicCubeMapSRVSphere*/mSkyBox->mCubeMap);
 
 
 	XMStoreFloat4x4(&sceneBuff.viewProj, mCam->ViewProj());
 	sceneBuff.camPos = mCam->GetPosition();
+	sceneBuff.pad = 1.0f;
 	mDevcon->VSSetConstantBuffers(0, 1, &sceneCBuffer);
+	mDevcon->PSSetConstantBuffers(0, 1, &sceneCBuffer);
+
 	mDevcon->UpdateSubresource(sceneCBuffer, 0, 0, &sceneBuff , 0, 0);
 
 	//Skybox right now doesn't like zbuffers, so dont' set one for it
@@ -330,16 +304,7 @@ void RenderManager::Render(int renderType)
 	}
 }
 
-void RenderManager::DynamicCubeMapRender(int renderType, Camera cam)
-{
-	for(int i = 0; i < renderables.size() ; i++)
-	{
-		sceneBuff.camPos = XMFLOAT3(0.5,0,0);
-		mDevcon->UpdateSubresource(sceneCBuffer, 0, 0, &sceneBuff , 0, 0);
-		mDevcon->PSSetConstantBuffers(0, 1, &sceneCBuffer);
-		renderables[i]->Render(sceneCBuffer, &mCubeMapCamera[cameraCount], renderTargets::environment);
-	}
-}
+
 
 void RenderManager::RenderToTarget(enum renderTargets target)
 {
@@ -374,120 +339,4 @@ void RenderManager::RecompShaders()
 	{
 		renderables[i]->RecompileShader();
 	}
-}
-
-void RenderManager::BuildCubeFaceCamera(float x, float y, float z)
-{
-    // Generate the cube map about the given position.
-    XMFLOAT3 center(x, y, z);
-    XMFLOAT3 worldUp(0.0f, 1.0f, 0.0f);
-
-    // Look along each coordinate axis.
-    XMFLOAT3 targets[6] = 
-    {
-        XMFLOAT3(x+1.0f, y, z), // +X
-        XMFLOAT3(x-1.0f, y, z), // -X
-        XMFLOAT3(x, y+1.0f, z), // +Y
-        XMFLOAT3(x, y-1.0f, z), // -Y
-        XMFLOAT3(x, y, z+1.0f), // +Z
-        XMFLOAT3(x, y, z-1.0f)  // -Z
-    };
-
-    // Use world up vector (0,1,0) for all directions except +Y/-Y.  In these cases, we are looking down +Y or -Y, so we need a different "up" vector.
-    XMFLOAT3 ups[6] = 
-    {
-        XMFLOAT3(0.0f, 1.0f, 0.0f),  // +X
-        XMFLOAT3(0.0f, 1.0f, 0.0f),  // -X
-        XMFLOAT3(0.0f, 0.0f, -1.0f), // +Y
-        XMFLOAT3(0.0f, 0.0f, +1.0f), // -Y
-        XMFLOAT3(0.0f, 1.0f, 0.0f),	 // +Z
-        XMFLOAT3(0.0f, 1.0f, 0.0f)	 // -Z
-    };
-
-    for(int i = 0; i < 6; ++i)
-    {
-        mCubeMapCamera[i].LookAt(center, targets[i], ups[i]);
-        mCubeMapCamera[i].SetLens(0.5f*XM_PI, 1.0f, 0.1f, 500.0f);
-        mCubeMapCamera[i].UpdateViewMatrix();
-    }
-}
-
-
-void RenderManager::BuildDynamicCubeMapViewsSphere()
-{
-    // Cubemap is a special texture array with 6 elements.
-    D3D11_TEXTURE2D_DESC texDesc;
-    texDesc.Width = CubeMapSizeSphere;
-    texDesc.Height = CubeMapSizeSphere;
-    texDesc.MipLevels = 0;
-    texDesc.ArraySize = 6;
-    texDesc.SampleDesc.Count = 1;
-    texDesc.SampleDesc.Quality = 0;
-    texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    texDesc.Usage = D3D11_USAGE_DEFAULT;
-    texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-    texDesc.CPUAccessFlags = 0;
-    texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS | D3D11_RESOURCE_MISC_TEXTURECUBE;
-
-    ID3D11Texture2D* cubeTex = 0;
-    mDev->CreateTexture2D(&texDesc, 0, &cubeTex);
-
-    // Create a render target view to each cube map face (i.e., each element in the texture array).
-    D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
-    rtvDesc.Format = texDesc.Format;
-    rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
-    rtvDesc.Texture2DArray.ArraySize = 1;
-    rtvDesc.Texture2DArray.MipSlice = 0;
-
-    for(int i = 0; i < 6; ++i)
-    {
-        rtvDesc.Texture2DArray.FirstArraySlice = i;
-        mDev->CreateRenderTargetView(cubeTex, &rtvDesc, &mDynamicCubeMapRTVSphere[i]);
-    }
-
-    // Create a shader resource view to the cube map.
-    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-    srvDesc.Format = texDesc.Format;
-    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-    srvDesc.TextureCube.MostDetailedMip = 0;
-    srvDesc.TextureCube.MipLevels = -1;
-
-   HRESULT hrte = mDev->CreateShaderResourceView(cubeTex, &srvDesc, &mDynamicCubeMapSRVSphere);
-
-    //ReleaseCOM(cubeTex);
-
-    // We need a depth texture for rendering the scene into the cubemap that has the same resolution as the cubemap faces.  
-    D3D11_TEXTURE2D_DESC depthTexDesc;
-    depthTexDesc.Width = CubeMapSizeSphere;
-    depthTexDesc.Height = CubeMapSizeSphere;
-    depthTexDesc.MipLevels = 1;
-    depthTexDesc.ArraySize = 1;
-    depthTexDesc.SampleDesc.Count = 1;
-    depthTexDesc.SampleDesc.Quality = 0;
-    depthTexDesc.Format = DXGI_FORMAT_D32_FLOAT;
-    depthTexDesc.Usage = D3D11_USAGE_DEFAULT;
-    depthTexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-    depthTexDesc.CPUAccessFlags = 0;
-    depthTexDesc.MiscFlags = 0;
-
-    ID3D11Texture2D* depthTex = 0;
-    mDev->CreateTexture2D(&depthTexDesc, 0, &depthTex);
-
-    // Create the depth stencil view for the entire cube
-    D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
-    dsvDesc.Format = depthTexDesc.Format;
-    dsvDesc.Flags  = 0;
-    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-    dsvDesc.Texture2D.MipSlice = 0;
-    mDev->CreateDepthStencilView(depthTex, &dsvDesc, &mDynamicCubeMapDSVSphere);
-
-    //ReleaseCOM(depthTex);
-
-    // Viewport for drawing into cubemap.
-    mCubeMapViewport.TopLeftX = 0.0f;
-    mCubeMapViewport.TopLeftY = 0.0f;
-    mCubeMapViewport.Width    = (float)CubeMapSizeSphere;
-    mCubeMapViewport.Height   = (float)CubeMapSizeSphere;
-    mCubeMapViewport.MinDepth = 0.0f;
-    mCubeMapViewport.MaxDepth = 1.0f;
 }

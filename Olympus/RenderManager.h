@@ -29,12 +29,15 @@ enum renderTargets
         depth
 	};
 
+#ifndef SCENEBUFF
+#define SCENEBUFF
 struct SceneBuff
 {
 	XMFLOAT4X4 viewProj;
 	XMFLOAT3   camPos;
 	float	   pad;
 };
+#endif
 
 struct DirectionalLight
 {
@@ -91,7 +94,7 @@ public:
 				  Apex *apex,
 				  Camera *cam);
 
-	void DynamicCubeMapRender(int renderType, Camera mCubeMapCamera);
+	
 	void Render(int renderType);
 	void Render();
 	void RenderToTarget(enum renderTargets);
@@ -99,9 +102,6 @@ public:
 	//DEBUG
 	void RenderManager::SetPosition(float x, float y, float z);
 	void RenderManager::SetEmit(bool on);
-
-	void RenderManager::BuildCubeFaceCamera(float x, float y, float z);
-	void RenderManager::BuildDynamicCubeMapViewsSphere();
 
 	void RecompShaders();
 	//void InitObjects();
@@ -125,21 +125,7 @@ public:
 	Camera *mScreenCam;
 	GroundPlane *mGrid;
 	Sphere *mSphere;
-
-	Camera mCubeMapCamera[6];
-	static const int CubeMapSizeSphere = 512;
-	ID3D11DepthStencilView* mDynamicCubeMapDSVSphere;
-	ID3D11RenderTargetView* mDynamicCubeMapRTVSphere[6];
-	ID3D11ShaderResourceView* mDynamicCubeMapSRVSphere;
-	D3D11_VIEWPORT mCubeMapViewport;
-	//Material mSphereMat;
-	// Define transformations from local spaces to world space.
-    XMFLOAT4X4 mSphereWorld;
-	int mSphereVertexOffset;
-	UINT mSphereIndexOffset;
-	UINT mSphereIndexCount;
-	int cameraCount;
-
+	
 	ID3D11Buffer *sceneCBuffer;
 	ID3D11Buffer *dirLightCBuffer;
 	ID3D11Buffer *pointLightCBuffer;

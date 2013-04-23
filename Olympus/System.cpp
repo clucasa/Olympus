@@ -281,9 +281,9 @@ void System::RenderFrame(float dt)
 	timePassed += dt;
 	// Other animation?
 	float x,y,z;
-	x = 20.f * (float)sin((float)timePassed);
-	y = abs(20.f * (float)sin((float)timePassed/1.33f));
-	z = 20.f * (float)cos((float)timePassed);
+	x = 30.f * (float)sin((float)timePassed);
+	y = abs(30.f * (float)sin((float)timePassed/1.33f));
+	z = 30.f * (float)cos((float)timePassed);
 
 	rendManager->SetPosition(x,y,z);
 	UpdateCamera(dt);

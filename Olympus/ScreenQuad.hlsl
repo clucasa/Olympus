@@ -43,8 +43,9 @@ VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float3 tangent 
 
 float4 PShader(VOut input) : SV_TARGET
 {   
+	float gamma = 1.8f;
     //return depth.Sample(samLinear, input.texcoord).r;
-	return tex.Sample(samLinear, input.texcoord);
+	//return tex.Sample(samLinear, input.texcoord);
     //return shadow.Sample(samLinear, input.texcoord);
 
 	float4 color = depth.Sample( samLinear, input.texcoord );
@@ -54,11 +55,13 @@ float4 PShader(VOut input) : SV_TARGET
 	float midDepth = 2*zFar*zNear / (zFar + zNear - (zFar - zNear)*(2*z_b -1));
 	float blurFactor = 1.0;
 
-	float depthRange = .018 * (zFar - zNear );
+	float depthRange = .004 * (zFar - zNear );
 
 	if( color.r > midDepth - depthRange && color.r < midDepth + depthRange )
 	{
 		color = tex.Sample( samLinear, input.texcoord );
+		// Gamma correction (Must be done last)
+		color = pow(color, 1.0f / gamma);
 		return color;
 	}
 	else
@@ -71,22 +74,65 @@ float4 PShader(VOut input) : SV_TARGET
 		blurFactor = abs( blurFactor );
 	}
 
-	color = (tex.Sample( samLinear, input.texcoord )) * 4;
+	color = (tex.Sample( samLinear, input.texcoord )) * 8.0f;
 
-	float blur = .002;
+	float blur = .000;
 	
-	color += ( tex.Sample( samLinear, float2( input.texcoord.x+blur, input.texcoord.y ) ) ) * 2;
-	color += ( tex.Sample( samLinear, float2( input.texcoord.x-blur, input.texcoord.y ) ) ) * 2;
-	color += ( tex.Sample( samLinear, float2( input.texcoord.x, input.texcoord.y+blur ) ) ) * 2;
-	color += ( tex.Sample( samLinear, float2( input.texcoord.x, input.texcoord.y-blur ) ) ) * 2;
+	color += ( tex.Sample( samLinear, float2( input.texcoord.x+blur, input.texcoord.y ) ) ) * 2.0f;
+	color += ( tex.Sample( samLinear, float2( input.texcoord.x-blur, input.texcoord.y ) ) ) * 2.0f;
+	color += ( tex.Sample( samLinear, float2( input.texcoord.x, input.texcoord.y+blur ) ) ) * 2.0f;
+	color += ( tex.Sample( samLinear, float2( input.texcoord.x, input.texcoord.y-blur ) ) ) * 2.0f;
 
 	color += tex.Sample( samLinear, float2( input.texcoord.x-blur, input.texcoord.y-blur ) );
 	color += tex.Sample( samLinear, float2( input.texcoord.x+blur, input.texcoord.y-blur ) );
 	color += tex.Sample( samLinear, float2( input.texcoord.x-blur, input.texcoord.y+blur ) );
 	color += tex.Sample( samLinear, float2( input.texcoord.x+blur, input.texcoord.y+blur ) );
 
-	color = color / 16;
-	color.a = 1.0f;
+	color = color / 20.0f;
 
+	// Locals
+
+	//float BlurStrength = 0.3f;
+	//float BlurScale = 1.0f;
+
+ //   float halfBlur = float(BlurAmount) * 0.5;
+ //   vec4 colour = vec4(0.0);
+ //   vec4 texColour = vec4(0.0);
+ //   
+ //   // Gaussian deviation
+ //   float deviation = halfBlur * 0.35;
+ //   deviation *= deviation;
+ //   float strength = 1.0 - BlurStrength;
+ //   
+ //   if ( Orientation == 0 )
+ //   {
+ //       // Horizontal blur
+ //       for (int i = 0; i < 10; ++i)
+ //       {
+ //           if ( i >= BlurAmount )
+ //               break;
+ //           
+ //           float offset = float(i) - halfBlur;
+ //           texColour = texture2D(Sample0, vUv + vec2(offset * TexelSize.x * BlurScale, 0.0)) * Gaussian(offset * strength, deviation);
+ //           colour += texColour;
+ //       }
+ //   }
+
+
+	// Gamma correction (Must be done last)
+	color = pow(color, 1.0f / gamma);
+
+	color.a = 1.0f;
 	return color;
+}
+
+/// <summary>
+/// Gets the Gaussian value in the first dimension.
+/// </summary>
+/// <param name="x">Distance from origin on the x-axis.</param>
+/// <param name="deviation">Standard deviation.</param>
+/// <returns>The gaussian value on the x-axis.</returns>
+float Gaussian (float x, float deviation)
+{
+    return (1.0 / sqrt(2.0 * 3.141592 * deviation)) * exp(-((x * x) / (2.0 * deviation)));  
 }

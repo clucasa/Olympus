@@ -1,9 +1,9 @@
-cbuffer ViewProjMat	: register(c0)
+cbuffer ViewProjMat	: register(b0)
 {
     float4x4 ViewProj;
 }
 
-cbuffer ObjectMat	: register(c1)
+cbuffer ObjectMat	: register(b1)
 {
     float4x4 viewInvProj;
 	float4x4 viewPrev;

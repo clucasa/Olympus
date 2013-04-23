@@ -157,6 +157,7 @@ float4 PShader(VOut input) : SV_TARGET
 	//return float4(textureColor.rgb,1.0f);
 	color = saturate(textureColor*(ambient + diffuse) + spec);
 	//clip(color.a < 0.999999f ? -1:1 );
+
 	color.a = 1.0;
 
     return color;
