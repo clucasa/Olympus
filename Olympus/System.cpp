@@ -264,6 +264,7 @@ int System::initd3d()
     mApex = new Apex();
     mApex->Init(dev, devcon);
     mApex->InitParticles();
+    mApex->InitClothing();
 
 	rendManager = new RenderManager(devcon, dev, swapchain, mApex, mCam);
     return InitPipeline();
