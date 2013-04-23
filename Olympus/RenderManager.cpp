@@ -257,7 +257,7 @@ void RenderManager::Render()
 	
 	particles->Update();
 	emitter->Update();
-	//mDevcon->RSSetState(0);
+	mDevcon->RSSetState(0);
 
 	//mSphere->getShit(/*mDynamicCubeMapSRVSphere*/mSkyBox->mCubeMap);
 
