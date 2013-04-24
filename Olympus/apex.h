@@ -15,6 +15,7 @@
 //#include "NxApexSDK.h"
 #include "ZeusRenderResourceManager.h"
 #include "ApexParticles.h"
+#include "ApexCloth.h"
 //#include "Object.h"
 #include "ZeusResourceCallback.h"
 #include <d3d11.h>
@@ -55,6 +56,7 @@ public:
 
     bool Init(ID3D11Device* dev, ID3D11DeviceContext* devcon);
     bool InitParticles();
+    bool InitClothing();
 
 	ApexParticles* CreateEmitter(physx::apex::NxUserRenderer* renderer);
 
@@ -74,6 +76,10 @@ private:
 	NxModuleParticleIos*        mParticleIosModule;
     NxModuleEmitter*            mEmitterModule;
     NxModuleIofx*               mIofxModule;
+
+    ApexCloth*                  gApexCloth;
+
+    NxModuleClothing*           mApexClothingModule;
 
 	ID3D11Device* mDev;
 	ID3D11DeviceContext* mDevcon;

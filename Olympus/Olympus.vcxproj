@@ -109,6 +109,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="apex.cpp" />
+    <ClCompile Include="ApexCloth.cpp" />
     <ClCompile Include="ApexParticles.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FontSheet.cpp" />
@@ -144,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="apex.h" />
+    <ClInclude Include="ApexCloth.h" />
     <ClInclude Include="ApexParticles.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FontSheet.h" />

@@ -36,42 +36,69 @@ void* ZeusResourceCallback::requestResource(const char* nameSpace, const char* n
     std::string filename = name + std::string(".apb");
 
     physx::PxFileBuf* stream = NxGetApexSDK()->createStream( filename.c_str(), physx::PxFileBuf::OPEN_READ_ONLY );
-    
     if(stream)
     {
         bool success = stream->getOpenMode() == physx::PxFileBuf::OPEN_READ_ONLY;
         if(!success)
-            return NULL;
-        NxParameterized::Serializer::SerializeType serType = NxGetApexSDK()->getSerializeType(*stream);
-        PX_ASSERT( serType != NxParameterized::Serializer::SerializeType::NST_LAST );
-
-        NxParameterized::Serializer * ser = NxGetApexSDK()->createSerializer(serType);
-
-        NxApexAsset *asset;
-        NxParameterized::Serializer::DeserializedData data;
-
-        ser->deserialize(*stream, data); // assume there is one asset in the stream for this case
-        NxParameterized::Interface *params = data[0];
-        asset = NxGetApexSDK()->createAsset( params, name );
-
-
-
-        PX_ASSERT(asset);
-        if (asset)
         {
-            bool rightType = strcmp(nameSpace, asset->getObjTypeName()) == 0;
-            PX_ASSERT(rightType);
-            if (rightType)
+            filename = name + std::string(".ctw"); 
+            stream = NxGetApexSDK()->createStream( filename.c_str(), physx::PxFileBuf::OPEN_READ_ONLY );
+            if(stream)
             {
-                resource = asset;
-            }
-            else
-            {
-                NxGetApexSDK()->releaseAsset(*asset);
-                asset = 0;
+                success = stream->getOpenMode() == physx::PxFileBuf::OPEN_READ_ONLY;
+                if(!success)
+                {
+                    return NULL;
+                }
             }
         }
     }
+    else
+    {
+        return NULL;
+    }
+    
+    char peekData[32];
+    stream->peek(peekData, 32);
+
+    NxParameterized::Serializer::SerializeType serType = NxGetApexSDK()->getSerializeType(peekData, 32);
+    if( serType == NxParameterized::Serializer::SerializeType::NST_LAST )
+        return NULL;
+
+    NxParameterized::Serializer * ser = NxGetApexSDK()->createSerializer(serType);
+
+    NxParameterized::Serializer::DeserializedData data;
+    
+    if (ser != NULL)
+    {
+        NxParameterized::Serializer::ErrorType serError = NxParameterized::Serializer::ERROR_NONE;
+        serError = ser->deserialize(*stream, data);         // assume there is one asset in the stream for this case
+
+        ser->release();
+    }
+
+    stream->release();
+
+    NxApexAsset *asset;
+    NxParameterized::Interface *params = data[0];
+    asset = NxGetApexSDK()->createAsset( params, name );
+
+    PX_ASSERT(asset);
+    if (asset)
+    {
+        bool rightType = strcmp(nameSpace, asset->getObjTypeName()) == 0;
+        PX_ASSERT(rightType);
+        if (rightType)
+        {
+            resource = asset;
+        }
+        else
+        {
+            NxGetApexSDK()->releaseAsset(*asset);
+            asset = 0;
+        }
+    }
+   
 
     return resource;
 }

@@ -89,8 +89,14 @@
     <Filter Include="Rendering\Objects\OnScreen\FontSheet">
       <UniqueIdentifier>{6224932f-5073-418b-a1a4-78bffd54d06b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Objects\ApexCloth">
+      <UniqueIdentifier>{caf44aec-17c4-4f57-8524-9417a9b0f407}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Objects\ApexDestructable">
+      <UniqueIdentifier>{87835560-c4c6-4b39-a21d-5fba403a6904}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Rendering\Objects\Sphere">
-      <UniqueIdentifier>{d953064f-e284-4532-b96d-9de252a8418c}</UniqueIdentifier>
+      <UniqueIdentifier>{1fb2f87d-4323-48e9-90b3-ace34f856a58}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +163,9 @@
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Rendering\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="ApexCloth.cpp">
+      <Filter>Rendering\Objects\ApexCloth</Filter>
     </ClCompile>
     <ClCompile Include="Sphere.cpp">
       <Filter>Rendering\Objects\Sphere</Filter>
@@ -263,6 +272,9 @@
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Rendering\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="ApexCloth.h">
+      <Filter>Rendering\Objects\ApexCloth</Filter>
     </ClInclude>
     <ClInclude Include="Sphere.h">
       <Filter>Rendering\Objects\Sphere</Filter>

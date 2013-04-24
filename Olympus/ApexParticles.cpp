@@ -23,7 +23,7 @@ void ApexParticles::CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 	gRenderer = renderer;
 
     NxApexEmitterAsset* emitterAsset;
-    physx::apex::NxApexAsset* asset = reinterpret_cast<physx::apex::NxApexAsset*>(gApexSDK->getNamedResourceProvider()->getResource(NX_APEX_EMITTER_AUTHORING_TYPE_NAME, "testSpriteEmitter4ParticleFluidIos"));
+    physx::apex::NxApexAsset* asset = reinterpret_cast<physx::apex::NxApexAsset*>(gApexSDK->getNamedResourceProvider()->getResource(NX_APEX_EMITTER_AUTHORING_TYPE_NAME, "testSpriteEmitter4ParticleFluidIos"/*"SmokeEmitter"*/));
     if (asset)
     {
         emitterAsset = static_cast<NxApexEmitterAsset*> (asset);
@@ -46,7 +46,7 @@ void ApexParticles::CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
         emitterActor = static_cast<NxApexEmitterActor*>(emitterAsset->createApexActor(*descParams,*gApexScene));
         if(emitterActor)
         {
-            emitterActor->setCurrentPosition(PxVec3(0.0f, 25.0f, 0.0f));
+            emitterActor->setCurrentPosition(PxVec3(0.0f, 20.0f, 0.0f));
             emitterActor->startEmit( true );
             //emitterActor->setLifetimeRange(physx::apex::NxRange<PxF32>(1,5));
             //emitterActor->setRateRange(physx::apex::NxRange<PxF32>(10, 10));
@@ -64,7 +64,7 @@ void ApexParticles::CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 
 void ApexParticles::InitPipeline()
 {
-	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/popcorn.png"/*SoftParticle.dds"/**/, 0, 0, &spriteTexture, 0 );
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, /*"Media/Textures/SoftParticle.dds"*/"Media/Textures/popcorn.png", 0, 0, &spriteTexture, 0 );
 
 	// compile the shaders
     ID3D10Blob *sVS, *sPS, *sGS;
