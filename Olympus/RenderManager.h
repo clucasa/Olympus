@@ -127,6 +127,7 @@ public:
 	Camera *mScreenCam;
 	GroundPlane *mGrid;
 	Sphere *mSphere;
+	Sphere *mSphereMove;
 	
 	ID3D11Buffer *sceneCBuffer;
 	ID3D11Buffer *dirLightCBuffer;

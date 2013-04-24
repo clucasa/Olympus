@@ -1,0 +1,224 @@
+<materialset meshfile='Levels/Village/Models/PRP_Tree_C'>
+	<variation name='standard'>
+		<section name='lambert3'> 
+			<uberMaterial type='Phong'>
+				<diffuseSampler samplerType='Texture' texture='Levels/Village/Textures/PRP_TreeBranches_A_DM' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='true' 
+				color='1.000000 1.000000 1.000000 1.000000' />
+				
+				<normalSampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='true' 
+				color='0.000000 0.000000 1.000000 1.000000' />
+				
+				<specularSampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='false' 
+				color='0.010000 0.010000 0.010000 1.000000' />
+				
+				<occlusionSampler samplerType='Texture' texture='Levels/Village/Textures/PRP_Tree_C_AO' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='false' 
+				color='1.000000 1.000000 1.000000 1.000000' />
+				
+				<transmissionSampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='false' 
+				color='0.000000 0.000000 0.000000 1.000000' />
+				
+				<heightSampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='false' 
+				color='1.000000 1.000000 1.000000 1.000000' />
+				
+				<reflectionSampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='true' 
+				color='0.000000 0.000000 0.000000 1.000000' />
+				
+				<radiumICESampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='true' 
+				color='1.000000 1.000000 1.000000 1.000000' />
+				
+				<radiumSSSSampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='true' 
+				color='0.000000 0.000000 0.000000 1.000000' />
+				
+				<fallOffColor value='0.000000 0.000000 0.000000 1.000000'/>
+				<fallOffSpread value='0.000000'/>
+				<specularGloss value='7.000000'/>
+				<incidenceMin value='0.000000'/>
+				<incidenceMax value='1.000000'/>
+				<incandescence value='0.000000'/>
+				<parallaxScale value='0.100000'/>
+				<parallaxMidpoint value='0.500000'/>
+				<translucencyType value='0'/>
+				<minimumAlpha value='0.000000'/>
+				<translucencyOverride value='-1.000000'/>
+				<haveRadiumICE value='0.000000'/>
+				
+				<renderStateVars sort="MS_OPAQUE"
+				srcBlend="BLEND_ONE" dstBlend="BLEND_ZERO"
+				alphaTest="true"
+				alphaRef="0.900000"
+				depthTest="true"
+				depthFunc="PCF_LESS_EQUAL"
+				depthWrite="true"
+				fillMode="FM_SOLID"
+				affectedByLights="true"
+				fogged="true"
+				doubleSided="true"
+				receiveShadows="true"
+				castShadows="true"
+				motionBlur="true"
+				motionBlurMultiplier="1.000000"
+				flipBinormal="false"
+				shadowDisplacement="1.000000"
+				autoScaleUVs="0.000000"
+				/>
+			</uberMaterial>
+		</section>
+	</variation>
+	<variation name='standard'>
+		<section name='plantTreeWood'> 
+			<uberMaterial type='Phong'>
+				<diffuseSampler samplerType='Texture' texture='Levels/Village/Textures/PRP_Log_A_DM' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='true' 
+				color='1.000000 1.000000 1.000000 1.000000' />
+				
+				<normalSampler samplerType='Texture' texture='Levels/Village/Textures/PRP_log_A_NM' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='true' 
+				color='0.000000 0.000000 1.000000 1.000000' />
+				
+				<specularSampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='false' 
+				color='0.010000 0.010000 0.010000 1.000000' />
+				
+				<occlusionSampler samplerType='Texture' texture='Levels/Village/Textures/PRP_Tree_C_AO' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='false' 
+				color='1.000000 1.000000 1.000000 1.000000' />
+				
+				<transmissionSampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='false' 
+				color='0.000000 0.000000 0.000000 1.000000' />
+				
+				<heightSampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='false' 
+				color='1.000000 1.000000 1.000000 1.000000' />
+				
+				<reflectionSampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='true' 
+				color='0.000000 0.000000 0.000000 1.000000' />
+				
+				<radiumICESampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='true' 
+				color='1.000000 1.000000 1.000000 1.000000' />
+				
+				<radiumSSSSampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='true' 
+				color='0.000000 0.000000 0.000000 1.000000' />
+				
+				<fallOffColor value='0.000000 0.000000 0.000000 1.000000'/>
+				<fallOffSpread value='0.000000'/>
+				<specularGloss value='7.000000'/>
+				<incidenceMin value='0.000000'/>
+				<incidenceMax value='1.000000'/>
+				<incandescence value='0.000000'/>
+				<parallaxScale value='0.100000'/>
+				<parallaxMidpoint value='0.500000'/>
+				<translucencyType value='0'/>
+				<minimumAlpha value='0.000000'/>
+				<translucencyOverride value='-1.000000'/>
+				<haveRadiumICE value='0.000000'/>
+				
+				<renderStateVars sort="MS_OPAQUE"
+				srcBlend="BLEND_ONE" dstBlend="BLEND_ZERO"
+				alphaTest="false"
+				alphaRef="0.500000"
+				depthTest="true"
+				depthFunc="PCF_LESS_EQUAL"
+				depthWrite="true"
+				fillMode="FM_SOLID"
+				affectedByLights="true"
+				fogged="true"
+				doubleSided="false"
+				receiveShadows="true"
+				castShadows="true"
+				motionBlur="true"
+				motionBlurMultiplier="1.000000"
+				flipBinormal="false"
+				shadowDisplacement="1.000000"
+				autoScaleUVs="0.000000"
+				/>
+			</uberMaterial>
+		</section>
+	</variation>
+	<variation name='standard'>
+		<section name='tree_foliageB'> 
+			<uberMaterial type='Phong'>
+				<diffuseSampler samplerType='Texture' texture='Levels/Village/Textures/PRP_Tree_Leaves_B_DM' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='true' 
+				color='1.000000 1.000000 1.000000 1.000000' />
+				
+				<normalSampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='true' 
+				color='0.000000 0.000000 1.000000 1.000000' />
+				
+				<specularSampler samplerType='Texture' texture='Levels/Village/Textures/PRP_Tree_Leaves_B_SM' multiplyColor='0.870000 0.870000 0.870000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='false' 
+				color='1.000000 1.000000 1.000000 1.000000' />
+				
+				<occlusionSampler samplerType='Texture' texture='Levels/Village/Textures/PRP_Tree_C_AO' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='false' 
+				color='1.000000 1.000000 1.000000 1.000000' />
+				
+				<transmissionSampler samplerType='Texture' texture='Levels/Village/Textures/PRP_Tree_Leaves_B_TM' multiplyColor='1.100000 1.100000 1.100000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='false' 
+				color='0.000000 0.000000 0.000000 1.000000' />
+				
+				<heightSampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='false' 
+				color='1.000000 1.000000 1.000000 1.000000' />
+				
+				<reflectionSampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='true' 
+				color='0.000000 0.000000 0.000000 1.000000' />
+				
+				<radiumICESampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='true' 
+				color='1.000000 1.000000 1.000000 1.000000' />
+				
+				<radiumSSSSampler samplerType='Color' texture='' multiplyColor='1.000000 1.000000 1.000000 1.000000' scale='1.000000 1.000000' scrollSpeed='0.000000 0.000000' rotation='0.000000' spinSpeed='0.000000' 
+				uMode='Wrap' vMode='Wrap' mipBias='0.000000' anisotropy='true' 
+				color='0.000000 0.000000 0.000000 1.000000' />
+				
+				<fallOffColor value='0.000000 0.000000 0.000000 1.000000'/>
+				<fallOffSpread value='0.000000'/>
+				<specularGloss value='7.000000'/>
+				<incidenceMin value='0.000000'/>
+				<incidenceMax value='1.000000'/>
+				<incandescence value='0.000000'/>
+				<parallaxScale value='0.100000'/>
+				<parallaxMidpoint value='0.500000'/>
+				<translucencyType value='0'/>
+				<minimumAlpha value='0.000000'/>
+				<translucencyOverride value='-1.000000'/>
+				<haveRadiumICE value='0.000000'/>
+				
+				<renderStateVars sort="MS_OPAQUE"
+				srcBlend="BLEND_ONE" dstBlend="BLEND_ZERO"
+				alphaTest="true"
+				alphaRef="0.850000"
+				depthTest="true"
+				depthFunc="PCF_LESS_EQUAL"
+				depthWrite="true"
+				fillMode="FM_SOLID"
+				affectedByLights="true"
+				fogged="true"
+				doubleSided="true"
+				receiveShadows="true"
+				castShadows="true"
+				motionBlur="true"
+				motionBlurMultiplier="1.000000"
+				flipBinormal="false"
+				shadowDisplacement="1.000000"
+				autoScaleUVs="0.000000"
+				/>
+			</uberMaterial>
+		</section>
+	</variation>
+</materialset>

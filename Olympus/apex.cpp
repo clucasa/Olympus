@@ -45,6 +45,11 @@ bool Apex::advance(float dt)
     if(mCooldown > 0.0f)
         mCooldown -= mStepSize;
 
+	/*while (dt > mStepSize)
+	{
+		gApexScene->simulate(mStepSize);
+        dt -= mStepSize;
+	}*/
     gApexScene->simulate(mStepSize);
     return true;
 }
@@ -94,10 +99,74 @@ bool Apex::Init(ID3D11Device* dev, ID3D11DeviceContext* devcon)
     if(!gApexScene)
         return false;
 
-	static const physx::PxU32 viewIDlookAtRightHand = gApexScene->allocViewMatrix(physx::apex::ViewMatrixType::LOOK_AT_RH);
+	static const physx::PxU32 viewIDlookAtRightHand = gApexScene->allocViewMatrix(physx::apex::ViewMatrixType::LOOK_AT_LH);
 	static const physx::PxU32 projIDperspectiveCubicRightHand = gApexScene->allocProjMatrix(physx::apex::ProjMatrixType::USER_CUSTOMIZED);
 
+	gApexScene->setUseViewProjMatrix(viewIDlookAtRightHand, projIDperspectiveCubicRightHand);
+
     return true;
+}
+
+void Apex::UpdateViewProjMat(XMMATRIX *view, XMMATRIX *proj, float nearPlane, float farPlane, float fov, float vWidth, float vHeight)
+{
+	PxMat44 pview;
+	XMtoPxMatrix(view, &pview);
+
+	PxMat44 pproj;
+	XMtoPxMatrix(proj, &pproj);
+
+	gApexScene->setViewMatrix(pview);
+	gApexScene->setProjMatrix(pproj);
+
+	gApexScene->setProjParams(nearPlane, farPlane, fov, vWidth, vHeight);
+}
+
+void Apex::PxtoXMMatrix(PxTransform input, XMMATRIX* start)
+{
+	PxMat33 quat = PxMat33(input.q);
+
+	start->_11 = quat.column0[0];
+	start->_12 = quat.column0[1];
+	start->_13 = quat.column0[2];
+
+
+	start->_21 = quat.column1[0];
+	start->_22 = quat.column1[1];
+	start->_23 = quat.column1[2];
+
+
+	start->_31 = quat.column2[0];
+	start->_32 = quat.column2[1];
+	start->_33 = quat.column2[2];
+
+
+	start->_41 = input.p.x;
+	start->_42 = input.p.y;
+	start->_43 = input.p.z; 
+}
+
+void Apex::XMtoPxMatrix(XMMATRIX* input, PxMat44* start)
+{
+	start->column0.w = input->_11;
+	start->column0.x = input->_12;
+	start->column0.y = input->_13;
+	start->column0.z = input->_14;
+
+	start->column1.w = input->_21;
+	start->column1.x = input->_22;
+	start->column1.y = input->_23;
+	start->column1.z = input->_24;
+
+	start->column2.w = input->_31;
+	start->column2.x = input->_32;
+	start->column2.y = input->_33;
+	start->column2.z = input->_34;
+
+	start->column3.w = input->_41;
+	start->column3.x = input->_42;
+	start->column3.y = input->_43;
+	start->column3.z = input->_44;
+    
 }
 
 bool Apex::InitPhysX()
@@ -160,7 +229,7 @@ bool Apex::InitPhysX()
     if (!plane)
         return false;
 
-    mScene->addActor(*plane);
+    //mScene->addActor(*plane);
 
     // Create a heightfield
     PhysXHeightfield* heightfield = new PhysXHeightfield();
@@ -294,30 +363,30 @@ ApexParticles* Apex::CreateEmitter(physx::apex::NxUserRenderer* renderer)
 bool Apex::InitClothing()
 {
   
-    //PX_ASSERT(gApexSDK);
-    //NxApexCreateError            errorCode;
-    //mApexClothingModule = static_cast<physx::apex::NxModuleClothing*>(gApexSDK->createModule("Clothing", &errorCode));
+    PX_ASSERT(gApexSDK);
+    NxApexCreateError            errorCode;
+    mApexClothingModule = static_cast<physx::apex::NxModuleClothing*>(gApexSDK->createModule("Clothing", &errorCode));
 
-    //if (mApexClothingModule != NULL)
-    //{
-    //    NxParameterized::Interface* moduleDesc = mApexClothingModule->getDefaultModuleDesc();
+    if (mApexClothingModule != NULL)
+    {
+        NxParameterized::Interface* moduleDesc = mApexClothingModule->getDefaultModuleDesc();
 
-    //    // Know what you're doing when playing with these values!
+        // Know what you're doing when playing with these values!
 
-    //    // should not be 0 for every platform except PC.
-    //    NxParameterized::setParamU32(*moduleDesc, "maxNumCompartments", 3);
+        // should not be 0 for every platform except PC.
+        NxParameterized::setParamU32(*moduleDesc, "maxNumCompartments", 3);
 
-    //    // Can be tuned for switching between more memory and more spikes.
-    //    NxParameterized::setParamU32(*moduleDesc, "maxUnusedPhysXResources", 5);
+        // Can be tuned for switching between more memory and more spikes.
+        NxParameterized::setParamU32(*moduleDesc, "maxUnusedPhysXResources", 5);
 
-    //    mApexClothingModule->init(*moduleDesc);
-    //}
+        mApexClothingModule->init(*moduleDesc);
+    }
 
-    //physx::apex::NxApexAsset* asset = reinterpret_cast<physx::apex::NxApexAsset*>(gApexSDK->getNamedResourceProvider()->getResource(NX_CLOTHING_AUTHORING_TYPE_NAME, "curtain.mesh"));
-    //if( asset )
-    //{
-    //    gApexSDK->getNamedResourceProvider()->setResource(NX_CLOTHING_AUTHORING_TYPE_NAME, "c", asset, true);
-    //}
+    physx::apex::NxApexAsset* asset = reinterpret_cast<physx::apex::NxApexAsset*>(gApexSDK->getNamedResourceProvider()->getResource(NX_CLOTHING_AUTHORING_TYPE_NAME, "curtain.mesh"));
+    if( asset )
+    {
+        gApexSDK->getNamedResourceProvider()->setResource(NX_CLOTHING_AUTHORING_TYPE_NAME, "c", asset, true);
+    }
 
 
     return true;

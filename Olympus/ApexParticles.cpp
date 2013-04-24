@@ -46,8 +46,9 @@ void ApexParticles::CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
         emitterActor = static_cast<NxApexEmitterActor*>(emitterAsset->createApexActor(*descParams,*gApexScene));
         if(emitterActor)
         {
-            emitterActor->setCurrentPosition(PxVec3(0.0f, 20.0f, 0.0f));
+            emitterActor->setCurrentPosition(PxVec3(0.0f, 20.0f, 500.0f));
             emitterActor->startEmit( true );
+			//emitterActor->forcePhysicalLod(
             //emitterActor->setLifetimeRange(physx::apex::NxRange<PxF32>(1,5));
             //emitterActor->setRateRange(physx::apex::NxRange<PxF32>(10, 10));
         }
@@ -156,4 +157,26 @@ void ApexParticles::SetEmit(bool on)
     {
         emitterActor->startEmit( on );
     }
+}
+
+
+void ApexParticles::RecompileShader()
+{
+	// compile the shaders
+    ID3D10Blob *sVS, *sPS, *sGS;
+	HRESULT hr;
+	hr = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &sVS, 0, 0);
+
+    hr = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "GShader", "gs_5_0", 0, 0, 0, &sGS, 0, 0);
+
+    hr = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &sPS, 0, 0);
+
+
+    // create the shader objects
+
+    mDev->CreateVertexShader(sVS->GetBufferPointer(), sVS->GetBufferSize(), NULL, &mVS);
+    mDev->CreateGeometryShader(sGS->GetBufferPointer(), sGS->GetBufferSize(), NULL, &mGS);
+    mDev->CreatePixelShader(sPS->GetBufferPointer(), sPS->GetBufferSize(), NULL, &mPS);
+    
+
 }

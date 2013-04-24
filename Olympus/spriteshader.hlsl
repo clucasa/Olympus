@@ -114,6 +114,7 @@ void GShader(point VOut input[1], uint primID : SV_PrimitiveID, inout TriangleSt
 
 float4 PShader(GOut input) : SV_TARGET
 {	
+	//return float4(1.0,0.0,0.0,1.0);
 	float4 textureColor;
     float3 lightDir;
     float lightIntensity;

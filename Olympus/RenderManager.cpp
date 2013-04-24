@@ -26,6 +26,8 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	//ScreenQuad *sq = new ScreenQuad(mDevcon, mDev, geoGen);
 
 	emitter = apex->CreateEmitter(gRenderer);
+	//emitter->SetPosition(-3.0f,309.5,-957.3);
+	//emitter->SetEmit(true);
 
 	particles = apex->CreateEmitter(gRenderer);
 		
@@ -54,7 +56,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	
 
 	mGrid = new GroundPlane(mDevcon, mDev, geoGen, 400, 10);
-	renderables.push_back(mGrid);
+	//renderables.push_back(mGrid);
 
 	HRESULT hr;
 
@@ -124,7 +126,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	ZeroMemory( &raster, sizeof(D3D11_RASTERIZER_DESC));
 
 	raster.FillMode = D3D11_FILL_SOLID;
-	raster.CullMode = D3D11_CULL_BACK;
+	raster.CullMode = D3D11_CULL_NONE;
 	raster.FrontCounterClockwise = FALSE;
 	raster.DepthBias = 0;
 	raster.DepthBiasClamp = 0.0f;
@@ -207,8 +209,8 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	
 	mDirLight[0].Ambient =		XMFLOAT4(.2f, .2f, .2f, 1);
 	mDirLight[0].Diffuse =		XMFLOAT4(.4f, .4f, .4f, 1);
-	//mDirLight[0].Direction =	XMFLOAT4(-0.57735f, -0.57735f, 0.57735f, 1.0);
-	mDirLight[0].Direction =	XMFLOAT4(0, 0, 5.0f, 1.0);
+	mDirLight[0].Direction =	XMFLOAT4(-0.57735f, -0.57735f, 0.57735f, 1.0);
+	//mDirLight[0].Direction =	XMFLOAT4(0, 0, 5.0f, 1.0);
 	mDirLight[0].Specular =		XMFLOAT4(0.8f, 0.8f, 0.7f, 1);
 	mDirLight[0].SpecPower =	8.0f;
 
@@ -245,11 +247,16 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	mSphere = new Sphere(mDevcon, mDev, geoGen, apex, 4, 60, 60);
 	renderables.push_back(mSphere);
 	mSphere->SetupReflective(&renderables, mSkyBox, mScreen, mZbuffer, mViewport);
+
+	mSphereMove = new Sphere(mDevcon, mDev, geoGen, apex, 2, 30, 30);
+	renderables.push_back(mSphereMove);
+	mSphereMove->MoveTo(0,0,0);
 }
 
 
 void RenderManager::Render()
 {
+	
 	// clear the back buffer to a deep blue
 	mDevcon->ClearDepthStencilView(mZbuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     mDevcon->ClearRenderTargetView(mBackbuffer, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
@@ -325,11 +332,13 @@ void RenderManager::RenderToTarget(enum renderTargets target)
 void RenderManager::SetPosition(float x, float y, float z)
 {
 	particles->SetPosition(x,y,z);
+	emitter->SetPosition(-3.0f, 309.5f, -957.3);
 }
 
 void RenderManager::SetEmit(bool on)
 {
 	particles->SetEmit(on);
+
 }
 
 void RenderManager::RecompShaders()

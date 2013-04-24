@@ -2,8 +2,14 @@
 m Media/Models/tree1.fbx
 t Media/Textures/PRP_Log_A_DM.dds
 t Media/Textures/PRP_TreeLeaves_A.dds
+# t Media/Textures/PRP_TreeBranches_A_DM.png
+# t Media/Textures/PRP_Tree_Leaves_B_DM.png
+# t Media/Textures/PRP_Log_A_DM.dds
 n Media/Textures/PRP_Log_A_NM.png
-n Media/Textures/PRP_Log_A_NM.png
+n Media/Textures/BlankNormalMap.png
+n Media/Textures/BlankNormalMap.png
+n Media/Textures/BlankNormalMap.png
+n Media/Textures/BlankNormalMap.png
 i 10.0 0.0 50.0 0.09 0.09 0.09 0.0 0.0 0.0
 i 0.0 0.0 30.0 0.08 0.08 0.08 0.0 0.0 0.0
 i -10.0 0.0 75.0 0.1 0.1 0.1 0.0 0.0 0.0

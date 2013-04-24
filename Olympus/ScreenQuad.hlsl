@@ -43,7 +43,9 @@ VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float3 tangent 
 
 float4 PShader(VOut input) : SV_TARGET
 {   
-	float gamma = 1.8f;
+	float gamma = 1.5f;
+	float lumt = 1.6f;
+	float luminance;
     //return depth.Sample(samLinear, input.texcoord).r;
 	//return tex.Sample(samLinear, input.texcoord);
     //return shadow.Sample(samLinear, input.texcoord);
@@ -55,13 +57,17 @@ float4 PShader(VOut input) : SV_TARGET
 	float midDepth = 2*zFar*zNear / (zFar + zNear - (zFar - zNear)*(2*z_b -1));
 	float blurFactor = 1.0;
 
-	float depthRange = .004 * (zFar - zNear );
+	float depthRange = .008 * (zFar - zNear );
 
 	if( color.r > midDepth - depthRange && color.r < midDepth + depthRange )
 	{
 		color = tex.Sample( samLinear, input.texcoord );
+		// Luminance
+		luminance = 0.2125*color.r + 0.7154*color.g + 0.0721*color.b;
+		color = float4((1. - lumt) * float3(luminance, luminance, luminance) + lumt * color.rgb, 1.0f);
 		// Gamma correction (Must be done last)
 		color = pow(color, 1.0f / gamma);
+
 		return color;
 	}
 	else
@@ -75,8 +81,8 @@ float4 PShader(VOut input) : SV_TARGET
 	}
 
 	color = (tex.Sample( samLinear, input.texcoord )) * 8.0f;
-
-	float blur = .000;
+	//return float4(1.0,0.0,0.0,1.0);
+	float blur = .003;
 	
 	color += ( tex.Sample( samLinear, float2( input.texcoord.x+blur, input.texcoord.y ) ) ) * 2.0f;
 	color += ( tex.Sample( samLinear, float2( input.texcoord.x-blur, input.texcoord.y ) ) ) * 2.0f;
@@ -118,7 +124,9 @@ float4 PShader(VOut input) : SV_TARGET
  //       }
  //   }
 
-
+	// Luminance
+	luminance = 0.2125*color.r + 0.7154*color.g + 0.0721*color.b;
+	color = float4((1. - lumt) * float3(luminance, luminance, luminance) + lumt * color.rgb, 1.0f);
 	// Gamma correction (Must be done last)
 	color = pow(color, 1.0f / gamma);
 

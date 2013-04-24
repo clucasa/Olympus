@@ -122,7 +122,7 @@ float4 PShader(VOut input) : SV_TARGET
 	
 	//return float4(normalColor.xyz, 1.0f);
 
-	float3 bumpedNormalW = normalize(NormalSampleToWorldSpace(normalColor, input.NormalW, input.TangentW));
+	float3 bumpedNormalW = normalize(input.NormalW);//NormalSampleToWorldSpace(normalColor, input.NormalW, input.TangentW));
 
 	
 	float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -156,6 +156,7 @@ float4 PShader(VOut input) : SV_TARGET
 	float4 textureColor = float4(1.0f,1.0f,0.0f,1.0f);//float4(0.0f, 0.0f, 0.0f, 1.0f);
 	textureColor = diffuseTexture.Sample( samLinear, input.Tex );
 	//return float4(textureColor.rgb,1.0f);
+	textureColor = float4(.396f,.298f,.1255f,1.0f);
 	color = saturate(textureColor*(ambient + diffuse) + spec);
 	//clip(color.a < 0.999999f ? -1:1 );
 
