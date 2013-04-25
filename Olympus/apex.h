@@ -68,6 +68,9 @@ public:
 
     void Render();
 
+
+	
+
 	bool checkErrorCode(NxApexCreateError* err);
 private:
     NxApexSDK*                  gApexSDK;
@@ -90,11 +93,12 @@ private:
 // PhysX
 public:
 	void LoadTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info);
+	PxScene*	getScene() {return mScene;}
+	PxPhysics*	getPhysics() {return mPhysics;}
 
 private:
     bool InitPhysX();
 	
-
     PxFoundation*               mFoundation;
     PxPhysics*                  mPhysics;
     PxProfileZoneManager*       mProfileZoneManager;

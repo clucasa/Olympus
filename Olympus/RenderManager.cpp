@@ -53,7 +53,8 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 	Scene* scene = new Scene(&renderables, dev, devcon, apex);
 	
-	
+	projectile = new Projectile(dev, devcon, apex);
+	renderables.push_back(projectile);
 
 	mGrid = new GroundPlane(mDevcon, mDev, geoGen, 400, 10);
 	//renderables.push_back(mGrid);
@@ -138,6 +139,23 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 	hr = dev->CreateRasterizerState (&raster, &pState);
 	devcon->RSSetState( pState );
+
+	D3D11_SAMPLER_DESC sd;
+    sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    sd.MaxAnisotropy = 16;
+    sd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    sd.BorderColor[0] = 0.0f;
+    sd.BorderColor[1] = 0.0f;
+    sd.BorderColor[2] = 0.0f;
+    sd.BorderColor[3] = 0.0f;
+    sd.MinLOD = 0.0f;
+    sd.MaxLOD = FLT_MAX;
+    sd.MipLODBias = 0.0f;
+
+	dev->CreateSamplerState(&sd, &mSampState);
+	devcon->PSSetSamplers(0, 1, &mSampState);
 
 	D3D11_TEXTURE2D_DESC texd;
 	ZeroMemory(&texd, sizeof(texd));
@@ -251,8 +269,26 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	mSphereMove = new Sphere(mDevcon, mDev, geoGen, apex, 2, 30, 30);
 	renderables.push_back(mSphereMove);
 	mSphereMove->MoveTo(0,0,0);
+
+	sphere2 = new Sphere(mDevcon, mDev, geoGen, apex, 2, 30, 30);
+	renderables.push_back(sphere2);
+	sphere2->MoveTo(-3.0f, 309.5f, -957.3f);
 }
 
+float timePassed = 0.0f;
+void RenderManager::Update(float dt)
+{
+	timePassed += dt;
+	// Other animation?
+	float x,y,z;
+	x = 200.0f * (float)sin((float)timePassed);
+	y = abs(50.f * (float)sin((float)timePassed/0.3f))-10.0f;
+	z = 200.0f * (float)cos((float)timePassed);
+
+	SetPosition(x,y,z);
+	mSphereMove->MoveTo(x,y,z);
+	projectile->Update();
+}
 
 void RenderManager::Render()
 {
@@ -265,9 +301,6 @@ void RenderManager::Render()
 	particles->Update();
 	emitter->Update();
 	mDevcon->RSSetState(0);
-
-	//mSphere->getShit(/*mDynamicCubeMapSRVSphere*/mSkyBox->mCubeMap);
-
 
 	XMStoreFloat4x4(&sceneBuff.viewProj, mCam->ViewProj());
 	sceneBuff.camPos = mCam->GetPosition();

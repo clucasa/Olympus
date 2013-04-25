@@ -11,6 +11,7 @@
 class GeometryGenerator
 {
 public:
+
 	struct Vertex
 	{
 		Vertex(){}

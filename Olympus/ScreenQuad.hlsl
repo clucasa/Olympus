@@ -23,12 +23,7 @@ struct VOut
     float2 texcoord : TEXCOORD;
 };
 
-SamplerState samLinear
-{
-	Filter = MIN_MAG_MIP_LINEAR;
-	AddressU = Wrap;
-	AddressV = Wrap;
-};
+SamplerState ss;
 
 VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float3 tangent : TANGENT, float2 texcoord : TEXCOORD )
 {
@@ -50,10 +45,10 @@ float4 PShader(VOut input) : SV_TARGET
 	//return tex.Sample(samLinear, input.texcoord);
     //return shadow.Sample(samLinear, input.texcoord);
 
-	float4 color = depth.Sample( samLinear, input.texcoord );
+	float4 color = depth.Sample( ss, input.texcoord );
 	color.r = 2*zFar*zNear / (zFar + zNear - (zFar - zNear)*(2*color.r -1));
 
-	float z_b = depth.Sample( samLinear, float2( .5, .5 ) ).r;
+	float z_b = depth.Sample( ss, float2( .5, .5 ) ).r;
 	float midDepth = 2*zFar*zNear / (zFar + zNear - (zFar - zNear)*(2*z_b -1));
 	float blurFactor = 1.0;
 
@@ -61,7 +56,7 @@ float4 PShader(VOut input) : SV_TARGET
 
 	if( color.r > midDepth - depthRange && color.r < midDepth + depthRange )
 	{
-		color = tex.Sample( samLinear, input.texcoord );
+		color = tex.Sample( ss, input.texcoord );
 		// Luminance
 		luminance = 0.2125*color.r + 0.7154*color.g + 0.0721*color.b;
 		color = float4((1. - lumt) * float3(luminance, luminance, luminance) + lumt * color.rgb, 1.0f);
@@ -80,19 +75,19 @@ float4 PShader(VOut input) : SV_TARGET
 		blurFactor = abs( blurFactor );
 	}
 
-	color = (tex.Sample( samLinear, input.texcoord )) * 8.0f;
+	color = (tex.Sample( ss, input.texcoord )) * 8.0f;
 	//return float4(1.0,0.0,0.0,1.0);
-	float blur = .003;
+	float blur = .000;
 	
-	color += ( tex.Sample( samLinear, float2( input.texcoord.x+blur, input.texcoord.y ) ) ) * 2.0f;
-	color += ( tex.Sample( samLinear, float2( input.texcoord.x-blur, input.texcoord.y ) ) ) * 2.0f;
-	color += ( tex.Sample( samLinear, float2( input.texcoord.x, input.texcoord.y+blur ) ) ) * 2.0f;
-	color += ( tex.Sample( samLinear, float2( input.texcoord.x, input.texcoord.y-blur ) ) ) * 2.0f;
+	color += ( tex.Sample( ss, float2( input.texcoord.x+blur, input.texcoord.y ) ) ) * 2.0f;
+	color += ( tex.Sample( ss, float2( input.texcoord.x-blur, input.texcoord.y ) ) ) * 2.0f;
+	color += ( tex.Sample( ss, float2( input.texcoord.x, input.texcoord.y+blur ) ) ) * 2.0f;
+	color += ( tex.Sample( ss, float2( input.texcoord.x, input.texcoord.y-blur ) ) ) * 2.0f;
 
-	color += tex.Sample( samLinear, float2( input.texcoord.x-blur, input.texcoord.y-blur ) );
-	color += tex.Sample( samLinear, float2( input.texcoord.x+blur, input.texcoord.y-blur ) );
-	color += tex.Sample( samLinear, float2( input.texcoord.x-blur, input.texcoord.y+blur ) );
-	color += tex.Sample( samLinear, float2( input.texcoord.x+blur, input.texcoord.y+blur ) );
+	color += tex.Sample( ss, float2( input.texcoord.x-blur, input.texcoord.y-blur ) );
+	color += tex.Sample( ss, float2( input.texcoord.x+blur, input.texcoord.y-blur ) );
+	color += tex.Sample( ss, float2( input.texcoord.x-blur, input.texcoord.y+blur ) );
+	color += tex.Sample( ss, float2( input.texcoord.x+blur, input.texcoord.y+blur ) );
 
 	color = color / 20.0f;
 

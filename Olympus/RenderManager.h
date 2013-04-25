@@ -18,6 +18,7 @@
 #include "FontSheet.h"
 #include "GroundPlane.h"
 #include "Sphere.h"
+#include "Projectile.h"
 
 using namespace std;
 
@@ -95,7 +96,8 @@ public:
 				  Camera *cam,
 				  D3D11_VIEWPORT *viewport);
 
-	
+	void Update(float dt);
+
 	void Render(int renderType);
 	void Render();
 	void RenderToTarget(enum renderTargets);
@@ -122,12 +124,14 @@ public:
 	ID3D11RenderTargetView *mBackbuffer;    // the pointer to our back buffer
 
 	ID3D11BlendState* mBlendState;   // Our blend state
+	ID3D11SamplerState *mSampState;
 
 	Camera *mCam;
 	Camera *mScreenCam;
 	GroundPlane *mGrid;
 	Sphere *mSphere;
 	Sphere *mSphereMove;
+	Sphere *sphere2;
 	
 	ID3D11Buffer *sceneCBuffer;
 	ID3D11Buffer *dirLightCBuffer;
@@ -135,6 +139,7 @@ public:
 
 	SkyBox *mSkyBox;
 	ScreenQuad *mScreen;
+	Projectile *projectile;
 
 	ApexParticles* particles;
 	ApexParticles* emitter;

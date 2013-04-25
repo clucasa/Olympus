@@ -98,6 +98,9 @@
     <Filter Include="Rendering\Objects\Sphere">
       <UniqueIdentifier>{1fb2f87d-4323-48e9-90b3-ace34f856a58}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Objects\Projectiles">
+      <UniqueIdentifier>{860c1009-e313-465f-9f82-ff095ab77d19}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="apex.cpp">
@@ -169,6 +172,9 @@
     </ClCompile>
     <ClCompile Include="Sphere.cpp">
       <Filter>Rendering\Objects\Sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="Projectile.cpp">
+      <Filter>Rendering\Objects\Projectiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -278,6 +284,9 @@
     </ClInclude>
     <ClInclude Include="Sphere.h">
       <Filter>Rendering\Objects\Sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Rendering\Objects\Projectiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
