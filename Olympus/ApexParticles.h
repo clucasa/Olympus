@@ -47,6 +47,7 @@ public:
 					  physx::apex::NxUserRenderer* renderer, NxModuleIofx* iofxModule);
 	void Update();
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
+	virtual void RecompileShader();
 
 	void SetPosition(float x, float y, float z);
 	void SetEmit(bool on);

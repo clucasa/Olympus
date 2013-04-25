@@ -60,12 +60,7 @@ struct GOut
 
 Texture2D theTexture;
 
-SamplerState samTriLinearSam
-{
-	Filter = MIN_MAG_MIP_LINEAR;
-	AddressU = Wrap;
-	AddressV = Wrap;
-};
+SamplerState ss;
 
 VOut VShader(float3 position : POSITION)
 {
@@ -114,6 +109,7 @@ void GShader(point VOut input[1], uint primID : SV_PrimitiveID, inout TriangleSt
 
 float4 PShader(GOut input) : SV_TARGET
 {	
+	//return float4(1.0,0.0,0.0,1.0);
 	float4 textureColor;
     float3 lightDir;
     float lightIntensity;
@@ -126,7 +122,7 @@ float4 PShader(GOut input) : SV_TARGET
 	float4 totalAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 totalDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	float4 color = theTexture.Sample( samTriLinearSam, input.texcoord );///*float4(0.3f, 0.502f, 0.753f, 1.0f);*/theTexture.Gather(samTriLinearSam, input.texcoord, int2(0,0));
+	float4 color = theTexture.Sample( ss, input.texcoord );///*float4(0.3f, 0.502f, 0.753f, 1.0f);*/theTexture.Gather(samTriLinearSam, input.texcoord, int2(0,0));
 	
 
 	for(int i = 0; i < 2; i++)
@@ -185,7 +181,7 @@ float4 PShader(GOut input) : SV_TARGET
 
 	color *= totalDiffuse + totalAmbient;///(5.0f-numLightsHit);
 	color = saturate(color);
-	color.a = theTexture.GatherAlpha(samTriLinearSam, input.texcoord, int2(0,0), int2(0,0), int2(0,0), int2(0,0));
+	color.a = theTexture.GatherAlpha(ss, input.texcoord, int2(0,0), int2(0,0), int2(0,0), int2(0,0));
 
 	clip(color.a < 0.999999f ? -1:1 );
 

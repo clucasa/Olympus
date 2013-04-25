@@ -316,13 +316,14 @@ void Sphere::DynamicCubeMapRender(int renderType, Camera cam)
 
 void Sphere::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 {
-	if(renderType == renderTargets::environment)
-	{
-		return;
-	}
-
+	
 	if(reflective)
 	{
+		if(renderType == renderTargets::environment)
+		{
+			return;
+		}
+
 		 // Sphere position
 		mDevcon->RSSetViewports(1, &mCubeMapViewport);
 		for(int i = 0; i < 6; ++i) // for mirror, just do (int i = 0; i < 1; ++i) for 1 camera mapped to mirror surface
@@ -382,7 +383,7 @@ void Sphere::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 	mDevcon->VSSetConstantBuffers(1, 1, &mConstBuffer);
 	//mDevcon->PSSetConstantBuffers(0, 1, &sceneBuff);
 	mDevcon->UpdateSubresource(mConstBuffer, 0, 0, &mWorldMat, 0, 0);
-
+	//mDevcon->PSSetShaderResources(0, 1, NULL);
 	if(reflective)
 	{
 		XMStoreFloat4x4(&sphereBuff.viewProj, mCam->ViewProj());
@@ -419,4 +420,11 @@ void Sphere::RecompileShader()
     mDev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &mVS);
     
     mDev->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &mPS);
+}
+
+void Sphere::MoveTo(float x, float y, float z)
+{
+	mX = x;
+	mY = y;
+	mZ = z;
 }

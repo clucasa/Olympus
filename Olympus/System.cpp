@@ -61,6 +61,8 @@ int System::run()
     // enter the main loop:
     MSG msg;
 
+	RenderFrame(100.0f); // skip forward 100 seconds!
+
 	mTimer.Reset();
 
     while(TRUE)
@@ -145,7 +147,7 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
 			    break;
 		    }
-	    }
+	    } break;
 		case WM_SIZE:
 			// Save the new client area dimensions.
 			mClientWidth  = LOWORD(lParam);
@@ -278,8 +280,9 @@ int System::initd3d()
 	mCam = new Camera();
 	mLastMousePos.x = 0;
 	mLastMousePos.y = 0;
-    mCam->SetPosition(0.0f, 5.0f, -10.0f);
-	mCam->SetLens(0.25f*MathHelper::Pi, (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 1.0f, 1000.0f);
+    mCam->SetPosition(0.0f, 5.0f, 10.0f);
+	//mCam->RotateY(90);
+	mCam->SetLens(0.25f*MathHelper::Pi, (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 1.0f, 10000.0f);
 
     mApex = new Apex();
     mApex->Init(dev, devcon);
@@ -291,22 +294,14 @@ int System::initd3d()
 }
 
 
-float timePassed = 0.0f;
+
 // this is the function used to render a single frame
 void System::RenderFrame(float dt)
 {
-	
+	mApex->UpdateViewProjMat(&mCam->View(),&mCam->Proj(), 1.0f, 10000.0f, 0.25f*MathHelper::Pi, mClientWidth, mClientHeight);
 	bool fetch = mApex->advance(dt);
 
-	
-	timePassed += dt;
-	// Other animation?
-	float x,y,z;
-	x = 30.f * (float)sin((float)timePassed);
-	y = abs(30.f * (float)sin((float)timePassed/1.33f));
-	z = 30.f * (float)cos((float)timePassed);
-
-	rendManager->SetPosition(x,y,z);
+	rendManager->Update(dt);
 	UpdateCamera(dt);
 
 	if(fetch)
@@ -362,7 +357,7 @@ void System::UpdateCamera(float dt)
     if( dwResult == ERROR_SUCCESS ){ // Controller is connected.
         float speed = 1.0f;
         if( state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB )
-            speed = 4.0f;
+            speed = 40.0f;
         
 		ShowCursor(false);
 
@@ -389,13 +384,13 @@ void System::UpdateCamera(float dt)
         float rightThumbX = state.Gamepad.sThumbRX;
 
 		if(mFovFlag == 1){
-			mCam->SetLens(0.25f*MathHelper::Pi, (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 1.0f, 1000.0f);
+			mCam->SetLens(0.25f*MathHelper::Pi, (float)mClientWidth/(float)mClientHeight, 1.0f, 10000.0f);
 			mFovFlag = 0;
 		}
 
         // Aiming with left trigger
         if(state.Gamepad.bLeftTrigger && state.Gamepad.bRightTrigger < 256){ // 256 disables the right trigger
-			mCam->SetLens(0.1f*MathHelper::Pi, (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 1.0f, 1000.0f);
+			mCam->SetLens(0.1f*MathHelper::Pi, (float)mClientWidth/(float)mClientHeight, 1.0f, 10000.0f);
 			mFovFlag = 1;
             mCam->Walk((leftThumbY / 30000.0f) * dt * speed);
             mCam->Strafe((leftThumbX / 30000.0f) * dt * speed);
@@ -460,7 +455,7 @@ void System::UpdateCamera(float dt)
         float speed = 10.0f;
         ShowCursor(true);
         if( GetAsyncKeyState(0x10) & 0x8000 )
-            speed = 20.0f;
+            speed = 140.0f;
 
         if( GetAsyncKeyState('W') & 0x8000 )
             mCam->Walk(speed*dt);
@@ -486,9 +481,14 @@ void System::UpdateCamera(float dt)
 		rendManager->RecompShaders();
 
 	if( GetAsyncKeyState('P') & 0x8000 ){ // Super Zoom
-          mCam->SetLens(0.01f*MathHelper::Pi, (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 1.0f, 1000.0f); 
+          mCam->SetLens(0.01f*MathHelper::Pi, (float)mClientWidth/(float)mClientHeight, 1.0f, 10000.0f); 
 		  mFovFlag = 1;
 	}
+
+	if( (GetAsyncKeyState('B') & 0x8000) )
+    {
+		rendManager->projectile->Fire(mCam, 100.0f);
+    }
 
 	mCam->UpdateViewMatrix();
 }
@@ -532,7 +532,7 @@ void System::OnMouseMove(WPARAM btnState, int x, int y)
 void System::OnResize()
 {
 	//Set the new aspect ration for the camera
-	rendManager->mCam->SetLens(0.25f*MathHelper::Pi, (float)mClientWidth/(float)mClientHeight, 1.0f, 1000.0f);
+	rendManager->mCam->SetLens(0.25f*MathHelper::Pi, (float)mClientWidth/(float)mClientHeight, 1.0f, 10000.0f);
 
 	//Release anything related to the swapchain
 

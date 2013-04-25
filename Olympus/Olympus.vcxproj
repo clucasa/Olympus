@@ -123,6 +123,7 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="OnScreen.cpp" />
     <ClCompile Include="PhysXHeightField.cpp" />
+    <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ScreenQuad.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="OnScreen.h" />
     <ClInclude Include="PhysXHeightField.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="Scene.h" />

@@ -1,0 +1,11 @@
+# object terrain
+m Media/Models/terrain1.fbx
+t Media/Textures/TER_ForestGroundPlayable_I.png
+t Media/Textures/TER_ForestGroundPlayable_I.png
+t Media/Textures/TER_ForestGroundPlayable_I.png
+t Media/Textures/TER_ForestGroundPlayable_I.png
+n Media/Textures/TER_ForestGroundPlayable_I_NM.png
+n Media/Textures/TER_ForestGroundPlayable_I_NM.png
+n Media/Textures/TER_ForestGroundPlayable_I_NM.png
+n Media/Textures/TER_ForestGroundPlayable_I_NM.png
+i 269.0 -80.0 2.0 20.0 20.0 20.0 0.0 0.0 0.0

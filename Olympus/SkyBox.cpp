@@ -109,7 +109,6 @@ void SkyBox::SetupBuffer()
 
 void SkyBox::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 {
-
 	mDevcon->VSSetShader(mVS, 0, 0);
     mDevcon->PSSetShader(mPS, 0, 0);
     mDevcon->IASetInputLayout(mLayout);

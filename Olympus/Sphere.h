@@ -53,6 +53,7 @@ public:
 	void SetupBuffer();
 	void SetupPipeline();
 	void SetupRenderTarget();
+	void MoveTo(float x, float y, float z);
 
 	void SetupReflective(vector<Renderable*> *renderables, Renderable *skyBox,
 						ScreenQuad *screenQuad, ID3D11DepthStencilView *zbuff,

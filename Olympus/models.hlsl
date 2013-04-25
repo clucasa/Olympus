@@ -74,12 +74,7 @@ struct Vin
 	float4 BiNormal	: BINORMAL;
 };
 
-SamplerState samLinear
-{
-	Filter = MIN_MAG_MIP_LINEAR;
-	AddressU = Wrap;
-	AddressV = Wrap;
-};
+SamplerState ss;
 
 //VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float3 tangent : TANGENT, float2 texcoord : TEXCOORD )
 VOut VShader( Vin input )
@@ -88,7 +83,7 @@ VOut VShader( Vin input )
 	
 	output.PosW		= mul(matWorld, input.Pos);
 	output.NormalW  = normalize(mul((float3x3)matWorld, input.Normal));
-	output.TangentW = normalize(mul((float3x3)matWorld, cross(input.Pos, input.Normal)));
+	output.TangentW = normalize(mul((float3x3)matWorld, input.Tangent));
 	output.BiNormalW = normalize(mul((float3x3)matWorld, input.BiNormal));
 
 	output.PosH		= mul( mul(matFinal, matWorld), input.Pos);
@@ -118,7 +113,7 @@ float4 PShader(VOut input) : SV_TARGET
 	
 	
 
-	float3 normalColor  = normalTexture.Sample( samLinear, input.Tex ).rgb;
+	float3 normalColor  = normalTexture.Sample( ss, input.Tex ).rgb;
 	
 	//return float4(normalColor.xyz, 1.0f);
 
@@ -154,11 +149,15 @@ float4 PShader(VOut input) : SV_TARGET
 	}
 
 	float4 textureColor = float4(1.0f,1.0f,0.0f,1.0f);//float4(0.0f, 0.0f, 0.0f, 1.0f);
-	textureColor = diffuseTexture.Sample( samLinear, input.Tex );
+	textureColor = diffuseTexture.Sample( ss, input.Tex );
 	//return float4(textureColor.rgb,1.0f);
+	//textureColor = float4(.396f,.298f,.1255f,1.0f);
 	color = saturate(textureColor*(ambient + diffuse) + spec);
 	//clip(color.a < 0.999999f ? -1:1 );
-
+	//if(input.Tex.x > 1.0 || input.Tex.x < 0.0)
+	//	color = float4(1.0,0.0,0.0,1.0);
+	//if(input.Tex.y > 1.0 || input.Tex.y < 0.0)
+	//	color = float4(0.0,0.0,1.0,1.0);
 	color.a = 1.0;
 
     return color;

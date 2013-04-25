@@ -62,8 +62,14 @@ public:
 
     bool advance(float dt);
     void fetch();
+	void UpdateViewProjMat(XMMATRIX* view, XMMATRIX* proj, float nearPlane, float farPlane, float fov, float vWidth, float vHeight);
+	void PxtoXMMatrix(PxTransform input, XMMATRIX* start);
+	void XMtoPxMatrix(XMMATRIX* input, PxMat44* start);
 
     void Render();
+
+
+	
 
 	bool checkErrorCode(NxApexCreateError* err);
 private:
@@ -87,11 +93,12 @@ private:
 // PhysX
 public:
 	void LoadTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info);
+	PxScene*	getScene() {return mScene;}
+	PxPhysics*	getPhysics() {return mPhysics;}
 
 private:
     bool InitPhysX();
 	
-
     PxFoundation*               mFoundation;
     PxPhysics*                  mPhysics;
     PxProfileZoneManager*       mProfileZoneManager;
