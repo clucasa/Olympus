@@ -61,7 +61,7 @@ public:
 	void BuildCubeFaceCamera(float x, float y, float z);
 	void BuildDynamicCubeMapViewsSphere();
 	bool reflective;
-	void DynamicCubeMapRender(int renderType, Camera mCubeMapCamera);
+	void DynamicCubeMapRender(ID3D11Buffer *sceneBuff, int renderType, Camera mCubeMapCamera);
 
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
 	virtual void RecompileShader();

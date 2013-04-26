@@ -176,7 +176,7 @@ void Projectile::RecompileShader()
 
 void Projectile::SetupBoxMesh()
 {
-	float side = 0.5f;
+	float side = 1.0f;
 	float w2 = 0.5f * side;
 	float h2 = 0.5f * side;
 	float d2 = 0.5f * side;
