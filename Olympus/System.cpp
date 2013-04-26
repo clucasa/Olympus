@@ -397,7 +397,8 @@ void System::UpdateCamera(float dt)
             mCam->Pitch((-rightThumbY / 102000.0f) * dt);
             mCam->RotateY((rightThumbX / 105000.0f) * dt);
         }
-        else{
+        else
+		{
             mCam->Walk((leftThumbY / 3000.0f) * dt * speed);
             mCam->Strafe((leftThumbX / 3000.0f) * dt * speed);
 			
@@ -419,7 +420,8 @@ void System::UpdateCamera(float dt)
 			mCam->RotateY((rightThumbX / 8500.0f) * dt);
         }
 		XMFLOAT3 camPos = mCam->GetPosition();
-		if(mFlyMode == false){
+		if(mFlyMode == false)
+		{
 			
 			mCam->SetPosition(camPos.x, 2.0f, camPos.z);
 	
@@ -431,24 +433,17 @@ void System::UpdateCamera(float dt)
 			if(state.Gamepad.wButtons & XINPUT_GAMEPAD_A)
 				mCam->SetPosition(camPos.x, 5.0f, camPos.z);
 		}
-		else{
+		else
+		{
 			mCam->SetPosition(camPos.x, camPos.y, camPos.z);
 		}
-
-        /*// Shoot block with right trigger     
+		float shootspeed;
+        // Shoot block with right trigger     
         if( state.Gamepad.bRightTrigger && state.Gamepad.bLeftTrigger < 256 )
         {
-            shootspeed = (state.Gamepad.bRightTrigger / 255) * 40.0f;
-            if(shootBox)
-            {
-                mPhysX->CreateBox( mCam.GetPosition().x, mCam.GetPosition().y, mCam.GetPosition().z,
-					    	       mCam.GetLook().x, mCam.GetLook().y, mCam.GetLook().z, shootspeed);
-            }
-            else
-            {
-                mPhysX->CreateBox( 0., 10.0f, 0., 0., 0., 0., 0.);
-            }
-        }*/
+            shootspeed = (state.Gamepad.bRightTrigger / 255) * 100.0f;
+			rendManager->projectile->Fire(mCam, shootspeed);
+        }
 		
     }
     else{ // Controller is disconnected, oh balls

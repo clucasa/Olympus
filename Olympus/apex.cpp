@@ -45,12 +45,12 @@ bool Apex::advance(float dt)
     if(mCooldown > 0.0f)
         mCooldown -= mStepSize;
 
-	/*while (dt > mStepSize)
+	while (dt > mStepSize)
 	{
 		gApexScene->simulate(mStepSize);
         dt -= mStepSize;
-	}*/
-    gApexScene->simulate(mStepSize);
+	}
+    gApexScene->simulate(dt);
     return true;
 }
 
