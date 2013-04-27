@@ -31,6 +31,8 @@ public:
 	vector<Vertex>				vertices;
 	ID3D11Buffer*				vertexBuffer;
 
+    ID3D11ShaderResourceView*   mTexture;
+    ID3D11ShaderResourceView*   mNmap;
 	
 	ID3D11VertexShader			*opVS;			// the pointer to the vertex shader
 	ID3D11PixelShader			*opPS;          // the pointer to the vertex shader

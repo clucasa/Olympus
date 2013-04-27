@@ -224,7 +224,7 @@ bool Apex::InitPhysX()
     mScene = mPhysics->createScene(sceneDesc);
     if (!mScene)
         return false;
-
+    
     defaultMaterial = mPhysics->createMaterial(0.5f, 0.5f, 0.1f);    //static friction, dynamic friction, restitution
     if(!defaultMaterial)
         return false;
@@ -346,6 +346,12 @@ ApexParticles* Apex::CreateEmitter(physx::apex::NxUserRenderer* renderer, const 
 	emitter->CreateEmitter(gApexSDK, gApexScene, mDevcon, mDev, renderer, mIofxModule, filename);
 	return emitter;
 }
+ApexCloth* Apex::CreateCloth(physx::apex::NxUserRenderer* renderer, const char* filename)
+{
+    ApexCloth* cloth = new ApexCloth();
+    cloth->CreateCloth(gApexSDK, gApexScene, mDevcon, mDev, renderer, filename);
+    return cloth;
+}
 
 bool Apex::InitClothing()
 {
@@ -368,14 +374,7 @@ bool Apex::InitClothing()
 
         mApexClothingModule->init(*moduleDesc);
     }
-
-    physx::apex::NxApexAsset* asset = reinterpret_cast<physx::apex::NxApexAsset*>(gApexSDK->getNamedResourceProvider()->getResource(NX_CLOTHING_AUTHORING_TYPE_NAME, "ctdm_Cape_400"));
-    if( asset )
-    {
-        gApexSDK->getNamedResourceProvider()->setResource(NX_CLOTHING_AUTHORING_TYPE_NAME, "c", asset, true);
-    }
-
-
+        
     return true;
 }
 

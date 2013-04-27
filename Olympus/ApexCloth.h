@@ -38,10 +38,14 @@ public:
     ~ApexCloth();
 
 	void InitPipeline();
-    /*void CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
-						ID3D11DeviceContext *devcon, 	ID3D11Device *dev,
-					  physx::apex::NxUserRenderer* renderer, NxModuleIofx* iofxModule);*/
 
+    void CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
+						ID3D11DeviceContext *devcon, 	ID3D11Device *dev,
+					  physx::apex::NxUserRenderer* renderer, const char* filename);
+	void Update();
+	virtual void RecompileShader();
+
+	void SetPosition(float x, float y, float z);
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
 
 private:
@@ -56,7 +60,10 @@ private:
 	ID3D11ShaderResourceView *clothTexture;
 
 
-		
+	//NxApexEmitterActor* emitterActor;
+   // physx::apex::NxApexRenderVolume*  mRenderVolume;
+    physx::apex::NxClothingActor* clothingActor;
+        	
 	apex::NxUserRenderer*      gRenderer;
 };
 

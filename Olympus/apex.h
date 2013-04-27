@@ -62,6 +62,7 @@ public:
     bool InitClothing();
 
 	ApexParticles* CreateEmitter(physx::apex::NxUserRenderer* renderer, const char* filename);
+    ApexCloth* CreateCloth(physx::apex::NxUserRenderer* renderer, const char* filename);
 
     bool advance(float dt);
     void fetch();

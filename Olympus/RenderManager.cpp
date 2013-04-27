@@ -27,6 +27,8 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	
 	mSkyBox = new SkyBox(mDevcon, mDev, geoGen);
 	
+    //ApexCloth* cloth = apex->CreateCloth(gRenderer, "ctdm_Cape_400");
+
 	//ScreenQuad *sq = new ScreenQuad(mDevcon, mDev, geoGen);
     emitter = apex->CreateEmitter(gRenderer, "SmokeEmitter");
 	emitter->SetPosition(-18.0f, -65.0f, -243.0f);
