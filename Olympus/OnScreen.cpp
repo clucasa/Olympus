@@ -244,7 +244,7 @@ void OnScreen::Draw(const CD3D11_RECT& destinationRect, const CD3D11_RECT& sourc
 	mSpriteList.push_back(sprite);
 }
 
-void OnScreen::DrawString(ID3D11DeviceContext* dc, FontSheet& fs, const std::wstring& text, 
+void OnScreen::DrawString(ID3D11DeviceContext* dc, FontSheet& fs, std::string text, 
 							 const POINT& pos, XMCOLOR color)
 {
 			dc->VSSetShader(opVS, 0, 0);

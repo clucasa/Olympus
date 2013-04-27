@@ -33,12 +33,15 @@
 class System
 {
 public:
+	System();
     System(HINSTANCE hInstance, int nCmdShow);
     ~System();
 
     int init();
     int run();
     int initd3d();
+
+
 
     LRESULT msgProc( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -57,6 +60,7 @@ public:
     void OnMouseMove(WPARAM btnState, int x, int y);
     void UpdateCamera(float dt);
     void OnResize();
+	void fpsCalc();
 
 private:
     // global declarations

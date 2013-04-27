@@ -6,6 +6,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
     return gSystem->msgProc(hWnd, message, wParam, lParam);
 }
 
+System::System()
+{
+}
+
 System::System(HINSTANCE hInstance, int nCmdShow) :
 	mAppPaused(false), mFlyMode(false), mFovFlag(1)
 {
@@ -61,7 +65,8 @@ int System::run()
     // enter the main loop:
     MSG msg;
 
-	RenderFrame(100.0f); // skip forward 100 seconds!
+	//RenderFrame(100.0f); // skip forward 100 seconds!
+
 
 	mTimer.Reset();
 
@@ -77,9 +82,11 @@ int System::run()
         }
 		else
 		{
+			mTimer.Tick(); 
+
 			if( !mAppPaused )
 			{
-				mTimer.Tick();
+				rendManager->fpsCalc(mTimer);
 				RenderFrame(mTimer.DeltaTime());
 			}
 			else
@@ -94,6 +101,8 @@ int System::run()
 
     return msg.wParam;
 }
+
+
 
 
 // this is the main message handler for the program
@@ -526,6 +535,7 @@ void System::OnMouseMove(WPARAM btnState, int x, int y)
 
 void System::OnResize()
 {
+	rendManager->GetScreenParams(mClientWidth, mClientHeight);
 	//Set the new aspect ration for the camera
 	rendManager->mCam->SetLens(0.25f*MathHelper::Pi, (float)mClientWidth/(float)mClientHeight, 1.0f, 10000.0f);
 

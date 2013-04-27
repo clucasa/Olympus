@@ -1,6 +1,6 @@
 #include "RenderManager.h"
 #include "GeometryGenerator.h"
-#include "System.h"
+
 
 RenderManager::RenderManager(ID3D11DeviceContext *devcon, 
 							 ID3D11Device *dev, 
@@ -10,6 +10,10 @@ RenderManager::RenderManager(ID3D11DeviceContext *devcon,
 							 D3D11_VIEWPORT *viewport) :
 mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mViewport(viewport)
 {
+	fps = 0;
+	SCREEN_WIDTH = 1280;
+	SCREEN_HEIGHT = 720;
+
 	ID3D11Texture2D *pBackBuffer;
     swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
 
@@ -76,25 +80,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	hr = mFont.Initialize(mDev, L"Times New Roman", 30.0f, FontSheet::FontStyleRegular, false);
 	hr = mText.Initialize(mDev);
 
-	sText = L"Dragon Slayer";
 
-	// Calculate the text width.
-	int textWidth = 0;
-	for(UINT i = 0; i < sText.size(); ++i)
-	{
-		WCHAR character = sText[i];
-		if(character == ' ') 
-		{
-			textWidth += mFont.GetSpaceWidth();
-		}
-		else{
-			const CD3D11_RECT& r = mFont.GetCharRect(sText[i]);
-			textWidth += (r.right - r.left + 1);
-		}
-	}
-
-        textPos.x = (SCREEN_WIDTH - textWidth) - 2.0;
-        textPos.y = 0;//SCREEN_HEIGHT;
 
 	//hr = D3DX11CreateShaderResourceViewFromFile(dev, "Textures/WoodCrate01.dds", 0, 0, &mImageSRV, 0 );
 
@@ -278,6 +264,27 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	renderables.push_back(particles);
 }
 
+
+void RenderManager::fpsCalc(GameTimer mTimer)
+{
+	static int frameCnt = 0;
+	static float timeElapsed = 0.0f;
+
+	frameCnt++;
+
+	// Compute averages over one second period.
+	if( (mTimer.TotalTime() - timeElapsed) >= 1.0f )
+	{
+		fps = (int)frameCnt; // fps = frameCnt / 1
+		mspf = 1000.0f / fps;
+
+			// Reset for next average.
+		frameCnt = 0;
+		timeElapsed += 1.0f;
+	}
+}
+
+
 float timePassed = 0.0f;
 void RenderManager::Update(float dt)
 {
@@ -293,9 +300,86 @@ void RenderManager::Update(float dt)
 	projectile->Update();
 }
 
+void RenderManager::GetScreenParams(int mClientWidth, int mClientHeight)
+{
+	SCREEN_WIDTH = mClientWidth;
+	SCREEN_HEIGHT = mClientHeight;
+}
+
 void RenderManager::Render()
 {
-	
+	char buf[50];
+	itoa(fps, buf, 10);
+	sText = std::string("FPS: ") + buf;
+	std::string hair = "+";
+
+	// Convert the pos to a w string
+    std::string xs,ys,zs;
+        std::stringstream posx,posy,posz;
+        posx << mCam->GetPosition().x;
+        xs = posx.str();
+        posy << mCam->GetPosition().y;
+        ys = posy.str();
+        posz << mCam->GetPosition().z;
+        zs = posz.str();
+    std::string pos = xs + ", " + ys + ", " + zs;
+
+	// Calculate the text width.
+	int textWidth = 0;
+	for(UINT i = 0; i < sText.length(); ++i)
+	{
+		WCHAR character = sText[i];
+		if(character == ' ') 
+		{
+			textWidth += mFont.GetSpaceWidth();
+		}
+		else{
+			const CD3D11_RECT& r = mFont.GetCharRect(sText[i]);
+			textWidth += (r.right - r.left + 1);
+		}
+	}
+	        
+	// Calculate the hair width.
+    int hairWidth = 0;
+    for(UINT i = 0; i < hair.size(); ++i)
+    {
+        WCHAR character = hair[i];
+        if(character == ' ') 
+        {
+            hairWidth += mFont.GetSpaceWidth();
+        }
+        else{
+            const CD3D11_RECT& r = mFont.GetCharRect(hair[i]);
+            hairWidth += (r.right - r.left);
+        }
+    }
+
+   // Calculate the pos width
+    int posWidth = 0;
+    for(UINT i = 0; i < pos.size(); ++i)
+    {
+        WCHAR character = pos[i];
+        if(character == ' ') 
+        {
+            hairWidth += mFont.GetSpaceWidth();
+        }
+        else{
+            const CD3D11_RECT& r = mFont.GetCharRect(pos[i]);
+            posWidth += (r.right - r.left + 1);
+        }
+    }
+
+
+    textPos.x = (SCREEN_WIDTH - textWidth) - 2.0;
+    textPos.y = 0;//SCREEN_HEIGHT;
+
+	hairPos.x = (SCREEN_WIDTH - hairWidth) / 2;
+    hairPos.y = (SCREEN_HEIGHT - mFont.GetCharHeight()) / 2 ;
+
+	posPos.x = 2.0;
+	posPos.y = 1.0;
+
+
 	// clear the back buffer to a deep blue
 	mDevcon->ClearDepthStencilView(mZbuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     mDevcon->ClearRenderTargetView(mBackbuffer, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
@@ -338,6 +422,8 @@ void RenderManager::Render()
 	mScreen->Render(sceneCBuffer, mScreenCam, 0);
 
 	mText.DrawString(mDevcon, mFont, sText, textPos, XMCOLOR(0xffffffff));
+	mText.DrawString(mDevcon, mFont, hair, hairPos, XMCOLOR(0xffffffff));
+	mText.DrawString(mDevcon, mFont, pos, posPos, XMCOLOR(0xffffffff));
 }
 
 void RenderManager::Render(int renderType)
