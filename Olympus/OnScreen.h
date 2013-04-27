@@ -6,6 +6,7 @@
 #define ONSCREEN_H
 
 #include "TextHelper.h"
+#include <string>
 
 using namespace std;
 
@@ -136,7 +137,7 @@ public:
 	/// \param color The color of the sprite modulated with the texture color.  Specify 
 	///  white to keep the texture color unchanged.
 	/// 
-	void DrawString(ID3D11DeviceContext* dc, FontSheet& fs, const std::wstring& text, const POINT& pos, XMCOLOR color);
+	void DrawString(ID3D11DeviceContext* dc, FontSheet& fs, std::string text, const POINT& pos, XMCOLOR color);
 
 private:
 	OnScreen(const OnScreen& rhs);

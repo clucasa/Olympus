@@ -19,16 +19,17 @@
 #include "GroundPlane.h"
 #include "Sphere.h"
 #include "Projectile.h"
+#include "GameTimer.h"
 
 using namespace std;
 
 enum renderTargets
-	{
-		backbuffer,
-		postprocess,
-		environment,
-        depth
-	};
+{
+	backbuffer,
+	postprocess,
+	environment,
+    depth
+};
 
 #ifndef SCENEBUFF
 #define SCENEBUFF
@@ -88,6 +89,11 @@ class RenderManager
 {
 public:
 	
+	int fps;
+	float mspf;
+	int SCREEN_WIDTH;
+	int SCREEN_HEIGHT;
+
 
 	RenderManager(ID3D11DeviceContext *devcon, 
 				  ID3D11Device *dev, 
@@ -96,6 +102,8 @@ public:
 				  Camera *cam,
 				  D3D11_VIEWPORT *viewport);
 
+	void fpsCalc(GameTimer mTimer);
+	void GetScreenParams(int mClientWidth, int mClientHeight);
 	void Update(float dt);
 
 	void Render(int renderType);
@@ -157,7 +165,9 @@ public:
 	FontSheet mFont;
 	OnScreen mText;
 	POINT textPos;
-	wstring sText;
+	POINT hairPos;
+	POINT posPos;
+	string sText;
 };
 
 
