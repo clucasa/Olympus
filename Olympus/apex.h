@@ -7,6 +7,7 @@
 #include "PxVisualDebugger.h"
 #include "PxVisualDebuggerExt.h"
 #include "PvdNetworkStreams.h"
+#include "pxtask/PxCudaContextManager.h"
 
 #include < PxToolkit.h >
 #include "PhysXHeightField.h"
@@ -32,6 +33,8 @@ using namespace debugger;
 #pragma comment(lib, "PhysX3CookingCHECKED_x86.lib") 
 #pragma comment(lib, "PhysX3ExtensionsCHECKED.lib")
 #pragma comment(lib, "PhysXVisualDebuggerSDKCHECKED.lib")
+#pragma comment(lib, "PxTaskCHECKED.lib")
+#pragma comment(lib, "PhysXProfileSDKCHECKED.lib")
 
 #pragma comment(lib, "PxToolkitDEBUG.lib")
 
@@ -58,7 +61,7 @@ public:
     bool InitParticles();
     bool InitClothing();
 
-	ApexParticles* CreateEmitter(physx::apex::NxUserRenderer* renderer);
+	ApexParticles* CreateEmitter(physx::apex::NxUserRenderer* renderer, const char* filename);
 
     bool advance(float dt);
     void fetch();
@@ -105,6 +108,7 @@ private:
     PxCooking*                  mCooking;
     PxScene*                    mScene;
     PxDefaultCpuDispatcher*     mCpuDispatcher;
+    pxtask::CudaContextManager* mCudaContextManager;
     PxU32                       mNbThreads;
     PxMaterial*					defaultMaterial;
     PVD::PvdConnection*	        pvdConnection;

@@ -1,5 +1,5 @@
 # scene
-# o Scene/archway.txt
+o Scene/archway.txt
 o Scene/bigbadman.txt
 o Scene/trees.txt
 o Scene/terrain.txt

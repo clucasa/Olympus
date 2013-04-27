@@ -28,13 +28,23 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	mSkyBox = new SkyBox(mDevcon, mDev, geoGen);
 	
 	//ScreenQuad *sq = new ScreenQuad(mDevcon, mDev, geoGen);
-
-	emitter = apex->CreateEmitter(gRenderer);
-	//emitter->SetPosition(-3.0f,309.5,-957.3);
+    emitter = apex->CreateEmitter(gRenderer, "SmokeEmitter");
+	emitter->SetPosition(-18.0f, -65.0f, -243.0f);
 	//emitter->SetEmit(true);
 
-	particles = apex->CreateEmitter(gRenderer);
-		
+    sphere2 = new Sphere(mDevcon, mDev, geoGen, apex, 2, 30, 30);
+	renderables.push_back(sphere2);
+	sphere2->MoveTo(-18.0f, -65.0f, -243.0f);//-3.0f, 309.5f, -957.3f);
+    
+
+	particles = apex->CreateEmitter(gRenderer, "testSpriteEmitter4ParticleFluidIos");
+    particles->SetPosition(-23.0f, 45.0f, 220.0f);
+
+    mSphereMove = new Sphere(mDevcon, mDev, geoGen, apex, 2, 30, 30);
+	renderables.push_back(mSphereMove);
+	mSphereMove->MoveTo(-23.0f, 45.0f, 220.0f);
+
+	
 	//Special "renderable" case, do not add to the vector
 	mScreen = new ScreenQuad(mDevcon, mDev, geoGen);
 	//Special camera, doesn't move
@@ -64,20 +74,14 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	//renderables.push_back(mGrid);
 
 	
-	mSphereMove = new Sphere(mDevcon, mDev, geoGen, apex, 2, 30, 30);
-	renderables.push_back(mSphereMove);
-	mSphereMove->MoveTo(0,0,0);
-
-	sphere2 = new Sphere(mDevcon, mDev, geoGen, apex, 2, 30, 30);
-	renderables.push_back(sphere2);
-	sphere2->MoveTo(0,20.f,0);//-3.0f, 309.5f, -957.3f);
+	
 
 	HRESULT hr;
 
 	//mFont;// = new FontSheet();
 	//mText;//  = OnScreen();
 
-	hr = mFont.Initialize(mDev, L"Times New Roman", 30.0f, FontSheet::FontStyleRegular, false);
+	hr = mFont.Initialize(mDev, L"Times New Roman", 30.0f, FontSheet::FontStyleRegular, true);
 	hr = mText.Initialize(mDev);
 
 
@@ -295,8 +299,8 @@ void RenderManager::Update(float dt)
 	y = abs(50.f * (float)sin((float)timePassed/0.3f))-10.0f;
 	z = 200.0f * (float)cos((float)timePassed);
 
-	SetPosition(x,y,z);
-	mSphereMove->MoveTo(x,y,z);
+	//SetPosition(x,y,z);
+	//mSphereMove->MoveTo(x,y,z);
 	projectile->Update();
 }
 
@@ -453,14 +457,14 @@ void RenderManager::RenderToTarget(enum renderTargets target)
 //DEBUG
 void RenderManager::SetPosition(float x, float y, float z)
 {
-	particles->SetPosition(x,y,z);
+	//particles->SetPosition(x,y,z);
 	//emitter->SetPosition(-3.0f, 309.5f, -957.3);
 }
 
 void RenderManager::SetEmit(bool on)
 {
 	particles->SetEmit(on);
-
+    emitter->SetEmit(on);
 }
 
 void RenderManager::RecompShaders()

@@ -45,12 +45,12 @@ bool Apex::advance(float dt)
     if(mCooldown > 0.0f)
         mCooldown -= mStepSize;
 
-	while (dt > mStepSize)
-	{
+	//while (dt > mStepSize)
+	//{
 		gApexScene->simulate(mStepSize);
-        dt -= mStepSize;
-	}
-    gApexScene->simulate(dt);
+    //    dt -= mStepSize;
+	//}
+    //gApexScene->simulate(dt);
     return true;
 }
 
@@ -86,7 +86,7 @@ bool Apex::Init(ID3D11Device* dev, ID3D11DeviceContext* devcon)
    
     if(!gApexSDK)
         return false;
-
+    
     NxApexSceneDesc apexSceneDesc;
     // Create the APEX scene...
     
@@ -191,7 +191,7 @@ bool Apex::InitPhysX()
 
     if (!PxInitExtensions(*mPhysics))
         return false;
-
+    
 
     PxSceneDesc sceneDesc(mPhysics->getTolerancesScale());
     sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
@@ -215,6 +215,11 @@ bool Apex::InitPhysX()
         sceneDesc.gpuDispatcher = mCudaContextManager->getGpuDispatcher();
     }
     #*/
+    mProfileZoneManager = &PxProfileZoneManager::createProfileZoneManager(mFoundation);
+    pxtask::CudaContextManagerDesc cudaContextManagerDesc;
+    mCudaContextManager = pxtask::createCudaContextManager(*mFoundation,cudaContextManagerDesc, mProfileZoneManager);
+    sceneDesc.gpuDispatcher = mCudaContextManager->getGpuDispatcher();
+
 
     mScene = mPhysics->createScene(sceneDesc);
     if (!mScene)
@@ -234,23 +239,6 @@ bool Apex::InitPhysX()
     // Create a heightfield
     PhysXHeightfield* heightfield = new PhysXHeightfield();
     //heightfield->InitHeightfield(mPhysics, mScene, "terrain5.raw");
-
-
-    //// Create a box
-    //PxReal density = 10.0f;
-    //PxTransform transform(PxVec3(0.0, 8.0, 0.0) , PxQuat::createIdentity());
-    //PxVec3 dimensions(1.5,1.5,1.5);
-    //PxBoxGeometry geometry(dimensions);
-    //PxRigidDynamic* boxActor = PxCreateDynamic(*mPhysics, transform, geometry, *defaultMaterial, density);
-    //if (!boxActor)
-    //    return false;
-    //
-    //boxActor->setLinearVelocity(PxVec3(0.0,0.0,0.0));
-    //boxActor->setAngularDamping((PxReal)0.95);
-    ////PxRigidBodyExt::updateMassAndInertia(*boxActor, density);
-
-    //mScene->addActor(*boxActor);
-        
 
     // check if PvdConnection manager is available on this platform
     if(mPhysics->getPvdConnectionManager() == NULL)
@@ -329,9 +317,8 @@ bool Apex::InitParticles()
     {
         NxParameterized::Interface* params = mIofxModule->getDefaultModuleDesc();
         mIofxModule->init(*params);
-
-        //m_apexIofxModule->disableCudaInterop();
-        //m_apexIofxModule->disableCudaModifiers();
+        /*mIofxModule->disableCudaInterop();
+        mIofxModule->disableCudaModifiers();*/
     }
 
     mEmitterModule = static_cast<NxModuleEmitter*> ( gApexSDK->createModule("Emitter", &errorCode));
@@ -353,10 +340,10 @@ bool Apex::InitParticles()
     return true;
 }
 
-ApexParticles* Apex::CreateEmitter(physx::apex::NxUserRenderer* renderer)
+ApexParticles* Apex::CreateEmitter(physx::apex::NxUserRenderer* renderer, const char* filename)
 {
 	ApexParticles* emitter = new ApexParticles();
-	emitter->CreateEmitter(gApexSDK, gApexScene, mDevcon, mDev, renderer, mIofxModule);
+	emitter->CreateEmitter(gApexSDK, gApexScene, mDevcon, mDev, renderer, mIofxModule, filename);
 	return emitter;
 }
 
@@ -382,7 +369,7 @@ bool Apex::InitClothing()
         mApexClothingModule->init(*moduleDesc);
     }
 
-    physx::apex::NxApexAsset* asset = reinterpret_cast<physx::apex::NxApexAsset*>(gApexSDK->getNamedResourceProvider()->getResource(NX_CLOTHING_AUTHORING_TYPE_NAME, "curtain.mesh"));
+    physx::apex::NxApexAsset* asset = reinterpret_cast<physx::apex::NxApexAsset*>(gApexSDK->getNamedResourceProvider()->getResource(NX_CLOTHING_AUTHORING_TYPE_NAME, "ctdm_Cape_400"));
     if( asset )
     {
         gApexSDK->getNamedResourceProvider()->setResource(NX_CLOTHING_AUTHORING_TYPE_NAME, "c", asset, true);

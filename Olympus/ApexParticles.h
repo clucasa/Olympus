@@ -44,7 +44,7 @@ public:
 	void InitPipeline();
     void CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 						ID3D11DeviceContext *devcon, 	ID3D11Device *dev,
-					  physx::apex::NxUserRenderer* renderer, NxModuleIofx* iofxModule);
+					  physx::apex::NxUserRenderer* renderer, NxModuleIofx* iofxModule, const char* filename);
 	void Update();
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
 	virtual void RecompileShader();
