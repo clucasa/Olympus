@@ -40,11 +40,11 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
     
 
 	particles = apex->CreateEmitter(gRenderer, "testSpriteEmitter4ParticleFluidIos");
-    particles->SetPosition(-23.0f, 45.0f, 220.0f);
+    particles->SetPosition(-19.0f, 45.0f, 206.0f);
 
     mSphereMove = new Sphere(mDevcon, mDev, geoGen, apex, 2, 30, 30);
 	renderables.push_back(mSphereMove);
-	mSphereMove->MoveTo(-23.0f, 45.0f, 220.0f);
+	mSphereMove->MoveTo(-19.0f, 45.0f, 206.0f);
 
 	
 	//Special "renderable" case, do not add to the vector

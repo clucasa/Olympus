@@ -52,7 +52,7 @@ float4 PShader(VOut input) : SV_TARGET
 	float midDepth = 2*zFar*zNear / (zFar + zNear - (zFar - zNear)*(2*z_b -1));
 	float blurFactor = 1.0;
 
-	float depthRange = .008 * (zFar - zNear );
+	float depthRange = .004 * (zFar - zNear );
 
 	if( color.r > midDepth - depthRange && color.r < midDepth + depthRange )
 	{
@@ -77,7 +77,7 @@ float4 PShader(VOut input) : SV_TARGET
 
 	color = (tex.Sample( ss, input.texcoord )) * 8.0f;
 	//return float4(1.0,0.0,0.0,1.0);
-	float blur = .000;
+	float blur = .002;
 	
 	color += ( tex.Sample( ss, float2( input.texcoord.x+blur, input.texcoord.y ) ) ) * 2.0f;
 	color += ( tex.Sample( ss, float2( input.texcoord.x-blur, input.texcoord.y ) ) ) * 2.0f;
