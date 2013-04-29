@@ -77,7 +77,7 @@ float4 PShader(VOut input) : SV_TARGET
 
 	color = (tex.Sample( ss, input.texcoord )) * 8.0f;
 	//return float4(1.0,0.0,0.0,1.0);
-	float blur = .002;
+	float blur = .000;
 	
 	color += ( tex.Sample( ss, float2( input.texcoord.x+blur, input.texcoord.y ) ) ) * 2.0f;
 	color += ( tex.Sample( ss, float2( input.texcoord.x-blur, input.texcoord.y ) ) ) * 2.0f;
