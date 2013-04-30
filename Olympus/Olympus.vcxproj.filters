@@ -47,9 +47,6 @@
     <Filter Include="Rendering\PhysX\Apex">
       <UniqueIdentifier>{a1a775ca-a0be-4e22-9ff9-ca8e093517e5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\PhysX\Apex\ApexParticles">
-      <UniqueIdentifier>{ea8de009-e5b4-4078-8019-338d0a7a0837}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\PhysX\Apex\RenderResourceManager">
       <UniqueIdentifier>{0bfd4751-4717-4349-a8c0-d0aa0b18772a}</UniqueIdentifier>
     </Filter>
@@ -58,12 +55,6 @@
     </Filter>
     <Filter Include="Rendering\PhysX\Apex\ResourceCallback">
       <UniqueIdentifier>{b29e21c1-b331-482e-93e2-2414fa9b2376}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\PhysX\Apex\ApexCloth">
-      <UniqueIdentifier>{d0f5c6ea-c6cd-44c7-bb1e-edfbfbdbba2d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\PhysX\Apex\ApexDestruction">
-      <UniqueIdentifier>{5e19b906-d1a3-45db-9d45-33f9b13a9ba1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\PhysX\PhysXHeightField">
       <UniqueIdentifier>{242a9e9e-07cb-41f7-b5c1-012165e44d7a}</UniqueIdentifier>
@@ -202,6 +193,9 @@
     <None Include="Sphere.hlsl">
       <Filter>Rendering\Objects\Sphere</Filter>
     </None>
+    <None Include="LightHelper.hlsl">
+      <Filter>Rendering\Objects\Helpers</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="apex.h">
@@ -287,6 +281,12 @@
     </ClInclude>
     <ClInclude Include="Projectile.h">
       <Filter>Rendering\Objects\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="LightHelper.h">
+      <Filter>Rendering\Objects\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstBuffers.h">
+      <Filter>Rendering\Objects\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

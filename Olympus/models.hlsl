@@ -1,8 +1,9 @@
-float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, float3 tangentW);
+#include "LightHelper.hlsl"
+
 
 cbuffer ConstantBuffer : register(b0)
 {
-    float4x4 matFinal;
+    float4x4 ViewProj;
 	float3 cameraPos;
 	float padding;
 }
@@ -11,37 +12,12 @@ cbuffer worldBuffer	   : register(b1)
 {
     float4x4 matWorld;
 	float4x4 matWorldInvTrans;
+	Material material;
 }
-
-struct DirectionalLight
-{
-	float4 Ambient;
-	float4 Diffuse;
-	float4 Specular;
-	float4 Direction;
-	float  SpecPower;
-	float3 pad;
-};
-
 
 cbuffer DirectionalLight : register(b2)
 {
 	struct DirectionalLight dirLight[2];
-};
-
-struct PointLight
-{
-	float4 Ambient;
-	float4 Diffuse;
-	float4 Specular;
-
-	// Packed into 4D vector: (Position, Range)
-	float3 Position;
-	float Range;
-
-	// Packed into 4D vector: (A0, A1, A2, Pad)
-	float3 Att;
-	float Pad; // Pad the last float so we can set an array of lights if we wanted.
 };
 
 cbuffer PointLight : register(b3)
@@ -74,23 +50,28 @@ struct Vin
 	float4 BiNormal	: BINORMAL;
 };
 
-SamplerState ss;
+SamplerState samLinear
+{
+	Filter = MIN_MAG_MIP_LINEAR;
+	AddressU = Wrap;
+	AddressV = Wrap;
+};
 
 //VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float3 tangent : TANGENT, float2 texcoord : TEXCOORD )
 VOut VShader( Vin input )
 {
     VOut output;
 	
-	output.PosW		= mul(matWorld, input.Pos);
-	output.NormalW  = normalize(mul((float3x3)matWorld, input.Normal));
-	output.TangentW = normalize(mul((float3x3)matWorld, input.Tangent));
+	output.PosW		 = mul(matWorld, input.Pos);
+	output.NormalW   = normalize(mul((float3x3)matWorldInvTrans, input.Normal));
+	output.TangentW  = normalize(mul((float3x3)matWorld, input.Tangent));//cross(input.Pos, input.Normal)));
 	output.BiNormalW = normalize(mul((float3x3)matWorld, input.BiNormal));
 
-	output.PosH		= mul( mul(matFinal, matWorld), input.Pos);
+	output.PosH		 = mul( mul(ViewProj, matWorld), input.Pos);
 	
-	output.Tex		= input.Tex;
+	output.Tex		 = input.Tex;
 	
-	output.CamPos = cameraPos;
+	output.CamPos    = cameraPos;
 
     return output;
 }
@@ -99,10 +80,13 @@ VOut VShader( Vin input )
 float4 PShader(VOut input) : SV_TARGET
 {
 
+	//return material.Specular;
+
 	float3 lightVec;
 	float diffuseFactor;
 	float specFactor;
 	float3 v ;
+	float d;
 
 	input.NormalW = normalize(input.NormalW);
 
@@ -113,7 +97,7 @@ float4 PShader(VOut input) : SV_TARGET
 	
 	
 
-	float3 normalColor  = normalTexture.Sample( ss, input.Tex ).rgb;
+	float3 normalColor  = normalTexture.Sample( samLinear, input.Tex ).rgb;
 	
 	//return float4(normalColor.xyz, 1.0f);
 
@@ -122,14 +106,24 @@ float4 PShader(VOut input) : SV_TARGET
 	
 	float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 spec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 totalAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 totalDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 totalSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	float4 dirAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 dirDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 dirSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	
+	float4 pAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 pDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 pSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	for(int i = 0; i < 1; i++)
 	{
-		ambient	+= saturate(dirLight[i].Ambient);
+		dirAmbient	+= saturate(material.Ambient * dirLight[i].Ambient);
 
+
+		//lightVec = -dirLight[i].Direction.xyz;
 		lightVec = -dirLight[i].Direction.xyz;
 		lightVec = normalize(lightVec);
 		diffuseFactor = dot(lightVec, bumpedNormalW);
@@ -137,46 +131,75 @@ float4 PShader(VOut input) : SV_TARGET
 
 		if(diffuseFactor > 0.0f)
 		{
-			diffuse += saturate(diffuseFactor * dirLight[i].Diffuse);
+			dirDiffuse += saturate(diffuseFactor * material.Diffuse * dirLight[i].Diffuse);
 			
 			v = reflect(-lightVec, bumpedNormalW);
 
-			specFactor	 = pow(max(dot(v, toEye), 0.0f), dirLight[i].SpecPower);
+			specFactor	 = pow(max(dot(v, toEye), 0.0f), material.Specular.w);
 			
-			spec    = saturate(specFactor * dirLight[i].Specular);
+			dirSpec    += saturate(specFactor * material.Specular * dirLight[i].Specular);
 		}
 	
 	}
 
+	totalAmbient += dirAmbient;
+	totalDiffuse += dirDiffuse;
+	totalSpec	 += dirSpec;
+
+	for(int i = 0; i < 2; i++)
+	{
+		lightVec = pLight[i].Position - input.PosW;
+
+		d = length(lightVec);
+
+		if(d > pLight[i].Range)
+			continue;
+
+		lightVec /= d;
+
+		pAmbient = material.Ambient * pLight[i].Ambient;
+
+		diffuseFactor = dot(lightVec, bumpedNormalW);
+
+		[flatten]
+		if(diffuseFactor > 0.0f)
+		{
+			v = reflect(-lightVec, bumpedNormalW);
+
+			specFactor = pow(max(dot(v, toEye), 0.0f), 5);
+
+			pDiffuse = diffuseFactor * material.Diffuse * pLight[i].Diffuse;
+			pSpec	= specFactor * material.Specular * pLight[i].Specular;
+		}
+
+		float att = 1.0f / dot(pLight[i].Att, float3(1.0f, d, d*d));
+
+		pDiffuse *= att*(d / pLight[i].Range );
+		pSpec    *= att*(d / pLight[i].Range );
+
+		float softie = .55;
+
+		if( d < softie*pLight[i].Range )
+			pAmbient  *= 1/((d/pLight[i].Range+1)*(d/pLight[i].Range+1));
+		if( d > softie*pLight[i].Range )
+		{
+			pAmbient *= 1/((softie*pLight[i].Range/pLight[i].Range+1)*(softie*pLight[i].Range/pLight[i].Range+1));
+			pAmbient *= (pLight[i].Range-d)/(pLight[i].Range-softie*pLight[i].Range);
+		}
+
+		totalAmbient += pAmbient;
+		totalDiffuse += pDiffuse;
+		totalSpec	 += pSpec;
+	}
+
+
 	float4 textureColor = float4(1.0f,1.0f,0.0f,1.0f);//float4(0.0f, 0.0f, 0.0f, 1.0f);
-	textureColor = diffuseTexture.Sample( ss, input.Tex );
+	textureColor = diffuseTexture.Sample( samLinear, input.Tex );
 	//return float4(textureColor.rgb,1.0f);
-	//textureColor = float4(.396f,.298f,.1255f,1.0f);
-	color = saturate(textureColor*(ambient + diffuse) + spec);
+	color = saturate(textureColor*(totalAmbient + totalDiffuse) + totalSpec);
 	//clip(color.a < 0.999999f ? -1:1 );
-	//if(input.Tex.x > 1.0 || input.Tex.x < 0.0)
-	//	color = float4(1.0,0.0,0.0,1.0);
-	//if(input.Tex.y > 1.0 || input.Tex.y < 0.0)
-	//	color = float4(0.0,0.0,1.0,1.0);
+
 	color.a = 1.0;
 
     return color;
-}
-
-float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, float3 tangentW)
-{
-	// Uncompress each component from [0,1] to [-1,1].
-	float3 normalT = 2.0f*normalMapSample - 1.0f;
-
-	// Build orthonormal basis.
-	float3 N = unitNormalW;
-	float3 T = normalize(tangentW - dot(tangentW, N)*N);
-	float3 B = cross(N, T);
-
-	float3x3 TBN = float3x3(T, B, N);
-
-	// Transform from tangent space to world space.
-	float3 bumpedNormalW = mul(normalT,TBN);
-
-	return bumpedNormalW;
 }

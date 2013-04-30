@@ -11,7 +11,8 @@
 #include "importer.h"
 #include "Renderable.h"
 #include "apex.h"
-//#include "struct.h"
+#include "LightHelper.h"
+#include "ConstBuffers.h"
 
 using namespace std;
 
@@ -49,7 +50,11 @@ public:
 	
 	ID3D11Buffer *worldCBuffer;
 	XMFLOAT4X4 mWorldMat;
+
 	vector<XMFLOAT4X4> mWorldMats;
+	vector<Material> materials;
+
+	cbuffs cb;
 
 	Object();
 	void objLoad( char* filename, vector<LPCSTR > *textures, vector<LPCSTR > *NormTextures, ID3D11Device* devv, ID3D11DeviceContext *devcon, Apex* apex );

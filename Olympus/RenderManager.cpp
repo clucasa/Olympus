@@ -27,7 +27,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	
 	mSkyBox = new SkyBox(mDevcon, mDev, geoGen);
 	
-    //ApexCloth* cloth = apex->CreateCloth(gRenderer, "ctdm_Cape_400");
+    mCloth = apex->CreateCloth(gRenderer, "ctdm_Cape_400");//"bannercloth");//
 
 	//ScreenQuad *sq = new ScreenQuad(mDevcon, mDev, geoGen);
     emitter = apex->CreateEmitter(gRenderer, "SmokeEmitter");
@@ -50,23 +50,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	//Special "renderable" case, do not add to the vector
 	mScreen = new ScreenQuad(mDevcon, mDev, geoGen);
 	//Special camera, doesn't move
-
-	//renderables.push_back(sq);
-	
-
- //   vector<LPSTR> textures;
-	//vector<LPSTR> normalMap;
-
- //   textures.push_back( "Media/Textures/CommandoArmor_DM.dds" );
-	//textures.push_back( "Media/Textures/Commando_DM.dds" );
-	//normalMap.push_back( "Media/Textures/CommandoArmor_NM.dds" );
-	//normalMap.push_back( "Media/Textures/Commando_NM.dds" );
-
-	//Object* obj = new Object();
-	//obj->objLoad( "Media/Models/bigbadman.fbx", &textures, &normalMap, dev, devcon, apex);
-
- //   renderables.push_back(obj);
-
+    
 	Scene* scene = new Scene(&renderables, dev, devcon, apex);
 	
 	projectile = new Projectile(dev, devcon, apex);
@@ -75,20 +59,10 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	mGrid = new GroundPlane(mDevcon, mDev, geoGen, 400, 10);
 	//renderables.push_back(mGrid);
 
-	
-	
-
 	HRESULT hr;
-
-	//mFont;// = new FontSheet();
-	//mText;//  = OnScreen();
 
 	hr = mFont.Initialize(mDev, L"Times New Roman", 30.0f, FontSheet::FontStyleRegular, true);
 	hr = mText.Initialize(mDev);
-
-
-
-	//hr = D3DX11CreateShaderResourceViewFromFile(dev, "Textures/WoodCrate01.dds", 0, 0, &mImageSRV, 0 );
 
 
 	mScreenCam = new Camera();
@@ -97,8 +71,6 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 	free(geoGen);
 
-	
-    
     D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 
@@ -109,19 +81,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
     mDev->CreateBuffer(&bd, NULL, &sceneCBuffer);
 
 
-
-	////CREATE POST PROCESS RTV
-	//ID3D11Texture2D* pBuffer;
-	//mSwapchain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), ( LPVOID* )&pBuffer );
-	//
-
-	//mDev->CreateRenderTargetView( pBuffer, NULL, &mPostProcessRTV );
-	//pBuffer->Release();
-
-
 	// create the depth buffer texture
-	
-
 	ID3D11RasterizerState*		pState;
 	D3D11_RASTERIZER_DESC		raster;
 	ZeroMemory( &raster, sizeof(D3D11_RASTERIZER_DESC));
@@ -194,8 +154,6 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 	dev->CreateShaderResourceView(mDepthTargetTexture, &shaderResourceViewDesc, &mDepthShaderResourceView);
 	
-	
-
     // Init blending
     D3D11_BLEND_DESC blendDesc;
     blendDesc.AlphaToCoverageEnable = TRUE;
@@ -227,16 +185,13 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	
 	mDirLight[0].Ambient =		XMFLOAT4(.2f, .2f, .2f, 1);
 	mDirLight[0].Diffuse =		XMFLOAT4(.4f, .4f, .4f, 1);
-	mDirLight[0].Direction =	XMFLOAT4(-0.57735f, -0.57735f, 0.57735f, 1.0);
-	//mDirLight[0].Direction =	XMFLOAT4(0, 0, 5.0f, 1.0);
+	mDirLight[0].Direction =	XMFLOAT3(-0.57735f, -0.57735f, 0.57735f);
 	mDirLight[0].Specular =		XMFLOAT4(0.8f, 0.8f, 0.7f, 1);
-	mDirLight[0].SpecPower =	8.0f;
 
 	mDirLight[1].Ambient =		XMFLOAT4(.3f, .3f, .3f, 1);
 	mDirLight[1].Diffuse =		XMFLOAT4(.6f, .6f, .6f, 1);
-	mDirLight[1].Direction =	XMFLOAT4(10, 0, 0, 1);
+	mDirLight[1].Direction =	XMFLOAT3(10, 0, 0);
 	mDirLight[1].Specular =		XMFLOAT4(1, 1, 1, 1);
-	mDirLight[1].SpecPower =	8.0f;
 
 
 	//Set the point light
@@ -430,6 +385,15 @@ void RenderManager::Render()
 	mText.DrawString(mDevcon, mFont, sText, textPos, XMCOLOR(0xffffffff));
 	mText.DrawString(mDevcon, mFont, hair, hairPos, XMCOLOR(0xffffffff));
 	mText.DrawString(mDevcon, mFont, pos, posPos, XMCOLOR(0xffffffff));
+
+	if(!((mCam->GetPosition().x > 15.0f || mCam->GetPosition().x < -25.0) ||
+         (mCam->GetPosition().y > 25.0f || mCam->GetPosition().y < -25.0) ||
+         (mCam->GetPosition().z > 15.0f || mCam->GetPosition().z < -25.0)) ){
+		mSphere->IsItReflective(true);
+	}
+	else{
+		mSphere->IsItReflective(false);
+	}
 }
 
 void RenderManager::Render(int renderType)

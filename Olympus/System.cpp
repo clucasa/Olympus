@@ -493,6 +493,14 @@ void System::UpdateCamera(float dt)
     {
 		rendManager->projectile->Fire(mCam, 100.0f);
     }
+	if( (GetAsyncKeyState('Y') & 0x8000) )
+    {
+		rendManager->SetEmit(true);
+    }
+	if( (GetAsyncKeyState('H') & 0x8000) )
+    {
+		rendManager->SetEmit(false);		
+    }
 
 	mCam->UpdateViewMatrix();
 }

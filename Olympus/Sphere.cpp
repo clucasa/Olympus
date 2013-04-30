@@ -14,8 +14,6 @@ Sphere::Sphere(ID3D11DeviceContext *mDevcon, ID3D11Device *mDev, GeometryGenerat
 	mY = 4.0f;
 	mZ = 25.0f;
 	cb = new cbuffs();
-	cb->viewInvProj;
-	cb->viewPrevProj;
 
 	CreateGeometry(geoGen);
 	SetupBuffer();
@@ -94,6 +92,7 @@ void Sphere::SetupPipeline()
 
     mDev->CreateInputLayout(ied, 4, VS->GetBufferPointer(), VS->GetBufferSize(), &mLayout);
    
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/mountains1024.dds", 0, 0, &mDynamicCubeMapSRVSphere, 0 );
 }
 
 void Sphere::CreateGeometry(GeometryGenerator *geoGen)
@@ -360,9 +359,6 @@ void Sphere::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
     mDevcon->IASetInputLayout(mLayout);
 
 
-	cb->farZ = mCam->GetFarZ();
-	cb->nearZ = mCam->GetNearZ();
-
 
 	 // select which vertex buffer to display
     UINT stride = sizeof(PosNormalTexTan);
@@ -394,9 +390,9 @@ void Sphere::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 		sphereBuff.camPos = mCam->GetPosition();
 		sphereBuff.pad = 1.0f;
 		mDevcon->UpdateSubresource(sceneBuff, 0, 0, &sphereBuff, 0, 0);
-
-		mDevcon->PSSetShaderResources(0, 1, &mDynamicCubeMapSRVSphere);
 	}
+		mDevcon->PSSetShaderResources(0, 1, &mDynamicCubeMapSRVSphere);
+	
 	// else texture?
 
 	//mDevcon->PSSetShaderResources(0, 1, &mShaderResourceView);
@@ -431,4 +427,9 @@ void Sphere::MoveTo(float x, float y, float z)
 	mX = x;
 	mY = y;
 	mZ = z;
+}
+
+void Sphere::IsItReflective(bool isReflective)
+{
+	reflective = isReflective;
 }

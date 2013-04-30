@@ -43,25 +43,25 @@ void ApexCloth::CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
     PxMat44 currentPose = PxTransform(PxVec3(0.f,5.f,0.f));
     NxParameterized::setParamMat44(*actorDesc, "globalPose", currentPose);
 
-    //{
-    //    NxParameterized::Handle actorHandle(*actorDesc);
+    {
+        NxParameterized::Handle actorHandle(*actorDesc);
 
-    //    // No util method for this
-    //    actorHandle.getParameter("boneMatrices");
-    //    actorHandle.resizeArray(skinningMatrices.size());
-    //    actorHandle.setParamMat44Array(&skinningMatrices[0], skinningMatrices.size());
-    //}
+        // No util method for this
+        actorHandle.getParameter("boneMatrices");
+        actorHandle.resizeArray(0);
+        //actorHandle.setParamMat44Array(&skinningMatrices[0], skinningMatrices.size());
+    }
 
     // create the actor
-    physx::apex::NxApexActor* apexActor = clothAsset->createApexActor(*actorDesc, *gApexScene);
-    clothingActor = static_cast<physx::apex::NxClothingActor*>(apexActor);
-    if(clothingActor)
+    //physx::apex::NxApexActor* apexActor = clothAsset->createApexActor(*actorDesc, *gApexScene);
+    //clothingActor = static_cast<physx::apex::NxClothingActor*>(apexActor);
+    /*if(clothingActor)
     {
         NxParameterized::Interface* actorDesc = clothingActor->getActorDesc();
 
         NxParameterized::setParamVec3(*actorDesc, "windParams.Velocity", PxVec3(1.0,0.0,1.0));
         NxParameterized::setParamF32(*actorDesc, "windParams.Adaption", 0.25f);
-    }
+    }*/
 }
 
 void ApexCloth::InitPipeline()

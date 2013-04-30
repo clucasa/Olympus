@@ -20,7 +20,8 @@
 #include "Sphere.h"
 #include "Projectile.h"
 #include "GameTimer.h"
-
+#include "ConstBuffers.h"
+#include "LightHelper.h"
 using namespace std;
 
 enum renderTargets
@@ -31,44 +32,6 @@ enum renderTargets
     depth
 };
 
-#ifndef SCENEBUFF
-#define SCENEBUFF
-struct SceneBuff
-{
-	XMFLOAT4X4 viewProj;
-	XMFLOAT3   camPos;
-	float	   pad;
-};
-#endif
-
-struct DirectionalLight
-{
-	DirectionalLight() { ZeroMemory(this, sizeof(this)); }
-
-	XMFLOAT4 Ambient;
-	XMFLOAT4 Diffuse;
-	XMFLOAT4 Specular;
-	XMFLOAT4 Direction;
-	float  SpecPower;
-	XMFLOAT3 pad;
-};
-
-struct PointLight
-{
-	PointLight() { ZeroMemory(this, sizeof(this)); }
-
-	XMFLOAT4 Ambient;
-	XMFLOAT4 Diffuse;
-	XMFLOAT4 Specular;
-
-	// Packed into 4D vector: (Position, Range)
-	XMFLOAT3 Position;
-	float Range;
-
-	// Packed into 4D vector: (A0, A1, A2, Pad)
-	XMFLOAT3 Att;
-	float Pad; // Pad the last float so we can set an array of lights if we wanted.
-};
 
 namespace Colors
 {
@@ -151,6 +114,7 @@ public:
 
 	ApexParticles* particles;
 	ApexParticles* emitter;
+    ApexCloth* mCloth;
 	
 	vector<Renderable*> renderables;
 
