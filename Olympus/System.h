@@ -92,5 +92,6 @@ private:
 	bool				mMinimized;
 	bool				mMaximized;
 	bool				mResizing;
+    bool                mInitialized;
 };
 #endif

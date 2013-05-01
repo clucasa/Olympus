@@ -28,6 +28,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	mSkyBox = new SkyBox(mDevcon, mDev, geoGen);
 	
     mCloth = apex->CreateCloth(gRenderer, "ctdm_Cape_400");//"bannercloth");//
+    renderables.push_back(mCloth);
 
 	//ScreenQuad *sq = new ScreenQuad(mDevcon, mDev, geoGen);
     emitter = apex->CreateEmitter(gRenderer, "SmokeEmitter");
@@ -259,6 +260,9 @@ void RenderManager::Update(float dt)
 	//SetPosition(x,y,z);
 	//mSphereMove->MoveTo(x,y,z);
 	projectile->Update();
+    particles->Update();
+	emitter->Update();
+    mCloth->Update();
 }
 
 void RenderManager::GetScreenParams(int mClientWidth, int mClientHeight)
@@ -346,8 +350,7 @@ void RenderManager::Render()
     mDevcon->ClearRenderTargetView(mBackbuffer, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
 	mDevcon->ClearRenderTargetView(mScreen->mTargetView, D3DXCOLOR(0.0f, 1.0f, 0.4f, 1.0f));
 	
-	particles->Update();
-	emitter->Update();
+	
 	mDevcon->RSSetState(0);
 
 	XMStoreFloat4x4(&sceneBuff.viewProj, mCam->ViewProj());

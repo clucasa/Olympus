@@ -119,7 +119,7 @@ float4 PShader(VOut input) : SV_TARGET
 		}
 	
 	}
-    return float4(dirSpec.xyz,1.0f);
+    //return float4(dirSpec.xyz,1.0f);
 	totalAmbient += dirAmbient;
 	totalDiffuse += dirDiffuse;
 	totalSpec	 += dirSpec;

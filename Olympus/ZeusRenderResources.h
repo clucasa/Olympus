@@ -216,7 +216,7 @@ public:
     }
 
 private:
-    ZeusVertexBuffer**			mVertexBuffers;
+    vector<ZeusVertexBuffer*>			mVertexBuffers;
     physx::PxU32				mNumVertexBuffers;
     
     ZeusIndexBuffer*			mIndexBuffer;
