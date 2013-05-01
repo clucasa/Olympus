@@ -25,6 +25,13 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
 	numMeshes = Import( filename, &vertexes );
 	ID3D11Buffer* tempVB;
 
+	Material tempMat;
+
+	tempMat.Ambient		= XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+	tempMat.Diffuse		= XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f);
+	tempMat.Specular	= XMFLOAT4(0.9f, 0.9f, 0.9f, 10.0f);
+	tempMat.Reflect		= XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
+
 	for( int i = 0; i < numMeshes; i++ )
 	{
 		int numVerts = vertexes[i].size();
@@ -43,7 +50,7 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
 
 		vertexBuffer.push_back( tempVB );
 
-		
+		materials.push_back( tempMat );
 
 		
 	}
@@ -110,7 +117,7 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
 	ZeroMemory(&bd, sizeof(bd));
 
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = 64;
+    bd.ByteWidth = sizeof(cbuffs);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
     dev1->CreateBuffer(&bd, NULL, &worldCBuffer);
@@ -176,6 +183,9 @@ void Object::AddInstance(ObjectInfo info)
 
 void Object::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 {
+	XMMATRIX tempMat;
+	
+
 	UINT stride = sizeof(Vertex);
     UINT offset = 0;
 
@@ -183,6 +193,7 @@ void Object::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 	devcon1->PSSetShader(opPS, 0, 0);
 	
 	devcon1->VSSetConstantBuffers(1, 1, &worldCBuffer);
+	devcon1->PSSetConstantBuffers(1, 1, &worldCBuffer);
 
 	for( int i = 0; i < numMeshes; i++ )
 	{
@@ -195,9 +206,20 @@ void Object::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 		// select which primtive type we are using
 		devcon1->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+		cb.material = materials[i];
+
 		for( int j = 0; j < mWorldMats.size(); j++)
 		{
-			devcon1->UpdateSubresource(worldCBuffer, 0, 0, &mWorldMats[j], 0, 0);
+			
+
+			tempMat = XMLoadFloat4x4(&mWorldMats[j]);
+			tempMat = XMMatrixInverse(&XMMatrixDeterminant(tempMat), tempMat);
+			
+			
+			cb.matWorld = mWorldMats[j];
+			XMStoreFloat4x4(&cb.matWorldInvTrans, tempMat);
+
+			devcon1->UpdateSubresource(worldCBuffer, 0, 0, &cb, 0, 0);
 			devcon1->Draw( vertexes[i].size(),0);
 		}
 	}

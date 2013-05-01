@@ -11,36 +11,7 @@
 #include "Vertices.h"
 #include "Renderable.h"
 #include "apex.h"
-
-struct cbuffs
-{
-	D3DXMATRIX viewInvProj;
-	D3DXMATRIX viewPrevProj;
-
-	float nearZ;
-	float farZ;
-	float padding;
-	float pad;
-};
-
-#ifndef SCENEBUFF
-#define SCENEBUFF
-struct SceneBuff
-{
-	XMFLOAT4X4 viewProj;
-	XMFLOAT3   camPos;
-	float	   pad;
-};
-#endif
-
-struct EnvironBuff
-{
-    XMFLOAT4X4 ViewProj;
-	XMFLOAT3 cameraPos;
-	XMFLOAT3 eyePos;
-	XMFLOAT2 padding;
-};
-
+#include "ConstBuffers.h"
 
 class Sphere : public Renderable
 {
@@ -65,7 +36,8 @@ public:
 
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
 	virtual void RecompileShader();
-	
+	void IsItReflective(bool isReflective);
+
 	ID3D11Buffer *SphereVertBuffer;               
 	ID3D11Buffer *SphereIndBuffer;
 	ID3D11Buffer *envCBuffer;

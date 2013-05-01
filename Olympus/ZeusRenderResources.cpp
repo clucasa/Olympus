@@ -60,40 +60,40 @@ bool ZeusVertexBuffer::getInteropResourceHandle(CUgraphicsResource& handle)
 
 void ZeusVertexBuffer::writeBuffer(const physx::NxApexRenderVertexBufferData& data, physx::PxU32 firstVertex, physx::PxU32 numVertices)
 {
-    D3D11_MAPPED_SUBRESOURCE mappedResource;
-    HRESULT result;
-    physx::apex::NxApexRenderSemanticData* verticesPtr;
-    physx::apex::NxApexRenderSemanticData* srcData = (physx::apex::NxApexRenderSemanticData*) malloc(mStride*numVertices);
-    // Lock the vertex buffer so it can be written to.
-    result = mDevcon->Map(mVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    if(FAILED(result))
-    {
-        return;
-    }
+    //D3D11_MAPPED_SUBRESOURCE mappedResource;
+    //HRESULT result;
+    //physx::apex::NxApexRenderSemanticData* verticesPtr;
+    //physx::apex::NxApexRenderSemanticData* srcData = (physx::apex::NxApexRenderSemanticData*) malloc(mStride*numVertices);
+    //// Lock the vertex buffer so it can be written to.
+    //result = mDevcon->Map(mVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    //if(FAILED(result))
+    //{
+    //    return;
+    //}
 
-    // Get a pointer to the data in the vertex buffer.
-    verticesPtr = (physx::apex::NxApexRenderSemanticData*)mappedResource.pData + (firstVertex * mStride);
-    
-    // Copy the data into the vertex buffer.
-    
+    //// Get a pointer to the data in the vertex buffer.
+    //verticesPtr = (physx::apex::NxApexRenderSemanticData*)mappedResource.pData + (firstVertex * mStride);
+    //
+    //// Copy the data into the vertex buffer.
+    //
 
-    for(physx::PxU32 i = 0; i < numVertices; i++)
-    {
-        for (physx::PxU32 j = 0; j < physx::apex::NxRenderVertexSemantic::NUM_SEMANTICS; j++)
-        {
-            physx::apex::NxRenderVertexSemantic::Enum apexSemantic = (physx::apex::NxRenderVertexSemantic::Enum)j;
-            const physx::apex::NxApexRenderSemanticData& semanticData = data.getSemanticData(apexSemantic);
-            if (semanticData.data)
-            {
-                memcpy(srcData + (mStride * i), semanticData.data, semanticData.stride);
-            }
-        }
-    }
+    //for(physx::PxU32 i = 0; i < numVertices; i++)
+    //{
+    //    for (physx::PxU32 j = 0; j < physx::apex::NxRenderVertexSemantic::NUM_SEMANTICS; j++)
+    //    {
+    //        physx::apex::NxRenderVertexSemantic::Enum apexSemantic = (physx::apex::NxRenderVertexSemantic::Enum)j;
+    //        const physx::apex::NxApexRenderSemanticData& semanticData = data.getSemanticData(apexSemantic);
+    //        if (semanticData.data)
+    //        {
+    //            memcpy(srcData + (mStride * i), semanticData.data, semanticData.stride);
+    //        }
+    //    }
+    //}
 
-    memcpy(verticesPtr, srcData, (mStride * numVertices));
+    //memcpy(verticesPtr, srcData, (mStride * numVertices));
 
-    // Unlock the vertex buffer.
-    mDevcon->Unmap(mVertexBuffer, 0);
+    //// Unlock the vertex buffer.
+    //mDevcon->Unmap(mVertexBuffer, 0);
 
 }
 
@@ -147,41 +147,41 @@ bool ZeusIndexBuffer::getInteropResourceHandle(CUgraphicsResource& handle)
 
 void ZeusIndexBuffer::writeBuffer(const void* srcData, physx::PxU32 srcStride, physx::PxU32 firstDestElement, physx::PxU32 numElements)
 {
-    D3D11_MAPPED_SUBRESOURCE mappedResource;
-    HRESULT result;
-    physx::apex::NxApexRenderSemanticData* dstData;
-    //physx::apex::NxApexRenderSemanticData* srcData;
+   // D3D11_MAPPED_SUBRESOURCE mappedResource;
+   // HRESULT result;
+   // physx::apex::NxApexRenderSemanticData* dstData;
+   // //physx::apex::NxApexRenderSemanticData* srcData;
 
-    // Lock the vertex buffer so it can be written to.
-    result = mDevcon->Map(mIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    if(FAILED(result))
-    {
-        return;
-    }
+   // // Lock the vertex buffer so it can be written to.
+   // result = mDevcon->Map(mIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+   // if(FAILED(result))
+   // {
+   //     return;
+   // }
 
-    // Get a pointer to the data in the vertex buffer.
-    dstData = (physx::apex::NxApexRenderSemanticData*)mappedResource.pData + (firstDestElement * mStride);
-    
-    // Copy the data into the vertex buffer.
-    
+   // // Get a pointer to the data in the vertex buffer.
+   // dstData = (physx::apex::NxApexRenderSemanticData*)mappedResource.pData + (firstDestElement * mStride);
+   // 
+   // // Copy the data into the vertex buffer.
+   // 
 
-   /* for(physx::PxU32 i = 0; i < numVertices; i++)
-    {
-        for (physx::PxU32 j = 0; j < physx::apex::NxRenderVertexSemantic::NUM_SEMANTICS; j++)
-        {
-            physx::apex::NxRenderVertexSemantic::Enum apexSemantic = (physx::apex::NxRenderVertexSemantic::Enum)j;
-            const physx::apex::NxApexRenderSemanticData& semanticData = data.getSemanticData(apexSemantic);
-            if (semanticData.data)
-            {
-                memcpy(srcData + (mStride * i), semanticData.data, semanticData.stride);
-            }
-        }
-    }*/
+   ///* for(physx::PxU32 i = 0; i < numVertices; i++)
+   // {
+   //     for (physx::PxU32 j = 0; j < physx::apex::NxRenderVertexSemantic::NUM_SEMANTICS; j++)
+   //     {
+   //         physx::apex::NxRenderVertexSemantic::Enum apexSemantic = (physx::apex::NxRenderVertexSemantic::Enum)j;
+   //         const physx::apex::NxApexRenderSemanticData& semanticData = data.getSemanticData(apexSemantic);
+   //         if (semanticData.data)
+   //         {
+   //             memcpy(srcData + (mStride * i), semanticData.data, semanticData.stride);
+   //         }
+   //     }
+   // }*/
 
-    memcpy(dstData, (physx::apex::NxApexRenderSemanticData*)srcData, (mStride * numElements));
+   // memcpy(dstData, (physx::apex::NxApexRenderSemanticData*)srcData, (mStride * numElements));
 
-    // Unlock the vertex buffer.
-    mDevcon->Unmap(mIndexBuffer, 0);
+   // // Unlock the vertex buffer.
+   // mDevcon->Unmap(mIndexBuffer, 0);
 }
 
 /*******************************
@@ -459,7 +459,7 @@ ZeusRenderResource::ZeusRenderResource(const physx::apex::NxUserRenderResourceDe
     mNumVertexBuffers = desc.numVertexBuffers;
     for(PxU32 i = 0; i < mNumVertexBuffers; i++)
     {
-        mVertexBuffers[i] = static_cast<ZeusVertexBuffer*>(desc.vertexBuffers[i]);
+        mVertexBuffers.push_back( static_cast<ZeusVertexBuffer*>(desc.vertexBuffers[i]) );
     }
 
     setVertexBufferRange(desc.firstVertex, desc.numVerts);
@@ -472,9 +472,9 @@ ZeusRenderResource::ZeusRenderResource(const physx::apex::NxUserRenderResourceDe
 
 ZeusRenderResource::~ZeusRenderResource()
 {
-    if (mVertexBuffers)
+    if (mVertexBuffers.size()>0)
     {
-        delete [] mVertexBuffers;
+       mVertexBuffers.clear();
     }
 }
 

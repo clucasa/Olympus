@@ -36,21 +36,21 @@ void ApexCloth::CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
     PX_ASSERT(actorDesc != NULL);
 
     // Run Cloth on the GPU
-    NxParameterized::setParamBool(*actorDesc, "useHardwareCloth", true);
-    NxParameterized::setParamBool(*actorDesc, "flags.ParallelPhysXMeshSkinning", true);
+    NxParameterized::setParamBool(*actorDesc, "useHardwareCloth", false);
+    NxParameterized::setParamBool(*actorDesc, "flags.ParallelPhysXMeshSkinning", false);
 
     // Initialize the global pose
     PxMat44 currentPose = PxTransform(PxVec3(0.f,5.f,0.f));
     NxParameterized::setParamMat44(*actorDesc, "globalPose", currentPose);
 
-    //{
-    //    NxParameterized::Handle actorHandle(*actorDesc);
+    {
+        NxParameterized::Handle actorHandle(*actorDesc);
 
-    //    // No util method for this
-    //    actorHandle.getParameter("boneMatrices");
-    //    actorHandle.resizeArray(skinningMatrices.size());
-    //    actorHandle.setParamMat44Array(&skinningMatrices[0], skinningMatrices.size());
-    //}
+        // No util method for this
+        actorHandle.getParameter("boneMatrices");
+        actorHandle.resizeArray(0);
+        //actorHandle.setParamMat44Array(&skinningMatrices[0], skinningMatrices.size());
+    }
 
     // create the actor
     physx::apex::NxApexActor* apexActor = clothAsset->createApexActor(*actorDesc, *gApexScene);
@@ -78,7 +78,6 @@ void ApexCloth::Update()
 
 void ApexCloth::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 {
-    
     clothingActor->dispatchRenderResources(*gRenderer);
 }
 

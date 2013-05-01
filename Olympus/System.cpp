@@ -11,7 +11,7 @@ System::System()
 }
 
 System::System(HINSTANCE hInstance, int nCmdShow) :
-	mAppPaused(false), mFlyMode(false), mFovFlag(1)
+    mAppPaused(false), mFlyMode(false), mFovFlag(1), rendManager(0), mInitialized(false)
 {
     gSystem = this;
     WNDCLASSEX wc;
@@ -57,7 +57,10 @@ System::~System() {}
 
 int System::init()
 {
-    return initd3d();
+    int inited = initd3d();
+    if(inited)
+        mInitialized = true;
+    return inited;
 }
 
 int System::run()
@@ -108,6 +111,9 @@ int System::run()
 // this is the main message handler for the program
 LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    // If system isn't initialized, return
+
+
     switch(message)
     {
         // WM_ACTIVATE is sent when the window is activated or deactivated.  
@@ -174,7 +180,8 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					mAppPaused = false;
 					mMinimized = false;
 					mMaximized = true;
-					OnResize();
+					if(mInitialized)
+                        OnResize();
 				}
 				else if( wParam == SIZE_RESTORED )
 				{
@@ -184,7 +191,8 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					{
 						mAppPaused = false;
 						mMinimized = false;
-						OnResize();
+						if(mInitialized)
+                            OnResize();
 					}
 
 					// Restoring from maximized state?
@@ -192,7 +200,8 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					{
 						mAppPaused = false;
 						mMaximized = false;
-						OnResize();
+						if(mInitialized)
+                            OnResize();
 					}
 					else if( mResizing )
 					{
@@ -207,7 +216,8 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					}
 					else // API call such as SetWindowPos or mSwapChain->SetFullscreenState.
 					{
-						OnResize();
+						if(mInitialized)
+                            OnResize();
 					}
 				}
 			}
@@ -226,7 +236,8 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				mAppPaused = false;
 				mResizing  = false;
 				mTimer.Start();
-				OnResize();
+                if(mInitialized)
+                    OnResize();
 				return 0;
     }
 
@@ -492,6 +503,14 @@ void System::UpdateCamera(float dt)
 	if( (GetAsyncKeyState('B') & 0x8000) )
     {
 		rendManager->projectile->Fire(mCam, 100.0f);
+    }
+	if( (GetAsyncKeyState('Y') & 0x8000) )
+    {
+		rendManager->SetEmit(true);
+    }
+	if( (GetAsyncKeyState('H') & 0x8000) )
+    {
+		rendManager->SetEmit(false);		
     }
 
 	if( (GetAsyncKeyState('Y') & 0x8000) )

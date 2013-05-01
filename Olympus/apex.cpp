@@ -230,11 +230,11 @@ bool Apex::InitPhysX()
         return false;
 
     // Create a plane
-    PxRigidStatic* plane = PxCreatePlane(*mPhysics, PxPlane(PxVec3(0,1,0), 0), *defaultMaterial);
+    PxRigidStatic* plane = PxCreatePlane(*mPhysics, PxPlane(PxVec3(0,1,0), 700), *defaultMaterial);
     if (!plane)
         return false;
 
-    //mScene->addActor(*plane);
+    mScene->addActor(*plane);
 
     // Create a heightfield
     PhysXHeightfield* heightfield = new PhysXHeightfield();
