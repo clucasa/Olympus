@@ -242,7 +242,9 @@ bool Apex::InitPhysX()
 
     // check if PvdConnection manager is available on this platform
     if(mPhysics->getPvdConnectionManager() == NULL)
-        return false;
+	{
+        return true;
+	}
 
     // setup connection parameters
     const char*     pvd_host_ip = "127.0.0.1";  // IP of the PC which is running PVD

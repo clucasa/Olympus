@@ -9,17 +9,7 @@
 #include "Camera.h"
 #include "Vertices.h"
 #include "Renderable.h"
-
-struct cbuff
-{
-	D3DXMATRIX viewInvProj;
-	D3DXMATRIX viewPrevProj;
-
-	float nearZ;
-	float farZ;
-	float padding;
-	float pad;
-};
+#include "ConstBuffers.h"
 
 class ScreenQuad : public Renderable
 {
@@ -55,7 +45,7 @@ public:
 	ID3D11RenderTargetView* mTargetView;
 	ID3D11ShaderResourceView* mShaderResourceView;
 
-	struct cbuff *cb;
+	struct PostPBuff *cb;
 
 };
 

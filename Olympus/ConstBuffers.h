@@ -9,7 +9,15 @@ struct SceneBuff
 {
 	XMFLOAT4X4 viewProj;
 	XMFLOAT3   camPos;
-	float	   pad;
+	float	   phong;
+	float	   normalMap;
+	float	   textures;
+	float      ambientOn;
+	float	   diffuseOn;
+	float      specularOn;
+	float      pLightOn;
+	float      dirLightOn;
+	float	   padding;
 };
 
 struct EnvironBuff
@@ -27,4 +35,18 @@ struct cbuffs
 	Material material;
 };
 
+struct PostPBuff
+{
+	D3DXMATRIX viewInvProj;
+	D3DXMATRIX viewPrevProj;
+
+	float nearZ;
+	float farZ;
+	float lum;
+	float gam;
+	float depthOfField;
+	float dofRange;
+
+	XMFLOAT2 padding;
+};
 #endif

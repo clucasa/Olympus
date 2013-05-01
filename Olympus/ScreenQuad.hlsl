@@ -10,6 +10,12 @@ cbuffer ObjectMat	: register(c1)
 
 	float	 zNear;
 	float	 zFar;
+
+	float lum;
+    float gam;
+    float depthOfField;
+    float dofRange;
+
 	float2	 padding;
 }
 
@@ -43,8 +49,8 @@ VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float3 tangent 
 
 float4 PShader(VOut input) : SV_TARGET
 {   
-	float gamma = 2.0f;
-    float lumt = 1.6f;
+	float gamma = gam;
+    float lumt = lum;
 	float luminance;
 	//return depth.Sample(samLinear, input.texcoord).r;
 	//return tex.Sample(samLinear, input.texcoord);
@@ -61,7 +67,7 @@ float4 PShader(VOut input) : SV_TARGET
 	float midDepth = 2*zFar*zNear / (zFar + zNear - (zFar - zNear)*(2*z_b -1));
 	float blurFactor = 1.0;
 
-	float depthRange = .05 * (zFar - zNear );
+	float depthRange = dofRange * (zFar - zNear );
 
 	if( (input.texcoord.x-.5)*(input.texcoord.x - .5)*1280/720 + (input.texcoord.y-.5)*(input.texcoord.y - .5)*720/1280 < .3 * .3 )
 	{	//return 0.0;//tex.Sample(samLinear, input.texcoord);
@@ -72,7 +78,7 @@ float4 PShader(VOut input) : SV_TARGET
 		    luminance = 0.2125*color.r + 0.7154*color.g + 0.0721*color.b;
 		    color = float4((1. - lumt) * float3(luminance, luminance, luminance) + lumt * color.rgb, 1.0f);
 			// Gamma correction (Must be done last)
-			color = pow(color, 1.0f / gamma);
+			color = pow(abs(color), 1.0f / gamma);
 			return color;
 		}
 	}
@@ -85,7 +91,7 @@ float4 PShader(VOut input) : SV_TARGET
 
 		blurFactor = abs( blurFactor );
 	}
-	float blur = .002;
+	float blur = depthOfField;
 
 	color = (tex.Sample( samLinear, input.texcoord )) * 4.0f;
 
@@ -134,7 +140,7 @@ float4 PShader(VOut input) : SV_TARGET
 	luminance = 0.2125*color.r + 0.7154*color.g + 0.0721*color.b;
 	color = float4((1. - lumt) * float3(luminance, luminance, luminance) + lumt * color.rgb, 1.0f);
 	// Gamma correction (Must be done last)
-	color = pow(color, 1.0f / gamma);
+	color = pow(abs(color), 1.0f / gamma);
 
 	color.a = 1.0f;
 	return color;

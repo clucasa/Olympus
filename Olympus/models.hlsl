@@ -1,11 +1,9 @@
 #include "LightHelper.hlsl"
+#include "ConstBuffers.hlsl"
 
-
-cbuffer ConstantBuffer : register(b0)
+cbuffer SceneBuff : register(b0)
 {
-    float4x4 ViewProj;
-	float3 cameraPos;
-	float padding;
+    SceneBuffer sceneBuff;
 }
 
 cbuffer worldBuffer	   : register(b1)
@@ -67,11 +65,11 @@ VOut VShader( Vin input )
 	output.TangentW  = normalize(mul((float3x3)matWorld, input.Tangent));//cross(input.Pos, input.Normal)));
 	output.BiNormalW = normalize(mul((float3x3)matWorld, input.BiNormal));
 
-	output.PosH		 = mul( mul(ViewProj, matWorld), input.Pos);
+	output.PosH		 = mul( mul(sceneBuff.ViewProj, matWorld), input.Pos);
 	
 	output.Tex		 = input.Tex;
 	
-	output.CamPos    = cameraPos;
+	output.CamPos    = sceneBuff.cameraPos;
 
     return output;
 }
@@ -90,19 +88,19 @@ float4 PShader(VOut input) : SV_TARGET
 
 	input.NormalW = normalize(input.NormalW);
 
-	float3 toEye = cameraPos - input.PosW;
+	float3 toEye = input.CamPos - input.PosW;
 	float distToEye = length(toEye);
 	toEye /= distToEye;
 
-	
-	
+	float3 bumpedNormalW;
 
-	float3 normalColor  = normalTexture.Sample( samLinear, input.Tex ).rgb;
-	
-	//return float4(normalColor.xyz, 1.0f);
-
-	float3 bumpedNormalW = normalize(NormalSampleToWorldSpace(normalColor, input.NormalW, input.TangentW));
-
+	if(sceneBuff.normalMap == 1.0f)
+	{
+		float3 normalColor  = normalTexture.Sample( samLinear, input.Tex ).rgb;
+		bumpedNormalW = normalize(NormalSampleToWorldSpace(normalColor, input.NormalW, input.TangentW));
+	}
+	else
+		bumpedNormalW = input.NormalW;
 	
 	float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -120,8 +118,10 @@ float4 PShader(VOut input) : SV_TARGET
 
 	for(int i = 0; i < 1; i++)
 	{
-		dirAmbient	+= saturate(material.Ambient * dirLight[i].Ambient);
-
+		if(sceneBuff.ambientOn == 1.0f)
+		{
+			dirAmbient	+= saturate(material.Ambient * dirLight[i].Ambient);
+		}
 
 		//lightVec = -dirLight[i].Direction.xyz;
 		lightVec = -dirLight[i].Direction.xyz;
@@ -131,20 +131,33 @@ float4 PShader(VOut input) : SV_TARGET
 
 		if(diffuseFactor > 0.0f)
 		{
-			dirDiffuse += saturate(diffuseFactor * material.Diffuse * dirLight[i].Diffuse);
-			
+			if(sceneBuff.diffuseOn == 1.0f)
+			{
+				dirDiffuse += saturate(diffuseFactor * material.Diffuse * dirLight[i].Diffuse);
+			}
 			v = reflect(-lightVec, bumpedNormalW);
 
 			specFactor	 = pow(max(dot(v, toEye), 0.0f), material.Specular.w);
 			
-			dirSpec    += saturate(specFactor * material.Specular * dirLight[i].Specular);
+			if(sceneBuff.specularOn == 1.0f)
+			{
+				dirSpec    += saturate(specFactor * material.Specular * dirLight[i].Specular);
+			}
 		}
 	
 	}
 
-	totalAmbient += dirAmbient;
-	totalDiffuse += dirDiffuse;
-	totalSpec	 += dirSpec;
+	if(sceneBuff.dirLightOn == 1.0f)
+	{
+		if(sceneBuff.ambientOn == 1.0f)
+			totalAmbient += dirAmbient;
+
+		if(sceneBuff.diffuseOn == 1.0f)
+			totalDiffuse += dirDiffuse;
+
+		if(sceneBuff.specularOn == 1.0f)
+			totalSpec	 += dirSpec;
+	}
 
 	for(int i = 0; i < 2; i++)
 	{
@@ -177,25 +190,40 @@ float4 PShader(VOut input) : SV_TARGET
 		pDiffuse *= att*(d / pLight[i].Range );
 		pSpec    *= att*(d / pLight[i].Range );
 
-		float softie = .55;
+		float softie = .75;
 
 		if( d < softie*pLight[i].Range )
-			pAmbient  *= 1/((d/pLight[i].Range+1)*(d/pLight[i].Range+1));
+		{
+			pAmbient  *= 1.0f/((d/pLight[i].Range+1.0f)*(d/pLight[i].Range+1.0f));
+			pDiffuse  *= 1.0f/((d/pLight[i].Range+1.0f)*(d/pLight[i].Range+1.0f));
+		}
 		if( d > softie*pLight[i].Range )
 		{
-			pAmbient *= 1/((softie*pLight[i].Range/pLight[i].Range+1)*(softie*pLight[i].Range/pLight[i].Range+1));
+			pAmbient *= 1.0f/((softie*pLight[i].Range/pLight[i].Range+1.0f)*(softie*pLight[i].Range/pLight[i].Range+1.0f));
 			pAmbient *= (pLight[i].Range-d)/(pLight[i].Range-softie*pLight[i].Range);
+			pDiffuse *= 1.0f/((softie*pLight[i].Range/pLight[i].Range+1.0f)*(softie*pLight[i].Range/pLight[i].Range+1.0f));
+			pDiffuse *= (pLight[i].Range-d)/(pLight[i].Range-softie*pLight[i].Range);
 		}
 
-		totalAmbient += pAmbient;
-		totalDiffuse += pDiffuse;
-		totalSpec	 += pSpec;
+		if(sceneBuff.pLightOn == 1.0f)
+		{
+			if(sceneBuff.ambientOn == 1.0f)
+				totalAmbient += (4.0f * pAmbient);
+			if(sceneBuff.diffuseOn == 1.0f)
+				totalDiffuse += (4.0f * pDiffuse);
+			//if(sceneBuff.specularOn == 1.0f)
+				//totalSpec	 += pSpec;
+		}
 	}
 
 
 	float4 textureColor = float4(1.0f,1.0f,0.0f,1.0f);//float4(0.0f, 0.0f, 0.0f, 1.0f);
-	textureColor = diffuseTexture.Sample( samLinear, input.Tex );
-	//return float4(textureColor.rgb,1.0f);
+
+	if(sceneBuff.textures == 1.0f)
+		textureColor = diffuseTexture.Sample( samLinear, input.Tex );
+	else
+		textureColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
 	color = saturate(textureColor*(totalAmbient + totalDiffuse) + totalSpec);
 	//clip(color.a < 0.999999f ? -1:1 );
 

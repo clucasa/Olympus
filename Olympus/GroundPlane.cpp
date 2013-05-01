@@ -9,7 +9,7 @@ GroundPlane::GroundPlane()
 GroundPlane::GroundPlane(ID3D11DeviceContext *mDevcon, ID3D11Device *mDev, GeometryGenerator *geoGen, int planeSize, int increment) : 
 	mDevcon(mDevcon), mDev(mDev), size(planeSize), inc(increment)
 {
-	cb = new cbuff();
+	cb = new PostPBuff();
 	cb->viewInvProj;
 	cb->viewPrevProj;
 
@@ -152,7 +152,7 @@ void GroundPlane::SetupBuffer()
     ZeroMemory(&bd, sizeof(bd));
 
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(cbuff);
+    bd.ByteWidth = sizeof(PostPBuff);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
     mDev->CreateBuffer(&bd, NULL, &mConstBuffer);

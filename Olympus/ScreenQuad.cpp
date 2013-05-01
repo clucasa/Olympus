@@ -9,9 +9,11 @@ ScreenQuad::ScreenQuad()
 ScreenQuad::ScreenQuad(ID3D11DeviceContext *mDevcon, ID3D11Device *mDev, GeometryGenerator *geoGen) : 
 	mDevcon(mDevcon), mDev(mDev)
 {
-	cb = new cbuff();
-	cb->viewInvProj;
-	cb->viewPrevProj;
+	cb = new PostPBuff();
+	cb->lum = 1.6f;
+    cb->gam = 1.5f;
+    cb->depthOfField = 0.0f;
+    cb->dofRange = 0.004f;
 
 	CreateGeometry(geoGen);
 	SetupBuffer();
@@ -113,10 +115,32 @@ void ScreenQuad::SetupRenderTarget(int width, int height)
 
 void ScreenQuad::SetupPipeline()
 {
+	ID3D10Blob* pErrorBlob = NULL;
+    LPVOID pError = NULL;
+    char* errorStr = NULL;
     // load and compile the two shaders
 	ID3D10Blob *VS, *PS;
-    D3DX11CompileFromFile("ScreenQuad.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
-    D3DX11CompileFromFile("ScreenQuad.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
+    D3DX11CompileFromFile("ScreenQuad.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, &pErrorBlob, 0);
+	if(pErrorBlob)
+    {
+        pError = pErrorBlob->GetBufferPointer();
+        errorStr = (char*)pError;
+        __asm {
+            INT 3
+        }
+        return;
+    }
+
+    D3DX11CompileFromFile("ScreenQuad.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, &pErrorBlob, 0);
+	if(pErrorBlob)
+    {
+        pError = pErrorBlob->GetBufferPointer();
+        errorStr = (char*)pError;
+        __asm {
+            INT 3
+        }
+        return;
+    }
 
     // encapsulate both shaders into shader objects
     mDev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &mVS);
@@ -198,7 +222,7 @@ void ScreenQuad::SetupBuffer()
     ZeroMemory(&bd, sizeof(bd));
 
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(cbuff);
+    bd.ByteWidth = sizeof(PostPBuff);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
     mDev->CreateBuffer(&bd, NULL, &mConstBuffer);
@@ -245,16 +269,34 @@ void ScreenQuad::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 
 void ScreenQuad::RecompileShader()
 {
+	ID3D10Blob* pErrorBlob = NULL;
+    LPVOID pError = NULL;
+    char* errorStr = NULL;
 	// load and compile the two shaders
 	ID3D10Blob *VS, *PS;
-    D3DX11CompileFromFile("ScreenQuad.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
-    D3DX11CompileFromFile("ScreenQuad.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
+	HRESULT hr = D3DX11CompileFromFile("ScreenQuad.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, &pErrorBlob, 0);
+	if(pErrorBlob)
+    {
+        pError = pErrorBlob->GetBufferPointer();
+        errorStr = (char*)pError;
+        __asm {
+            INT 3
+        }
+        return;
+    }
+
+    hr = D3DX11CompileFromFile("ScreenQuad.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, &pErrorBlob, 0);
+	if(pErrorBlob)
+    {
+        pError = pErrorBlob->GetBufferPointer();
+        errorStr = (char*)pError;
+        __asm {
+            INT 3
+        }
+        return;
+    }
 
     // encapsulate both shaders into shader objects
     mDev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &mVS);
-    
-
     mDev->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &mPS);
-    
-
 }

@@ -159,7 +159,7 @@ void Sphere::SetupBuffer()
     ZeroMemory(&bd, sizeof(bd));
 
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(cbuff);
+    bd.ByteWidth = sizeof(cbuffs);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
     mDev->CreateBuffer(&bd, NULL, &mConstBuffer);
@@ -336,7 +336,10 @@ void Sphere::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 
 			XMStoreFloat4x4(&sphereBuff.viewProj, mCubeMapCamera[i].ViewProj());
 			sphereBuff.camPos = mCubeMapCamera[i].GetPosition();
-
+			sphereBuff.ambientOn = 1;
+			sphereBuff.diffuseOn = 1;
+			sphereBuff.dirLightOn = 1;
+			sphereBuff.textures = 1;
 			mDevcon->UpdateSubresource(sceneBuff, 0, 0, &sphereBuff , 0, 0);
 
 			// Draw the scene with the exception of the center sphere to this cube map face
@@ -388,7 +391,6 @@ void Sphere::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 	{
 		XMStoreFloat4x4(&sphereBuff.viewProj, mCam->ViewProj());
 		sphereBuff.camPos = mCam->GetPosition();
-		sphereBuff.pad = 1.0f;
 		mDevcon->UpdateSubresource(sceneBuff, 0, 0, &sphereBuff, 0, 0);
 	}
 		mDevcon->PSSetShaderResources(0, 1, &mDynamicCubeMapSRVSphere);

@@ -135,6 +135,7 @@
     <ClCompile Include="ZeusResourceCallback.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ConstBuffers.hlsl" />
     <None Include="GroundPlane.hlsl" />
     <None Include="LightHelper.hlsl" />
     <None Include="models.hlsl" />

@@ -10,6 +10,17 @@ RenderManager::RenderManager(ID3D11DeviceContext *devcon,
 							 D3D11_VIEWPORT *viewport) :
 mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mViewport(viewport)
 {
+    sceneBuff.normalMap		= 1;
+    sceneBuff.phong			= 1;
+    sceneBuff.textures		= 1;
+    sceneBuff.ambientOn		= 1;
+    sceneBuff.diffuseOn		= 1;
+    sceneBuff.specularOn	= 1;
+    sceneBuff.dirLightOn	= 1;
+    sceneBuff.pLightOn		= 1;
+  
+    emitterOn = true;
+
 	fps = 0;
 	SCREEN_WIDTH = 1280;
 	SCREEN_HEIGHT = 720;
@@ -204,19 +215,19 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
     mDev->CreateBuffer(&bd, NULL, &pointLightCBuffer);
 
-	mPointLight[0].Ambient = XMFLOAT4(.1f, .1f, .1f, 1);
+	mPointLight[0].Ambient = XMFLOAT4(.3f, .1f, .1f, 1);
 	mPointLight[0].Att     = XMFLOAT3(1.0f, .05f, .0075f);
-	mPointLight[0].Diffuse = XMFLOAT4(.6f, .0f, .0f, 1);
+	mPointLight[0].Diffuse = XMFLOAT4(.7f, .3f, .0f, 1);
 	mPointLight[0].Specular = XMFLOAT4(1, 1, 1, 1);
-	mPointLight[0].Range    = 10.0f;
-	mPointLight[0].Position = XMFLOAT3(0, 15, 0);
+	mPointLight[0].Range    = 15.0f;
+	mPointLight[0].Position = XMFLOAT3(-13.5f, -3.0f, -33.4f);
 
-	mPointLight[1].Ambient = XMFLOAT4(.1f, .1f, .1f, 1);
+	mPointLight[1].Ambient = XMFLOAT4(.3f, .1f, .1f, 1);
 	mPointLight[1].Att     = XMFLOAT3(1.0f, .05f, .0075f);
-	mPointLight[1].Diffuse = XMFLOAT4(.0f, .6f, .0f, 1);
+	mPointLight[1].Diffuse = XMFLOAT4(.7f, .3f, .0f, 1);
 	mPointLight[1].Specular = XMFLOAT4(1, 1, 1, 1);
-	mPointLight[1].Range    = 6.0f;
-	mPointLight[1].Position = XMFLOAT3(0, 0, -3);
+	mPointLight[1].Range    = 15.0f;
+	mPointLight[1].Position = XMFLOAT3(-67.7f, -3.0f, -33.4f);
 
 	mSphere = new Sphere(mDevcon, mDev, geoGen, apex, 4, 60, 60);
 	renderables.push_back(mSphere);
@@ -355,7 +366,7 @@ void RenderManager::Render()
 
 	XMStoreFloat4x4(&sceneBuff.viewProj, mCam->ViewProj());
 	sceneBuff.camPos = mCam->GetPosition();
-	sceneBuff.pad = 1.0f;
+	//sceneBuff.pad = 1.0f;
 	mDevcon->VSSetConstantBuffers(0, 1, &sceneCBuffer);
 	mDevcon->PSSetConstantBuffers(0, 1, &sceneCBuffer);
 

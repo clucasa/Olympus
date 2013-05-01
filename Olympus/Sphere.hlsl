@@ -1,10 +1,9 @@
 #include "LightHelper.hlsl"
+#include "ConstBuffers.hlsl"
 
-cbuffer ViewProjMat	: register(b0)
+cbuffer SceneBuff 	: register(b0)
 {
-    float4x4 ViewProj;
-	float3 cameraPos;
-	float padding;
+    SceneBuffer sceneBuff;
 }
 
 cbuffer ObjectMat	: register(b1)
@@ -13,7 +12,6 @@ cbuffer ObjectMat	: register(b1)
 	float4x4 matInvFinal;
 	Material material;
 }
-
 
 TextureCube dynamicCubeMap;
 
@@ -48,7 +46,7 @@ VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float3 tangent 
 {
     VOut output;
 
-	output.posH = mul(mul(ViewProj, matFinal), float4(position, 1.0f));    // transform the vertex from 3D to 2D
+	output.posH = mul(mul(sceneBuff.ViewProj, matFinal), float4(position, 1.0f));    // transform the vertex from 3D to 2D
     output.posL = position;
     output.PosW = mul(matFinal, float4(position, 1.0f)).xyz;
 	output.NormalW = mul((float3x3)matInvFinal, normalize(normal)); //normalize(mul((float3x3)matFinal, normal));
@@ -61,7 +59,7 @@ VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float3 tangent 
 float4 PShader(VOut input) : SV_TARGET
 {   
 
-	float3 incident = input.PosW - cameraPos;
+	float3 incident = input.PosW - sceneBuff.cameraPos;
 	float3 reflectionVector = reflect(incident, input.NormalW);
 
 	float3 lightVec;
@@ -72,7 +70,7 @@ float4 PShader(VOut input) : SV_TARGET
 
 	input.NormalW = normalize(input.NormalW);
 
-	float3 toEye = cameraPos - input.PosW;
+	float3 toEye = sceneBuff.cameraPos - input.PosW;
 	float distToEye = length(toEye);
 	toEye /= distToEye;
 

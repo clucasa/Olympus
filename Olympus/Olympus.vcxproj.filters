@@ -196,6 +196,9 @@
     <None Include="LightHelper.hlsl">
       <Filter>Rendering\Objects\Helpers</Filter>
     </None>
+    <None Include="ConstBuffers.hlsl">
+      <Filter>Rendering\Objects\Helpers</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="apex.h">

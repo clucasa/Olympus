@@ -126,6 +126,8 @@ public:
 	DirectionalLight mDirLight[2];
 	PointLight		 mPointLight[2];
 
+	bool emitterOn;
+
 	FontSheet mFont;
 	OnScreen mText;
 	POINT textPos;

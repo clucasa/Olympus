@@ -25,7 +25,7 @@ public:
 	void SetupRenderTarget();
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
 	
-	struct cbuff
+	struct PostPBuff
 {
 	XMFLOAT4X4 viewInvProj;
 	XMFLOAT4X4 viewPrevProj;
@@ -58,7 +58,7 @@ public:
 	ID3D11RenderTargetView* mTargetView;
 	ID3D11ShaderResourceView* mShaderResourceView;
 
-	struct cbuff *cb;
+	struct PostPBuff *cb;
 
 	int size;
 	int inc;
