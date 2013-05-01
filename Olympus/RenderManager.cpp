@@ -27,12 +27,12 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	
 	mSkyBox = new SkyBox(mDevcon, mDev, geoGen);
 	
-    //ApexCloth* cloth = apex->CreateCloth(gRenderer, "ctdm_Cape_400");
+    ApexCloth* cloth = apex->CreateCloth(gRenderer, "bannercloth");//"ctdm_Cape_400");
 
 	//ScreenQuad *sq = new ScreenQuad(mDevcon, mDev, geoGen);
     emitter = apex->CreateEmitter(gRenderer, "SmokeEmitter");
 	emitter->SetPosition(-18.0f, -65.0f, -243.0f);
-	//emitter->SetEmit(true);
+	emitter->SetEmit(false);
 
     sphere2 = new Sphere(mDevcon, mDev, geoGen, apex, 2, 30, 30);
 	renderables.push_back(sphere2);
@@ -41,6 +41,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 	particles = apex->CreateEmitter(gRenderer, "testSpriteEmitter4ParticleFluidIos");
     particles->SetPosition(-19.0f, 45.0f, 206.0f);
+	particles->SetEmit(false);
 
     mSphereMove = new Sphere(mDevcon, mDev, geoGen, apex, 2, 30, 30);
 	renderables.push_back(mSphereMove);
@@ -264,7 +265,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 	mSphere = new Sphere(mDevcon, mDev, geoGen, apex, 4, 60, 60);
 	renderables.push_back(mSphere);
-	mSphere->SetupReflective(&renderables, mSkyBox, mScreen, mZbuffer, mViewport);
+	//mSphere->SetupReflective(&renderables, mSkyBox, mScreen, mZbuffer, mViewport);
 
 	renderables.push_back(emitter);
 	renderables.push_back(particles);

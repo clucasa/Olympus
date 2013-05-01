@@ -155,7 +155,14 @@ void ApexParticles::SetEmit(bool on)
 {
 	if(emitterActor)
     {
-        emitterActor->startEmit( on );
+		if(on)
+		{
+			emitterActor->startEmit( on );
+		}
+		else
+		{
+			emitterActor->stopEmit();
+		}
     }
 }
 
