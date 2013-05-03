@@ -61,6 +61,7 @@ public:
 	void renderO(ID3D11DeviceContext *devcon);
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
 	virtual void RecompileShader();
+	virtual void Depth();
 
 	void AddInstance(ObjectInfo info);
 

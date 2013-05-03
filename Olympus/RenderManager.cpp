@@ -42,17 +42,21 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
     renderables.push_back(mCloth);
 
 	//ScreenQuad *sq = new ScreenQuad(mDevcon, mDev, geoGen);
-    emitter = apex->CreateEmitter(gRenderer, "SmokeEmitter");
-	emitter->SetPosition(-18.0f, -65.0f, -243.0f);
+    //emitter = apex->CreateEmitter(gRenderer, "SmokeEmitter");
+	//emitter->SetPosition(-18.0f, -65.0f, -243.0f);
 	//emitter->SetEmit(true);
 
     sphere2 = new Sphere(mDevcon, mDev, geoGen, apex, 2, 30, 30);
 	renderables.push_back(sphere2);
 	sphere2->MoveTo(-18.0f, -65.0f, -243.0f);//-3.0f, 309.5f, -957.3f);
     
+	emitter = apex->CreateEmitter(gRenderer, "TorchEmitter");
+	emitter->SetPosition(-13.5f, -2.0f, -32.8f);
+    particles = apex->CreateEmitter(gRenderer, "TorchEmitter2");
+    particles->SetPosition(-67.5f, -2.0f, -32.8f);
 
-	particles = apex->CreateEmitter(gRenderer, "testSpriteEmitter4ParticleFluidIos");
-    particles->SetPosition(-19.0f, 45.0f, 206.0f);
+	//particles = apex->CreateEmitter(gRenderer, "testSpriteEmitter4ParticleFluidIos");
+   // particles->SetPosition(-19.0f, 45.0f, 206.0f);
 
     mSphereMove = new Sphere(mDevcon, mDev, geoGen, apex, 2, 30, 30);
 	renderables.push_back(mSphereMove);
@@ -215,16 +219,16 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
     mDev->CreateBuffer(&bd, NULL, &pointLightCBuffer);
 
-	mPointLight[0].Ambient = XMFLOAT4(.3f, .1f, .1f, 1);
-	mPointLight[0].Att     = XMFLOAT3(1.0f, .05f, .0075f);
-	mPointLight[0].Diffuse = XMFLOAT4(.7f, .3f, .0f, 1);
+	mPointLight[0].Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
+	mPointLight[0].Att     = XMFLOAT3(1.0f, 0.05f, .0075f);
+	mPointLight[0].Diffuse = XMFLOAT4(1.7f, 0.6f, 0.0f, 1);
 	mPointLight[0].Specular = XMFLOAT4(1, 1, 1, 1);
 	mPointLight[0].Range    = 15.0f;
 	mPointLight[0].Position = XMFLOAT3(-13.5f, -3.0f, -33.4f);
 
-	mPointLight[1].Ambient = XMFLOAT4(.3f, .1f, .1f, 1);
-	mPointLight[1].Att     = XMFLOAT3(1.0f, .05f, .0075f);
-	mPointLight[1].Diffuse = XMFLOAT4(.7f, .3f, .0f, 1);
+	mPointLight[1].Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
+	mPointLight[1].Att     = XMFLOAT3(1.0f, 0.05f, .0075f);
+	mPointLight[1].Diffuse = XMFLOAT4(1.7f, 0.6f, 0.0f, 1);
 	mPointLight[1].Specular = XMFLOAT4(1, 1, 1, 1);
 	mPointLight[1].Range    = 15.0f;
 	mPointLight[1].Position = XMFLOAT3(-67.7f, -3.0f, -33.4f);

@@ -94,6 +94,7 @@ public:
 	ID3D11RenderTargetView* mEnvironmentRTV;
 	ID3D11RenderTargetView *mBackbuffer;    // the pointer to our back buffer
 
+
 	ID3D11BlendState* mBlendState;   // Our blend state
 	ID3D11SamplerState *mSampState;
 
