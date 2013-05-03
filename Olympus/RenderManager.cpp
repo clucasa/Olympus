@@ -184,7 +184,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
         return;
 
     float blendFactor[] = {0.0f, 0.0f, 0.0f, 0.0f}; 
-    devcon->OMSetBlendState(mBlendState, blendFactor, 0xffffffff); // restore default
+   // devcon->OMSetBlendState(mBlendState, blendFactor, 0xffffffff); // restore default
 
 	//Set the directional light
 	ZeroMemory(&bd, sizeof(bd));
@@ -197,7 +197,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	
 	mDirLight[0].Ambient =		XMFLOAT4(.2f, .2f, .2f, 1);
 	mDirLight[0].Diffuse =		XMFLOAT4(.4f, .4f, .4f, 1);
-	mDirLight[0].Direction =	XMFLOAT3(-0.57735f, -0.57735f, 0.57735f);
+	mDirLight[0].Direction =	XMFLOAT3(-0.57735f, -50.f, 0.f);
 	mDirLight[0].Specular =		XMFLOAT4(0.8f, 0.8f, 0.7f, 1);
 
 	mDirLight[1].Ambient =		XMFLOAT4(.3f, .3f, .3f, 1);
@@ -235,6 +235,77 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 	renderables.push_back(emitter);
 	renderables.push_back(particles);
+
+	// Shadow Initialization
+
+	// Set the viewport
+    ZeroMemory(&mShadowPort, sizeof(D3D11_VIEWPORT));
+
+    mShadowPort.TopLeftX = 0;
+    mShadowPort.TopLeftY = 0;
+    mShadowPort.Width = 2048;
+    mShadowPort.Height = 2048;
+  mShadowPort.MaxDepth = 1;
+  mShadowPort.MinDepth = 0;
+
+	mShadowCam = new Camera();
+	//Set the shadow positions
+	ZeroMemory(&bd, sizeof(bd));
+
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(ShadowBuff);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+	mDev->CreateBuffer(&bd, NULL, &shadowCBuffer);
+
+	// Create depth stencil texture
+	D3D11_TEXTURE2D_DESC descDepth;
+	ZeroMemory(&descDepth, sizeof(descDepth));
+	descDepth.Width = mShadowPort.Width;
+	descDepth.Height = mShadowPort.Height;
+	descDepth.ArraySize = 1;
+	descDepth.MipLevels = 1;
+	descDepth.SampleDesc.Count = 1;
+	descDepth.Format = DXGI_FORMAT_R32_TYPELESS;
+	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;  
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV2;
+	ZeroMemory(&descDSV2, sizeof(descDSV2));
+	descDSV2.Format = DXGI_FORMAT_D32_FLOAT;
+	descDSV2.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	descDSV2.Texture2D.MipSlice = 0;
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(srvDesc));
+	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = descDepth.MipLevels;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+
+	hr = mDev->CreateTexture2D( &descDepth, NULL, &pShadowMap );
+	if( FAILED(hr) )  
+		return ;
+	hr = mDev->CreateDepthStencilView( pShadowMap, &descDSV2, &pShadowMapDepthView );
+	if( FAILED(hr) )  
+		return;
+	hr = mDev->CreateShaderResourceView( pShadowMap, &srvDesc, &pShadowMapSRView);
+	if( FAILED(hr) )  
+    return;
+
+	ID3D11SamplerState* pSS;
+//	D3D11_SAMPLER_DESC sd;
+	ZeroMemory(&sd, sizeof(sd));
+    //sd.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+    sd.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+    sd.MaxAnisotropy = 1;
+    sd.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR       ;
+    sd.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR       ;
+    sd.AddressW = D3D11_TEXTURE_ADDRESS_MIRROR       ;
+
+	sd.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+    mDev->CreateSamplerState(&sd, &pSS);
+	mDevcon->PSSetSamplers(5, 1, &pSS);
+
 }
 
 
@@ -361,6 +432,7 @@ void RenderManager::Render()
     mDevcon->ClearRenderTargetView(mBackbuffer, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
 	mDevcon->ClearRenderTargetView(mScreen->mTargetView, D3DXCOLOR(0.0f, 1.0f, 0.4f, 1.0f));
 	
+	mDevcon->ClearDepthStencilView(pShadowMapDepthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	
 	mDevcon->RSSetState(0);
 
@@ -385,6 +457,60 @@ void RenderManager::Render()
 	mDevcon->PSSetConstantBuffers(3, 1, &pointLightCBuffer);
 	mDevcon->UpdateSubresource(pointLightCBuffer, 0, 0, &mPointLight, 0, 0);
 
+	// START SHADOW MAP
+	mDevcon->RSSetViewports(1, &mShadowPort);
+	mShadowCam->SetLensOrtho( -50.0, 50.0, -50.0, 50.0, 1.0, 1000);
+
+  XMFLOAT3 ShadPos = XMFLOAT3( mDirLight[0].Direction.x,// + mCam->GetPosition().x, 
+               -mDirLight[0].Direction.y,// + mCam->GetPosition().y,
+               mDirLight[0].Direction.z);//+ mCam->GetPosition().z ); 
+  
+  mShadowCam->SetPosition(ShadPos);
+  mShadowCam->LookAt( ShadPos, XMFLOAT3(0,0,0), XMFLOAT3(0,1,0));
+//  mShadowCam->LookAt( ShadPos, mCam->GetPosition(), XMFLOAT3(0,1,0));
+  mShadowCam->UpdateViewMatrix();
+
+
+  sceneBuff.camPos = mShadowCam->GetPosition();
+
+  XMStoreFloat4x4(&sceneBuff.viewProj, mShadowCam->ViewProj()); 
+
+  mDevcon->VSSetConstantBuffers(0, 1, &sceneCBuffer);
+  mDevcon->UpdateSubresource(sceneCBuffer, 0, 0, &sceneBuff , 0, 0);
+  shadowBuff.lightPos = mShadowCam->GetPosition();
+  XMStoreFloat4x4( &shadowBuff.lightViewProj,  XMMatrixMultiply(mShadowCam->View(), mShadowCam->Proj()) );
+  //XMStoreFloat4x4( &shadowBuff.lightViewProj,  XMMatrixMultiply(mShadowCam->View(), mCam->Proj()) );
+
+  shadowBuff.PADdyCake = .5;
+
+  mDevcon->PSSetConstantBuffers(5, 1, &shadowCBuffer);
+  mDevcon->VSSetConstantBuffers(5, 1, &shadowCBuffer);
+  mDevcon->UpdateSubresource(shadowCBuffer, 0, 0, &shadowBuff , 0, 0);
+  //*********************
+
+
+  mDevcon->OMSetRenderTargets(0, 0, pShadowMapDepthView);
+  //obj->Depth(sceneCBuffer, mCam, depth);
+  for(int i = 0; i < renderables.size() ; i++)
+  {
+    renderables[i]->Depth();
+  }
+
+  mDevcon->OMSetRenderTargets(1, &mScreen->mTargetView/*mBackbuffer*/, mZbuffer);
+
+  // MUST PASS IN THE SHADER RESOURCE VIEW AFTER YOU SWITCH TEH RENDER TARGET OTHERWISE ITS NULL
+  mDevcon->PSSetShaderResources(6, 1, &pShadowMapSRView);
+
+  //***********************
+  XMStoreFloat4x4(&sceneBuff.viewProj, mCam->ViewProj());
+
+  sceneBuff.camPos = mCam->GetPosition();
+
+  mDevcon->VSSetConstantBuffers(0, 1, &sceneCBuffer);
+  mDevcon->UpdateSubresource(sceneCBuffer, 0, 0, &sceneBuff , 0, 0);
+  //***********************
+  // END SHADOW MAP
+  mDevcon->RSSetViewports(1, mViewport);
     Render(0);
 
 	
@@ -392,6 +518,7 @@ void RenderManager::Render()
 	mDevcon->OMSetRenderTargets(1, &mBackbuffer, 0);
 	
 	mDevcon->PSSetShaderResources(1, 1, &mDepthShaderResourceView);
+	mDevcon->PSSetShaderResources(6, 1, &pShadowMapSRView);
 
 	mDevcon->UpdateSubresource(sceneCBuffer, 0, 0, mScreenCam->ViewProj().m , 0, 0);
 	mScreen->Render(sceneCBuffer, mScreenCam, 0);

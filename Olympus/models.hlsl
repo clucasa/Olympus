@@ -3,12 +3,12 @@
 
 cbuffer SceneBuff : register(b0)
 {
-    SceneBuffer sceneBuff;
+	SceneBuffer sceneBuff;
 }
 
 cbuffer worldBuffer	   : register(b1)
 {
-    float4x4 matWorld;
+	float4x4 matWorld;
 	float4x4 matWorldInvTrans;
 	Material material;
 }
@@ -24,18 +24,29 @@ cbuffer PointLight : register(b3)
 };
 
 
+cbuffer ShadowProj  : register(b5)
+{
+	float4x4 lightViewProj;
+	float3 lightPos;
+	float PADdyCake;
+}
+
 Texture2D diffuseTexture : register(t0);
 Texture2D normalTexture : register(t1);
+Texture2D shadowTexture : register(t6);
+
+SamplerComparisonState ss : register(s5);
 
 struct VOut
 {
-    float4 PosH       : SV_POSITION;
-    float3 PosW       : POSITION;
-    float3 NormalW    : NORMAL;
+	float4 PosH       : SV_POSITION;
+	float3 PosW       : POSITION;
+	float3 NormalW    : NORMAL;
 	float3 TangentW   : TANGENT;
 	float3 BiNormalW  : BINORM;
 	float2 Tex        : TEXCOORD0;
 	float3 CamPos     : CAMPOS;
+	float4 lpos    : TEXCOORD2;
 };
 
 struct Vin
@@ -58,26 +69,82 @@ SamplerState samLinear
 //VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float3 tangent : TANGENT, float2 texcoord : TEXCOORD )
 VOut VShader( Vin input )
 {
-    VOut output;
-	
+	VOut output;
+
 	output.PosW		 = mul(matWorld, input.Pos);
 	output.NormalW   = normalize(mul((float3x3)matWorldInvTrans, input.Normal));
 	output.TangentW  = normalize(mul((float3x3)matWorld, input.Tangent));//cross(input.Pos, input.Normal)));
 	output.BiNormalW = normalize(mul((float3x3)matWorld, input.BiNormal));
 
 	output.PosH		 = mul( mul(sceneBuff.ViewProj, matWorld), input.Pos);
-	
+
 	output.Tex		 = input.Tex;
-	
+
 	output.CamPos    = sceneBuff.cameraPos;
 
-    return output;
+	output.lpos = mul( matWorld, float4(input.Pos.xyz, 1.0) );
+	output.lpos = mul( lightViewProj, float4(output.lpos.xyz, 1.0) );
+
+	return output;
+}
+
+float3 offset_lookup(Texture2D map, float4 loc, float2 offset)
+{
+//return tex2Dproj(map, float4(loc.xy + offset * float2(1/4096,1/4096) * loc.w, loc.z, loc.w));
+//return map.SampleCmpLevelZero( ss, (loc.xy + offset * float2(1/4096,1/4096)) * loc.w ,  loc.z, loc.w);
+//return map.SampleCmpLevelZero( ss, float4(loc.xy + offset * float2(1/4096,1/4096) * loc.w ,  loc.z, loc.w));
+//return map.SampleCmp(ss, loc.xy + offset * (1/4096) * loc.w, loc.z).r;
+return map.SampleCmpLevelZero(ss, loc.xy + offset, loc.z).r;
+}
+float shadowVal(VOut input)
+{
+	//return PADdyCake;
+	//return theShade.Sample( samLinear, input.texcoord );
+
+	//  return 1.0;
+	//  return float4( PADdyCake, PADdyCake, PADdyCake, 1.0 );
+	//  return float4( lightPos.x, lightPos.y, lightPos.z, 1.0 );
+	input.lpos.xy /= input.lpos.w;
+
+	if( input.lpos.x < -1.0f || input.lpos.x > 1.0f ||
+		input.lpos.y < -1.0f || input.lpos.y > 1.0f ||
+		input.lpos.z < 0.0f  || input.lpos.z > 1.0f ) return 1.0;
+
+
+	input.lpos.x = input.lpos.x/2 + 0.5;
+	input.lpos.y = input.lpos.y/-2 + 0.5;
+
+	input.lpos.z -= .001;
+
+
+	//float samp = 1000 * 1/4096;
+	float samp = .001;
+
+	float3 shadowCoeff = (
+		offset_lookup(shadowTexture, input.lpos, float2(0, 0))+
+		offset_lookup(shadowTexture, input.lpos, float2(0, -samp)) +
+		offset_lookup(shadowTexture, input.lpos, float2(0, samp)) +
+		offset_lookup(shadowTexture, input.lpos, float2(-samp, 0)) +
+		offset_lookup(shadowTexture, input.lpos, float2(-samp, -samp)) +
+		offset_lookup(shadowTexture, input.lpos, float2(-samp, samp)) +
+		offset_lookup(shadowTexture, input.lpos, float2( samp, 0)) +
+		offset_lookup(shadowTexture, input.lpos, float2( samp, -samp)) +
+		offset_lookup(shadowTexture, input.lpos, float2( samp, samp)) 
+		) * 1.f/9.f;
+
+	return shadowCoeff.r;
+
+	float shad = shadowTexture.Sample( samLinear, input.lpos.xy ).r;
+//	return shad;
+	if ( shad < input.lpos.z) return 0.0;
+
+	return 1.0;
 }
 
 
 float4 PShader(VOut input) : SV_TARGET
 {
-
+	
 	//return material.Specular;
 
 	float3 lightVec;
@@ -101,7 +168,7 @@ float4 PShader(VOut input) : SV_TARGET
 	}
 	else
 		bumpedNormalW = input.NormalW;
-	
+
 	float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	float4 totalAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -111,7 +178,7 @@ float4 PShader(VOut input) : SV_TARGET
 	float4 dirAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 dirDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 dirSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	
+
 	float4 pAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 pDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 pSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -138,13 +205,13 @@ float4 PShader(VOut input) : SV_TARGET
 			v = reflect(-lightVec, bumpedNormalW);
 
 			specFactor	 = pow(max(dot(v, toEye), 0.0f), material.Specular.w);
-			
+
 			if(sceneBuff.specularOn == 1.0f)
 			{
 				dirSpec    += saturate(specFactor * material.Specular * dirLight[i].Specular);
 			}
 		}
-	
+
 	}
 
 	if(sceneBuff.dirLightOn == 1.0f)
@@ -212,7 +279,7 @@ float4 PShader(VOut input) : SV_TARGET
 			if(sceneBuff.diffuseOn == 1.0f)
 				totalDiffuse += (4.0f * pDiffuse);
 			//if(sceneBuff.specularOn == 1.0f)
-				//totalSpec	 += pSpec;
+			//totalSpec	 += pSpec;
 		}
 	}
 
@@ -229,5 +296,6 @@ float4 PShader(VOut input) : SV_TARGET
 
 	color.a = 1.0;
 
-    return color;
+	float shadow =  shadowVal(input);
+	return color * shadow;
 }
