@@ -227,6 +227,9 @@ void Object::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 
 void Object::Depth()
 {
+	XMMATRIX tempMat;
+	
+
 	UINT stride = sizeof(Vertex);
     UINT offset = 0;
 
@@ -234,6 +237,7 @@ void Object::Depth()
 	devcon1->PSSetShader(NULL, 0, 0);
 	
 	devcon1->VSSetConstantBuffers(1, 1, &worldCBuffer);
+	devcon1->PSSetConstantBuffers(1, 1, &worldCBuffer);
 
 	for( int i = 0; i < numMeshes; i++ )
 	{
@@ -246,9 +250,20 @@ void Object::Depth()
 		// select which primtive type we are using
 		devcon1->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+		cb.material = materials[i];
+
 		for( int j = 0; j < mWorldMats.size(); j++)
 		{
-			devcon1->UpdateSubresource(worldCBuffer, 0, 0, &mWorldMats[j], 0, 0);
+			
+
+			tempMat = XMLoadFloat4x4(&mWorldMats[j]);
+			tempMat = XMMatrixInverse(&XMMatrixDeterminant(tempMat), tempMat);
+			
+			
+			cb.matWorld = mWorldMats[j];
+			XMStoreFloat4x4(&cb.matWorldInvTrans, tempMat);
+
+			devcon1->UpdateSubresource(worldCBuffer, 0, 0, &cb, 0, 0);
 			devcon1->Draw( vertexes[i].size(),0);
 		}
 	}

@@ -135,6 +135,15 @@ public:
 	POINT hairPos;
 	POINT posPos;
 	string sText;
+
+		//Shadow Varibles
+	D3D11_VIEWPORT mShadowPort;
+ID3D11Texture2D* pShadowMap;
+ID3D11DepthStencilView* pShadowMapDepthView;
+ID3D11ShaderResourceView* pShadowMapSRView;
+Camera *mShadowCam;
+ID3D11Buffer *shadowCBuffer;
+ShadowBuff shadowBuff;
 };
 
 
