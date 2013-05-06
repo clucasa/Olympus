@@ -38,7 +38,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 	mSkyBox = new SkyBox(mDevcon, mDev, geoGen);
 
-	mCloth = apex->CreateCloth(gRenderer, "ctdm_Cape_400");//"bannercloth");//"curtainew");//
+	mCloth = apex->CreateCloth(gRenderer, "curtainew");//"ctdm_Cape_400");//"bannercloth");//
 	renderables.push_back(mCloth);
 
 	emitter = apex->CreateEmitter(gRenderer, "SmokeEmitter");
@@ -47,7 +47,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
     sphere2 = new Sphere(mDevcon, mDev, geoGen, apex, 2, 30, 30);
 	renderables.push_back(sphere2);
-	sphere2->MoveTo(-18.0f, -65.0f, -243.0f);//-3.0f, 309.5f, -957.3f);
+	sphere2->MoveTo(0.0f,5.0f,-10.0f);//-18.0f, -65.0f, -243.0f);//-3.0f, 309.5f, -957.3f);
     
 	torch1 = apex->CreateEmitter(gRenderer, "TorchEmitter");
 	torch1->SetPosition(-13.5f, -2.0f, -42.0f);
@@ -440,7 +440,7 @@ void RenderManager::Render()
 
 	mDevcon->ClearDepthStencilView(pShadowMapDepthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	mDevcon->RSSetState(0);
+	//mDevcon->RSSetState(0);
 
 	XMStoreFloat4x4(&sceneBuff.viewProj, mCam->ViewProj());
 	sceneBuff.camPos = mCam->GetPosition();

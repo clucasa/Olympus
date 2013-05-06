@@ -81,8 +81,8 @@ void Projectile::Fire(Camera *mCam, float speed)
 		
 		PxTransform transform(pos, PxQuat::createIdentity());
 		PxVec3 dimensions(.5,.5,.5);
-		//PxSphereGeometry geometry(0.5);
-		PxBoxGeometry geometry(dimensions);
+		PxSphereGeometry geometry(0.5);
+		//PxBoxGeometry geometry(dimensions);
 		PxRigidDynamic* boxActor = PxCreateDynamic(*mApex->getPhysics(), transform, geometry, *blockMaterial, density);
 		if (!boxActor)
 			return;

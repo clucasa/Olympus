@@ -97,9 +97,12 @@ void ApexCloth::CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
     // Run Cloth on the GPU
     NxParameterized::setParamBool(*actorDesc, "useHardwareCloth", false);
     NxParameterized::setParamBool(*actorDesc, "flags.ParallelPhysXMeshSkinning", false);
+	NxParameterized::setParamVec3(*actorDesc, "windParams.Velocity", PxVec3(2.0,0.0,17.0));
+    NxParameterized::setParamF32(*actorDesc, "windParams.Adaption", 0.25f);
+
 
     // Initialize the global pose
-    PxMat44 currentPose = PxTransform(PxVec3(0.f,5.f,0.f));
+    PxMat44 currentPose = PxTransform(PxVec3(0.f,0.f,0.f));
     NxParameterized::setParamMat44(*actorDesc, "globalPose", currentPose);
 
     {
@@ -117,8 +120,9 @@ void ApexCloth::CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
     if(clothingActor)
     {
         NxParameterized::Interface* actorDesc = clothingActor->getActorDesc();
-
-        NxParameterized::setParamVec3(*actorDesc, "windParams.Velocity", PxVec3(2.0,0.0,7.0));
+		clothingActor->createCollisionPlane(PxPlane(0,1,0,-1));
+		//clothingActor->createCollisionSphere(
+        NxParameterized::setParamVec3(*actorDesc, "windParams.Velocity", PxVec3(2.0,0.0,17.0));
         NxParameterized::setParamF32(*actorDesc, "windParams.Adaption", 0.25f);
     }
 
@@ -128,6 +132,7 @@ void ApexCloth::CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 
 void ApexCloth::Update()
 {
+	clothingActor->setGraphicalLOD(100);
     clothingActor->lockRenderResources();
     clothingActor->updateRenderResources();
     clothingActor->unlockRenderResources();

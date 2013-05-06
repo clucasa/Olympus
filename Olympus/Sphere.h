@@ -55,6 +55,9 @@ public:
 	ID3D11DeviceContext *mDevcon;
 	ID3D11Device *mDev;
 
+	Apex *mApex;
+	PxRigidStatic* sphereActor;
+
 	ID3D11InputLayout   *mLayout;           // the pointer to the input layout
     ID3D11VertexShader  *mVS;               // the pointer to the vertex shader
     ID3D11PixelShader   *mPS;               // the pointer to the pixel shader
