@@ -23,6 +23,7 @@
 #include <d3dx11.h>
 #include <d3dx10.h>
 #include <vector>
+#include "LightHelper.h"
 
 //using namespace std;
 using namespace physx;
@@ -47,6 +48,8 @@ struct ObjectInfo
 	float x,y,z;
 	float sx,sy,sz;
 	float rx, ry, rz;
+
+	vector<Material> materials; //one per mesh
 };
 #endif
 
@@ -61,7 +64,7 @@ public:
     bool InitParticles();
     bool InitClothing();
 
-	ApexParticles* CreateEmitter(physx::apex::NxUserRenderer* renderer, const char* filename);
+    ApexParticles* CreateEmitter(physx::apex::NxUserRenderer* renderer, const char* filename);
     ApexCloth* CreateCloth(physx::apex::NxUserRenderer* renderer, const char* filename);
 
     bool advance(float dt);

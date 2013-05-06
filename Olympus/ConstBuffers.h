@@ -49,4 +49,12 @@ struct PostPBuff
 
 	XMFLOAT2 padding;
 };
+
+struct ShadowBuff
+{
+  XMFLOAT4X4 lightViewProj;
+  XMFLOAT3 lightPos;
+  float PADdyCake;
+};
+
 #endif

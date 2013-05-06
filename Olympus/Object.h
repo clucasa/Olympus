@@ -23,6 +23,8 @@ struct ObjectInfo
 	float x,y,z;
 	float sx,sy,sz;
 	float rx, ry, rz;
+
+    vector<Material> materials; //one per mesh
 };
 #endif
 
@@ -52,7 +54,7 @@ public:
 	XMFLOAT4X4 mWorldMat;
 
 	vector<XMFLOAT4X4> mWorldMats;
-	vector<Material> materials;
+	vector<vector<Material>> materials;     // each instance has one per mesh. Yea. Fun.
 
 	cbuffs cb;
 

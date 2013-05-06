@@ -20,6 +20,10 @@
 #include <Xinput.h>
 #include "MathHelper.h"
 
+#include <iostream>
+#include <fstream>
+using namespace std;
+
 // include the Direct3D Library file
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dx11.lib")
@@ -62,6 +66,8 @@ public:
     void OnResize();
 	void fpsCalc();
 
+	// Random Helper
+	float randomf(float low, float high);
 private:
     // global declarations
     IDXGISwapChain      *swapchain;         // the pointer to the swap chain interface

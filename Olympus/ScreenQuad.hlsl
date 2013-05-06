@@ -92,7 +92,7 @@ float4 PShader(VOut input) : SV_TARGET
 		blurFactor = abs( blurFactor );
 	}
 	float blur = depthOfField;
-
+	//return float4(1.0,0.0,0.0,1.0);
 	color = (tex.Sample( samLinear, input.texcoord )) * 4.0f;
 
 	color += ( tex.Sample( samLinear, float2( input.texcoord.x+blur, input.texcoord.y ) ) ) * 2.0f;

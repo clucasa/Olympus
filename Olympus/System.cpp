@@ -434,7 +434,7 @@ int System::InitPipeline()
 /////////////////////////////////////
 // CAMERA STUFF
 /////////////////////////////////////
-
+float cooldown = 0.0f;
 void System::UpdateCamera(float dt)
 {
 	//////////////////////////////////
@@ -535,10 +535,36 @@ void System::UpdateCamera(float dt)
         // Shoot block with right trigger     
         if( state.Gamepad.bRightTrigger && state.Gamepad.bLeftTrigger < 256 )
         {
+			XMFLOAT3 originalPos = mCam->GetPosition();
             shootspeed = (state.Gamepad.bRightTrigger / 255) * 100.0f;
-			rendManager->projectile->Fire(mCam, shootspeed);
+			//rendManager->projectile->Fire(mCam, shootspeed);	
+			for(int i = 0; i < 20; i++)
+			{
+				mCam->SetPosition(originalPos.x + 5 * sinf(i), originalPos.y, originalPos.z + 5 * cosf(i));
+				rendManager->projectile->Fire(mCam, shootspeed);	
+			}
+			mCam->SetPosition(originalPos.x, originalPos.y, originalPos.z);
         }
 		
+		if( state.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
+		{
+			if(cooldown > 0)
+			{
+				cooldown--;
+			}
+			else
+			{
+				ofstream myfile;
+				myfile.open("treepositions.txt", ios::app);
+				float scale = randomf(0.12,0.24);
+				myfile  << "i " << camPos.x << " " << camPos.y << " " << camPos.z << " " 
+						<< scale << " " << scale << " " << scale << " " << "0.0" << " " << randomf(0.0, 6.2832) << " " << "0.0" << endl;
+				myfile  << "a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.9 0.9 0.9 10.0 0.0 0.0 0.0 0.0 0" << endl;
+				myfile  << "a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.9 0.9 0.9 70.0 0.0 0.0 0.0 0.0 1" << endl;
+				myfile.close();
+				cooldown += 10.0f;
+			}
+		}
     }
     else{ // Controller is disconnected, oh balls
         float speed = 10.0f;
@@ -610,13 +636,13 @@ void System::UpdateCamera(float dt)
 	if( (GetAsyncKeyState(0x69) & 0x8000) )
 	{
 		if(rendManager->mScreen->cb->depthOfField <= .02)
-			rendManager->mScreen->cb->depthOfField += .001;			
+			rendManager->mScreen->cb->depthOfField += .00001;			
 	}
 	//Numpad 6
 	if( (GetAsyncKeyState(0x66) & 0x8000) )
 	{
 		if(rendManager->mScreen->cb->depthOfField > 0)
-			rendManager->mScreen->cb->depthOfField -= .001;				
+			rendManager->mScreen->cb->depthOfField -= .00001;				
 	}
 
 	//Numpad 9 + left shift
@@ -762,3 +788,8 @@ void System::OnResize()
     devcon->RSSetViewports(1, &mViewport);
 }
  
+
+float System::randomf(float low, float high)
+{
+	return low + (float)rand()/((float)RAND_MAX/(high-low));
+}

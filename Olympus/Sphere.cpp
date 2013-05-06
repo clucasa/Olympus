@@ -92,7 +92,7 @@ void Sphere::SetupPipeline()
 
     mDev->CreateInputLayout(ied, 4, VS->GetBufferPointer(), VS->GetBufferSize(), &mLayout);
    
-	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/mountains1024.dds", 0, 0, &mDynamicCubeMapSRVSphere, 0 );
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/cloudymountains2048new.dds", 0, 0, &mDynamicCubeMapSRVSphere, 0 );
 }
 
 void Sphere::CreateGeometry(GeometryGenerator *geoGen)
@@ -265,7 +265,7 @@ void Sphere::BuildDynamicCubeMapViewsSphere()
     srvDesc.TextureCube.MostDetailedMip = 0;
     srvDesc.TextureCube.MipLevels = -1;
 
-   HRESULT hrte = mDev->CreateShaderResourceView(cubeTex, &srvDesc, &mDynamicCubeMapSRVSphere);
+    HRESULT hrte = mDev->CreateShaderResourceView(cubeTex, &srvDesc, &mDynamicCubeMapSRVSphere);
 
     //ReleaseCOM(cubeTex);
 
@@ -429,6 +429,11 @@ void Sphere::MoveTo(float x, float y, float z)
 	mX = x;
 	mY = y;
 	mZ = z;
+
+	if(reflective)
+	{
+		BuildCubeFaceCamera(mX, mY, mZ);
+	}
 }
 
 void Sphere::IsItReflective(bool isReflective)
