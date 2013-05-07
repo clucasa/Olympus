@@ -54,11 +54,11 @@ void ApexCloth::InitPipeline()
     {
        // { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }, 
         {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		//{ "NORMAL",	  0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		{ "NORMAL",	  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
     // use the input element descriptions to create the input layout
-    mDev->CreateInputLayout(clothied, 1, sVS->GetBufferPointer(), sVS->GetBufferSize(), &mLayout);
+    mDev->CreateInputLayout(clothied, 2, sVS->GetBufferPointer(), sVS->GetBufferSize(), &mLayout);
 
     // create the constant buffer
     D3D11_BUFFER_DESC bd;
@@ -124,6 +124,11 @@ void ApexCloth::CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 		//clothingActor->createCollisionSphere(
         NxParameterized::setParamVec3(*actorDesc, "windParams.Velocity", PxVec3(2.0,0.0,17.0));
         NxParameterized::setParamF32(*actorDesc, "windParams.Adaption", 0.25f);
+
+        NxParameterized::setParamF32(*actorDesc, "lodWeights.maxDistance", 200.0f);
+        NxParameterized::setParamF32(*actorDesc, "lodWeights.distanceWeight", 1.0);
+        NxParameterized::setParamF32(*actorDesc, "lodWeights.benefitsBias", 0.3);
+
     }
 
      InitPipeline();
@@ -132,7 +137,8 @@ void ApexCloth::CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 
 void ApexCloth::Update()
 {
-	clothingActor->setGraphicalLOD(100);
+	//clothingActor->setGraphicalLOD(1000);
+    //clothingActor->setLODWeights(100,10,10,10);
     clothingActor->lockRenderResources();
     clothingActor->updateRenderResources();
     clothingActor->unlockRenderResources();

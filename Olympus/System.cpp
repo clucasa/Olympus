@@ -374,9 +374,10 @@ int System::initd3d()
 	mCam = new Camera();
 	mLastMousePos.x = 0;
 	mLastMousePos.y = 0;
-    mCam->SetPosition(0.0f, 5.0f, 10.0f);
-	//mCam->RotateY(90);
+    mCam->SetPosition(-10.0f, 5.0f, 15.0f);
+	mCam->RotateY(2.3);
 	mCam->SetLens(0.25f*MathHelper::Pi, (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 1.0f, 10000.0f);
+    mCam->UpdateViewMatrix();
 
     mApex = new Apex();
     mApex->Init(dev, devcon);
@@ -537,13 +538,13 @@ void System::UpdateCamera(float dt)
         {
 			XMFLOAT3 originalPos = mCam->GetPosition();
             shootspeed = (state.Gamepad.bRightTrigger / 255) * 100.0f;
-			//rendManager->projectile->Fire(mCam, shootspeed);	
-			for(int i = 0; i < 20; i++)
+			rendManager->projectile->Fire(mCam, shootspeed);	
+			/*for(int i = 0; i < 20; i++)
 			{
 				mCam->SetPosition(originalPos.x + 5 * sinf(i), originalPos.y, originalPos.z + 5 * cosf(i));
 				rendManager->projectile->Fire(mCam, shootspeed);	
 			}
-			mCam->SetPosition(originalPos.x, originalPos.y, originalPos.z);
+			mCam->SetPosition(originalPos.x, originalPos.y, originalPos.z);*/
         }
 		
 		if( state.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
