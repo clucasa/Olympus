@@ -10,7 +10,7 @@
 
 using namespace std;
 
-#define MAXBOXES 10000
+#define MAXBOXES 100000
 
 class Projectile : public Renderable
 {
@@ -23,6 +23,7 @@ public:
 	void Update();
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
 	virtual void RecompileShader();
+	virtual void Depth();
 
 	ID3D11Device *mDev;                     // the pointer to our Direct3D device interface
 	ID3D11DeviceContext *mDevcon;           // the pointer to our Direct3D device context

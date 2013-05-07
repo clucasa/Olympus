@@ -11,6 +11,7 @@ cbuffer worldBuffer	   : register(b1)
 	float4x4 matWorld;
 	float4x4 matWorldInvTrans;
 	Material material;
+
 }
 
 cbuffer DirectionalLight : register(b2)
@@ -110,15 +111,16 @@ float shadowVal(VOut input)
 		input.lpos.y < -1.0f || input.lpos.y > 1.0f ||
 		input.lpos.z < 0.0f  || input.lpos.z > 1.0f ) return 1.0;
 
+	//return 0.0;
 
 	input.lpos.x = input.lpos.x/2 + 0.5;
 	input.lpos.y = input.lpos.y/-2 + 0.5;
 
-	input.lpos.z -= .001;
+	input.lpos.z -= .0015;
 
 
 	//float samp = 1000 * 1/4096;
-	float samp = .001;
+	float samp = .0005;
 
 	float3 shadowCoeff = (
 		offset_lookup(shadowTexture, input.lpos, float2(0, 0))+
@@ -144,7 +146,19 @@ float shadowVal(VOut input)
 
 float4 PShader(VOut input) : SV_TARGET
 {
+
+	float4 textureColor = float4(1.0f,1.0f,0.0f,1.0f);//float4(0.0f, 0.0f, 0.0f, 1.0f);
+
+	if(sceneBuff.textures == 1.0f)
+		textureColor = diffuseTexture.Sample( samLinear, input.Tex );
+	else
+		textureColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
 	
+	if( material.AlphaKillOn )
+		clip( textureColor.a - .6f );
+
+
 	//return material.Specular;
     
     if(material.AlphaKillOn)
@@ -187,6 +201,8 @@ float4 PShader(VOut input) : SV_TARGET
 	float4 pDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 pSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
+	float shadow =  shadowVal(input);
+
 	for(int i = 0; i < 1; i++)
 	{
 		if(sceneBuff.ambientOn == 1.0f)
@@ -212,7 +228,7 @@ float4 PShader(VOut input) : SV_TARGET
 
 			if(sceneBuff.specularOn == 1.0f)
 			{
-				dirSpec    += saturate(specFactor * material.Specular * dirLight[i].Specular);
+				dirSpec    += specFactor * material.Specular * dirLight[i].Specular;
 			}
 		}
 
@@ -224,10 +240,10 @@ float4 PShader(VOut input) : SV_TARGET
 			totalAmbient += dirAmbient;
 
 		if(sceneBuff.diffuseOn == 1.0f)
-			totalDiffuse += dirDiffuse;
+			totalDiffuse += dirDiffuse*shadow;
 
 		if(sceneBuff.specularOn == 1.0f)
-			totalSpec	 += dirSpec;
+			totalSpec	 += dirSpec*shadow;
 	}
 
 	for(int i = 0; i < 2; i++)
@@ -288,6 +304,19 @@ float4 PShader(VOut input) : SV_TARGET
 	}
 
 
+	
+
+	color = textureColor*(totalAmbient + totalDiffuse) + totalSpec;
+	//clip(color.a < 0.999999f ? -1:1 );
+
+	color.a = 1.0;
+
+	
+	return color;
+}
+
+void PSAplhaShadow(VOut input)
+{
 	float4 textureColor = float4(1.0f,1.0f,0.0f,1.0f);//float4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	if(sceneBuff.textures == 1.0f)
@@ -295,11 +324,6 @@ float4 PShader(VOut input) : SV_TARGET
 	else
 		textureColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	color = saturate(textureColor*(totalAmbient + totalDiffuse) + totalSpec);
-	//clip(color.a < 0.999999f ? -1:1 );
-
-	color.a = 1.0;
-
-	float shadow =  shadowVal(input);
-	return color * shadow;
+	if( material.AlphaKillOn )
+		clip( textureColor.a - .6f );
 }

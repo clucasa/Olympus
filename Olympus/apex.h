@@ -49,7 +49,7 @@ struct ObjectInfo
 	float sx,sy,sz;
 	float rx, ry, rz;
 
-    vector<Material> materials; //one per mesh
+	vector<Material> materials; //one per mesh
 };
 #endif
 
@@ -64,7 +64,7 @@ public:
     bool InitParticles();
     bool InitClothing();
 
-	ApexParticles* CreateEmitter(physx::apex::NxUserRenderer* renderer, const char* filename);
+    ApexParticles* CreateEmitter(physx::apex::NxUserRenderer* renderer, const char* filename);
     ApexCloth* CreateCloth(physx::apex::NxUserRenderer* renderer, const char* filename);
 
     bool advance(float dt);

@@ -114,6 +114,8 @@ public:
 
 	ApexParticles* particles;
 	ApexParticles* emitter;
+	ApexParticles* torch1;
+	ApexParticles* torch2;
     ApexCloth* mCloth;
 	
 	vector<Renderable*> renderables;

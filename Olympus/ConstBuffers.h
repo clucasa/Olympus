@@ -52,8 +52,9 @@ struct PostPBuff
 
 struct ShadowBuff
 {
-    XMFLOAT3 lightPos;
-    XMFLOAT4X4 lightViewProj;
-    float PADdyCake;
+  XMFLOAT4X4 lightViewProj;
+  XMFLOAT3 lightPos;
+  float PADdyCake;
 };
+
 #endif

@@ -155,7 +155,7 @@ void Object::AddInstance(ObjectInfo info)
 	rot *= XMMatrixRotationX(info.rx);
 	rot *= XMMatrixRotationZ(info.rz);
 
-	XMStoreFloat4x4(&final, XMMatrixMultiply(scale,  XMMatrixMultiply(trans, rot) ) );
+	XMStoreFloat4x4(&final, XMMatrixMultiply(scale,  XMMatrixMultiply(rot, trans) ) );
 
 	mWorldMats.push_back(final);
 	for( int i = 0; i < numMeshes; i++ )

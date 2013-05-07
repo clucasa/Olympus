@@ -89,7 +89,7 @@
     <Filter Include="Rendering\Objects\Projectiles">
       <UniqueIdentifier>{860c1009-e313-465f-9f82-ff095ab77d19}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Scenes">
+    <Filter Include="Resource Files\Scene">
       <UniqueIdentifier>{8d7c2572-2f53-4144-8b01-b2e5c77cd94b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -199,29 +199,29 @@
     <None Include="ConstBuffers.hlsl">
       <Filter>Rendering\Objects\Helpers</Filter>
     </None>
-    <None Include="clothshader.hlsl">
-      <Filter>Rendering\Objects\ApexCloth</Filter>
+    <None Include="Scene\archway.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\bigbadman.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\Scene.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\terrain.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\torch.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\trees.txt">
+      <Filter>Resource Files\Scene</Filter>
     </None>
     <None Include="destructableshader.hlsl">
       <Filter>Rendering\Objects\ApexDestructable</Filter>
     </None>
-    <None Include="Scene\archway.txt">
-      <Filter>Resource Files\Scenes</Filter>
-    </None>
-    <None Include="Scene\bigbadman.txt">
-      <Filter>Resource Files\Scenes</Filter>
-    </None>
-    <None Include="Scene\Scene.txt">
-      <Filter>Resource Files\Scenes</Filter>
-    </None>
-    <None Include="Scene\terrain.txt">
-      <Filter>Resource Files\Scenes</Filter>
-    </None>
-    <None Include="Scene\torch.txt">
-      <Filter>Resource Files\Scenes</Filter>
-    </None>
-    <None Include="Scene\trees.txt">
-      <Filter>Resource Files\Scenes</Filter>
+    <None Include="clothshader.hlsl">
+      <Filter>Rendering\Objects\ApexCloth</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

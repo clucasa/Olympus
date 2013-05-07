@@ -41,7 +41,7 @@ void* ZeusResourceCallback::requestResource(const char* nameSpace, const char* n
         bool success = stream->getOpenMode() == physx::PxFileBuf::OPEN_READ_ONLY;
         if(!success)
         {
-            filename = name + std::string(".mesh.xml"); 
+            filename = name + std::string(".apx"); 
             stream = NxGetApexSDK()->createStream( filename.c_str(), physx::PxFileBuf::OPEN_READ_ONLY );
             if(stream)
             {

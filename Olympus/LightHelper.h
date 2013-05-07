@@ -77,7 +77,7 @@ struct Material
 	XMFLOAT4 Specular; // w = SpecPower
 	XMFLOAT4 Reflect;
 
-    int alphaKillOn;
+	int alphaKillOn;
     XMFLOAT3 padding;
 };
 

@@ -81,7 +81,8 @@ void Projectile::Fire(Camera *mCam, float speed)
 		
 		PxTransform transform(pos, PxQuat::createIdentity());
 		PxVec3 dimensions(.5,.5,.5);
-		PxBoxGeometry geometry(dimensions);
+		PxSphereGeometry geometry(0.5);
+		//PxBoxGeometry geometry(dimensions);
 		PxRigidDynamic* boxActor = PxCreateDynamic(*mApex->getPhysics(), transform, geometry, *blockMaterial, density);
 		if (!boxActor)
 			return;
@@ -167,6 +168,32 @@ void Projectile::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 		mDevcon->Draw( vertices.size(),0);
 	}
 
+}
+
+void Projectile::Depth()
+{
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+
+	mDevcon->VSSetShader(opVS, 0, 0);
+	mDevcon->PSSetShader(NULL, 0, 0);
+	
+	mDevcon->VSSetConstantBuffers(1, 1, &worldCBuffer);
+
+
+	mDevcon->IASetInputLayout(objLayout);
+    mDevcon->PSSetShaderResources(0, 1, &mTexture );
+    mDevcon->PSSetShaderResources(1, 1, &mNmap );
+	mDevcon->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+
+	// select which primtive type we are using
+	mDevcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	for( int j = 0; j < mWorldMats.size(); j++)
+	{
+		mDevcon->UpdateSubresource(worldCBuffer, 0, 0, &mWorldMats[j], 0, 0);
+		mDevcon->Draw( vertices.size(),0);
+	}
 }
 
 void Projectile::RecompileShader()

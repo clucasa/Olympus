@@ -8,7 +8,7 @@ Sphere::Sphere()
 }
 
 Sphere::Sphere(ID3D11DeviceContext *mDevcon, ID3D11Device *mDev, GeometryGenerator *geoGen, Apex* apex, int radius, int slices, int stacks) : 
-	mDevcon(mDevcon), mDev(mDev), radius(radius), slices(slices), stacks(stacks), reflective(false)
+	mDevcon(mDevcon), mDev(mDev), radius(radius), slices(slices), stacks(stacks), reflective(false), mApex(apex)
 {
 	mX = -20.0f;
 	mY = 4.0f;
@@ -19,6 +19,25 @@ Sphere::Sphere(ID3D11DeviceContext *mDevcon, ID3D11Device *mDev, GeometryGenerat
 	SetupBuffer();
 	SetupPipeline();
 	SetupRenderTarget();
+
+	PxVec3 pos = PxVec3(mX, mY, mZ);
+	PxReal density = 10.0f;
+		
+	PxTransform transform(pos, PxQuat::createIdentity());
+	//PxVec3 dimensions(radius,radius,radius);
+	PxSphereGeometry geometry(radius);
+	//PxBoxGeometry geometry(dimensions);
+	sphereActor = PxCreateStatic(*mApex->getPhysics(), transform, geometry, *mApex->getPhysics()->createMaterial(0.8f, 0.8f, 0.1f));
+	if (!sphereActor)
+		return;
+
+	//CCD
+	PxShape** shapes = new PxShape*[1];
+	sphereActor->getShapes(shapes, 1, 0);
+	shapes[0]->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
+	delete [] shapes;
+
+	mApex->getScene()->addActor(*sphereActor);
 }
 
 void Sphere::SetupRenderTarget()
@@ -92,7 +111,7 @@ void Sphere::SetupPipeline()
 
     mDev->CreateInputLayout(ied, 4, VS->GetBufferPointer(), VS->GetBufferSize(), &mLayout);
    
-	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/mountains1024.dds", 0, 0, &mDynamicCubeMapSRVSphere, 0 );
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/cloudymountains2048new.dds", 0, 0, &mDynamicCubeMapSRVSphere, 0 );
 }
 
 void Sphere::CreateGeometry(GeometryGenerator *geoGen)
@@ -265,7 +284,7 @@ void Sphere::BuildDynamicCubeMapViewsSphere()
     srvDesc.TextureCube.MostDetailedMip = 0;
     srvDesc.TextureCube.MipLevels = -1;
 
-   HRESULT hrte = mDev->CreateShaderResourceView(cubeTex, &srvDesc, &mDynamicCubeMapSRVSphere);
+    HRESULT hrte = mDev->CreateShaderResourceView(cubeTex, &srvDesc, &mDynamicCubeMapSRVSphere);
 
     //ReleaseCOM(cubeTex);
 
@@ -429,6 +448,14 @@ void Sphere::MoveTo(float x, float y, float z)
 	mX = x;
 	mY = y;
 	mZ = z;
+
+	if(reflective)
+	{
+		BuildCubeFaceCamera(mX, mY, mZ);
+	}
+
+	sphereActor->setGlobalPose(PxTransform(PxVec3(mX,mY,mZ)));
+
 }
 
 void Sphere::IsItReflective(bool isReflective)
