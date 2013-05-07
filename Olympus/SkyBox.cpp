@@ -63,7 +63,7 @@ void SkyBox::CreateGeometry(GeometryGenerator *geoGen)
 
 void SkyBox::SetupBuffer()
 {
-	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/mountains1024.dds", 0, 0, &mCubeMap, 0 );
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/cloudymountains2048new.dds", 0, 0, &mCubeMap, 0 );
 	
     // create the vertex buffer
     D3D11_BUFFER_DESC bd;

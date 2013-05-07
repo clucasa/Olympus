@@ -162,7 +162,7 @@ void Sphere::SetupBuffer()
     bd.ByteWidth = sizeof(cbuffs);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
-    mDev->CreateBuffer(&bd, NULL, &mConstBuffer);
+    HRESULT hr = mDev->CreateBuffer(&bd, NULL, &mConstBuffer);
 
 
 	ZeroMemory(&bd, sizeof(bd));

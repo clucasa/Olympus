@@ -16,7 +16,8 @@ ZeusVertexBuffer::ZeusVertexBuffer(const physx::apex::NxUserRenderVertexBufferDe
         
         if (apexFormat != physx::apex::NxRenderDataFormat::UNSPECIFIED)
         {
-            mStride += physx::apex::NxRenderDataFormat::getFormatDataSize(apexFormat);
+            if (apexSemantic == physx::apex::NxRenderVertexSemantic::POSITION || apexSemantic == physx::apex::NxRenderVertexSemantic::TEXCOORD0)
+                mStride += physx::apex::NxRenderDataFormat::getFormatDataSize(apexFormat);
         }
     }
 
@@ -27,22 +28,9 @@ ZeusVertexBuffer::ZeusVertexBuffer(const physx::apex::NxUserRenderVertexBufferDe
     d3ddesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     d3ddesc.MiscFlags = 0;
 
-    if(desc.hint == NxRenderBufferHint::STATIC)
-    {
-        d3ddesc.Usage = D3D11_USAGE_DEFAULT;
-    }
-    else if(desc.hint == NxRenderBufferHint::DYNAMIC)
-    {
-        d3ddesc.Usage = D3D11_USAGE_DYNAMIC;
-    }
-    else if(desc.hint == NxRenderBufferHint::STREAMING)
-    {
-        d3ddesc.Usage = D3D11_USAGE_DYNAMIC; //Until I know what better to use
-    }
-    else
-        return;
-
-    mDevice->CreateBuffer(&d3ddesc, NULL, &mVertexBuffer);
+    d3ddesc.Usage = D3D11_USAGE_DYNAMIC; //Until I know what better to use
+    
+    HRESULT hr = mDevice->CreateBuffer(&d3ddesc, NULL, &mVertexBuffer);
 }
 
 ZeusVertexBuffer::~ZeusVertexBuffer(void)
@@ -60,41 +48,57 @@ bool ZeusVertexBuffer::getInteropResourceHandle(CUgraphicsResource& handle)
 
 void ZeusVertexBuffer::writeBuffer(const physx::NxApexRenderVertexBufferData& data, physx::PxU32 firstVertex, physx::PxU32 numVertices)
 {
-    //D3D11_MAPPED_SUBRESOURCE mappedResource;
-    //HRESULT result;
-    //physx::apex::NxApexRenderSemanticData* verticesPtr;
-    //physx::apex::NxApexRenderSemanticData* srcData = (physx::apex::NxApexRenderSemanticData*) malloc(mStride*numVertices);
-    //// Lock the vertex buffer so it can be written to.
-    //result = mDevcon->Map(mVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    //if(FAILED(result))
-    //{
-    //    return;
-    //}
+    if (!mVertexBuffer || !numVertices)
+	{
+		return;
+	}
+    
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    HRESULT result;
 
-    //// Get a pointer to the data in the vertex buffer.
-    //verticesPtr = (physx::apex::NxApexRenderSemanticData*)mappedResource.pData + (firstVertex * mStride);
-    //
-    //// Copy the data into the vertex buffer.
-    //
+    // Lock the vertex buffer so it can be written to.
+    result = mDevcon->Map(mVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    if(FAILED(result))
+    {
+        return;
+    }
+    physx::PxU32 currentStride = 0;
+    physx::PxU32 numSem = 0;
+    physx::PxU32 totalStride = mStride;
 
-    //for(physx::PxU32 i = 0; i < numVertices; i++)
-    //{
-    //    for (physx::PxU32 j = 0; j < physx::apex::NxRenderVertexSemantic::NUM_SEMANTICS; j++)
-    //    {
-    //        physx::apex::NxRenderVertexSemantic::Enum apexSemantic = (physx::apex::NxRenderVertexSemantic::Enum)j;
-    //        const physx::apex::NxApexRenderSemanticData& semanticData = data.getSemanticData(apexSemantic);
-    //        if (semanticData.data)
-    //        {
-    //            memcpy(srcData + (mStride * i), semanticData.data, semanticData.stride);
-    //        }
-    //    }
-    //}
+    for (physx::PxU32 i = 0; i < physx::apex::NxRenderVertexSemantic::NUM_SEMANTICS; i++)
+	{
+		physx::apex::NxRenderVertexSemantic::Enum semantic = (physx::apex::NxRenderVertexSemantic::Enum)i;
+		const physx::apex::NxApexRenderSemanticData& semanticData = data.getSemanticData(semantic);
+        if (semantic == physx::apex::NxRenderVertexSemantic::POSITION || semantic == physx::apex::NxRenderVertexSemantic::TEXCOORD0)
+        {
+            if (semanticData.data)
+            {
+                const void* srcData = semanticData.data;
+                const physx::PxU32 srcStride = semanticData.stride;
 
-    //memcpy(verticesPtr, srcData, (mStride * numVertices));
+                void* dstData = mappedResource.pData;
+                PX_ASSERT(dstData && totalStride);
+                if (dstData && totalStride)
+                {
+                    dstData = ((physx::PxU8*)dstData) + (firstVertex * srcStride);//totalStride);
+                    physx::PxU32 formatSize = srcStride;
 
-    //// Unlock the vertex buffer.
-    //mDevcon->Unmap(mVertexBuffer, 0);
+                    for (physx::PxU32 j = 0; j < numVertices; j++)
+                    {
+                        memcpy(dstData, srcData, formatSize); // This doesn't work for writin multiple semantics per buffer, think of a fix
+                        srcData = ((physx::PxU8*)srcData) + srcStride;
+                        dstData = ((physx::PxU8*)dstData) + srcStride;//totalStride;
+                    }
+                    //currentStride += srcStride;
+                }
+            } 
+        }
 
+	}
+    	
+	// Unlock the vertex buffer.
+    mDevcon->Unmap(mVertexBuffer, 0);
 }
 
 
@@ -113,22 +117,10 @@ ZeusIndexBuffer::ZeusIndexBuffer(const physx::apex::NxUserRenderIndexBufferDesc&
     d3ddesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     d3ddesc.MiscFlags = 0;
     
-    if(desc.hint == NxRenderBufferHint::STATIC)
-    {
-        d3ddesc.Usage = D3D11_USAGE_DEFAULT;
-    }
-    else if(desc.hint == NxRenderBufferHint::DYNAMIC)
-    {
-        d3ddesc.Usage = D3D11_USAGE_DYNAMIC;
-    }
-    else if(desc.hint == NxRenderBufferHint::STREAMING)
-    {
-        d3ddesc.Usage = D3D11_USAGE_DYNAMIC; //Until I know what better to use
-    }
-    else
-        return;
+    d3ddesc.Usage = D3D11_USAGE_DYNAMIC; //Until I know what better to use
 
-    mDevice->CreateBuffer(&d3ddesc, NULL, &mIndexBuffer);
+
+    HRESULT hr = mDevice->CreateBuffer(&d3ddesc, NULL, &mIndexBuffer);
 
 }
 
@@ -147,41 +139,43 @@ bool ZeusIndexBuffer::getInteropResourceHandle(CUgraphicsResource& handle)
 
 void ZeusIndexBuffer::writeBuffer(const void* srcData, physx::PxU32 srcStride, physx::PxU32 firstDestElement, physx::PxU32 numElements)
 {
-   // D3D11_MAPPED_SUBRESOURCE mappedResource;
-   // HRESULT result;
-   // physx::apex::NxApexRenderSemanticData* dstData;
-   // //physx::apex::NxApexRenderSemanticData* srcData;
+   if (!mIndexBuffer || !numElements)
+	{
+		return;
+	}
+    
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    HRESULT result;
 
-   // // Lock the vertex buffer so it can be written to.
-   // result = mDevcon->Map(mIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-   // if(FAILED(result))
-   // {
-   //     return;
-   // }
+    // Lock the vertex buffer so it can be written to.
+    result = mDevcon->Map(mIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    if(FAILED(result))
+    {
+        return;
+    }
+        
+	if (srcData)
+	{
+		void* dstData = mappedResource.pData;
+		void* dstDataCopy = dstData;
 
-   // // Get a pointer to the data in the vertex buffer.
-   // dstData = (physx::apex::NxApexRenderSemanticData*)mappedResource.pData + (firstDestElement * mStride);
-   // 
-   // // Copy the data into the vertex buffer.
-   // 
+		PX_ASSERT(dstData);
+		if (dstData && srcStride)
+		{
+			dstData = ((physx::PxU8*)dstData) + firstDestElement * srcStride;
+            physx::PxU32 formatSize = mStride;
+			for (physx::PxU32 j = 0; j < numElements; j++)
+			{
+				memcpy(dstData, srcData, formatSize);
+				srcData = ((physx::PxU8*)srcData) + srcStride;
+				dstData = ((physx::PxU8*)dstData) + srcStride;
+			}
+		}
+	}
+	
 
-   ///* for(physx::PxU32 i = 0; i < numVertices; i++)
-   // {
-   //     for (physx::PxU32 j = 0; j < physx::apex::NxRenderVertexSemantic::NUM_SEMANTICS; j++)
-   //     {
-   //         physx::apex::NxRenderVertexSemantic::Enum apexSemantic = (physx::apex::NxRenderVertexSemantic::Enum)j;
-   //         const physx::apex::NxApexRenderSemanticData& semanticData = data.getSemanticData(apexSemantic);
-   //         if (semanticData.data)
-   //         {
-   //             memcpy(srcData + (mStride * i), semanticData.data, semanticData.stride);
-   //         }
-   //     }
-   // }*/
-
-   // memcpy(dstData, (physx::apex::NxApexRenderSemanticData*)srcData, (mStride * numElements));
-
-   // // Unlock the vertex buffer.
-   // mDevcon->Unmap(mIndexBuffer, 0);
+	// Unlock the index buffer.
+    mDevcon->Unmap(mIndexBuffer, 0);
 }
 
 /*******************************
@@ -480,12 +474,14 @@ ZeusRenderResource::~ZeusRenderResource()
 
 void ZeusRenderResource::setVertexBufferRange(physx::PxU32 firstVertex, physx::PxU32 numVerts)
 {
-
+    mVertexStart = firstVertex;
+	mVertexCount = numVerts;
 }
 
 void ZeusRenderResource::setIndexBufferRange(physx::PxU32 firstIndex, physx::PxU32 numIndices)
 {
-
+    mIndexStart = firstIndex;
+	mIndexCount = numIndices;
 }
 
 void ZeusRenderResource::setBoneBufferRange(physx::PxU32 firstBone, physx::PxU32 numBones)
@@ -515,6 +511,31 @@ void ZeusRenderResource::Render()
 	{
 		mSpriteBuffer->Render(mSpriteStart, mSpriteCount);
 	}
+    else if(mIndexBuffer && mVertexBuffers[0])
+    {
+        //Render somehow?
+        UINT* strides = (UINT*) malloc(sizeof(UINT) * mVertexBuffers.size());
+        UINT* offsets = (UINT*) malloc(sizeof(UINT) * mVertexBuffers.size());
+        ID3D11Buffer* buffers = (ID3D11Buffer*) malloc(sizeof(ID3D11Buffer) * mVertexBuffers.size());
+        ID3D11Buffer* buffers2[2];
+        buffers2[0] = mVertexBuffers[0]->mVertexBuffer;
+        buffers2[1] = mVertexBuffers[1]->mVertexBuffer;
+
+        for(int i = 0; i < mVertexBuffers.size(); i++)
+        {
+            strides[i] = mVertexBuffers[i]->mStride;
+            offsets[i] = 0;
+            buffers[i] = *mVertexBuffers[i]->mVertexBuffer;
+        }
+        mIndexBuffer->mDevcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        mIndexBuffer->mDevcon->IASetIndexBuffer(mIndexBuffer->mIndexBuffer, DXGI_FORMAT_R32_UINT, offsets[0]);
+        
+        UINT stride = (UINT)12;
+	    UINT offset = 0;
+        mIndexBuffer->mDevcon->IASetVertexBuffers(0, 1, &mVertexBuffers[1]->mVertexBuffer, &stride, &offset);
+        
+        mIndexBuffer->mDevcon->DrawIndexed(mIndexCount, mIndexStart, mVertexStart);
+    }
 }
 
 

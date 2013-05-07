@@ -11,9 +11,6 @@
     <Filter Include="Rendering">
       <UniqueIdentifier>{e32bb8b1-451a-46ab-aa56-66ec756898b5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\shaders">
-      <UniqueIdentifier>{8d7c2572-2f53-4144-8b01-b2e5c77cd94b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="System">
       <UniqueIdentifier>{9a5cdafb-2f2d-45eb-b937-888bcf1420b1}</UniqueIdentifier>
     </Filter>
@@ -92,6 +89,9 @@
     <Filter Include="Rendering\Objects\Projectiles">
       <UniqueIdentifier>{860c1009-e313-465f-9f82-ff095ab77d19}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Scenes">
+      <UniqueIdentifier>{8d7c2572-2f53-4144-8b01-b2e5c77cd94b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="apex.cpp">
@@ -167,11 +167,11 @@
     <ClCompile Include="Projectile.cpp">
       <Filter>Rendering\Objects\Projectiles</Filter>
     </ClCompile>
+    <ClCompile Include="ApexDestructable.cpp">
+      <Filter>Rendering\Objects\ApexDestructable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders.hlsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
     <None Include="OnScreen.hlsl">
       <Filter>Rendering\Objects\OnScreen</Filter>
     </None>
@@ -198,6 +198,30 @@
     </None>
     <None Include="ConstBuffers.hlsl">
       <Filter>Rendering\Objects\Helpers</Filter>
+    </None>
+    <None Include="clothshader.hlsl">
+      <Filter>Rendering\Objects\ApexCloth</Filter>
+    </None>
+    <None Include="destructableshader.hlsl">
+      <Filter>Rendering\Objects\ApexDestructable</Filter>
+    </None>
+    <None Include="Scene\archway.txt">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Scene\bigbadman.txt">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Scene\Scene.txt">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Scene\terrain.txt">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Scene\torch.txt">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Scene\trees.txt">
+      <Filter>Resource Files\Scenes</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -290,6 +314,9 @@
     </ClInclude>
     <ClInclude Include="ConstBuffers.h">
       <Filter>Rendering\Objects\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ApexDestructable.h">
+      <Filter>Rendering\Objects\ApexDestructable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -110,6 +110,7 @@
   <ItemGroup>
     <ClCompile Include="apex.cpp" />
     <ClCompile Include="ApexCloth.cpp" />
+    <ClCompile Include="ApexDestructable.cpp" />
     <ClCompile Include="ApexParticles.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FontSheet.cpp" />
@@ -135,13 +136,20 @@
     <ClCompile Include="ZeusResourceCallback.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="clothshader.hlsl" />
     <None Include="ConstBuffers.hlsl" />
+    <None Include="destructableshader.hlsl" />
     <None Include="GroundPlane.hlsl" />
     <None Include="LightHelper.hlsl" />
     <None Include="models.hlsl" />
     <None Include="OnScreen.hlsl" />
+    <None Include="Scene\archway.txt" />
+    <None Include="Scene\bigbadman.txt" />
+    <None Include="Scene\Scene.txt" />
+    <None Include="Scene\terrain.txt" />
+    <None Include="Scene\torch.txt" />
+    <None Include="Scene\trees.txt" />
     <None Include="ScreenQuad.hlsl" />
-    <None Include="shaders.hlsl" />
     <None Include="Skybox.hlsl" />
     <None Include="Sphere.hlsl" />
     <None Include="spriteshader.hlsl" />
@@ -149,6 +157,7 @@
   <ItemGroup>
     <ClInclude Include="apex.h" />
     <ClInclude Include="ApexCloth.h" />
+    <ClInclude Include="ApexDestructable.h" />
     <ClInclude Include="ApexParticles.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstBuffers.h" />

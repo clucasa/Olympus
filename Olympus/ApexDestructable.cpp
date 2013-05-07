@@ -1,7 +1,7 @@
-#include "ApexCloth.h"
+#include "ApexDestructable.h"
 
 
-ApexCloth::ApexCloth()
+ApexDestructable::ApexDestructable()
 {
     
    
@@ -9,12 +9,12 @@ ApexCloth::ApexCloth()
     return;
 }
 
-ApexCloth::~ApexCloth()
+ApexDestructable::~ApexDestructable()
 {
     return;
 }
 
-void ApexCloth::InitPipeline()
+void ApexDestructable::InitPipeline()
 {
 	ID3D10Blob* pErrorBlob = NULL;
     LPVOID pError = NULL;
@@ -73,7 +73,7 @@ void ApexCloth::InitPipeline()
 }
 
 
-void ApexCloth::CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
+void ApexDestructable::CreateDestructable(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 						ID3D11DeviceContext *devcon, 	ID3D11Device *dev,
 					  physx::apex::NxUserRenderer* renderer, const char* filename)
 {
@@ -126,14 +126,14 @@ void ApexCloth::CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 }
 
 
-void ApexCloth::Update()
+void ApexDestructable::Update()
 {
     clothingActor->lockRenderResources();
     clothingActor->updateRenderResources();
     clothingActor->unlockRenderResources();
 }
 
-void ApexCloth::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
+void ApexDestructable::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 {
     //SPRITECBUFFER scBuffer;
 	//scBuffer.EyePos = mCam->GetPosition();
@@ -148,7 +148,7 @@ void ApexCloth::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 }
 
 
-void ApexCloth::RecompileShader()
+void ApexDestructable::RecompileShader()
 {
 	//// compile the shaders
  //   ID3D10Blob *sVS, *sPS, *sGS;

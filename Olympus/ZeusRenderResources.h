@@ -39,13 +39,13 @@ public:
     virtual ~ZeusVertexBuffer(void);
 
     virtual bool getInteropResourceHandle(CUgraphicsResource& handle);
-
+    ID3D11Buffer*           mVertexBuffer;
+    int                     mStride;
 private:
     virtual void writeBuffer(const physx::NxApexRenderVertexBufferData& data, physx::PxU32 firstVertex, physx::PxU32 numVertices);
-    ID3D11Buffer*           mVertexBuffer;
+    
     ID3D11Device*           mDevice;
     ID3D11DeviceContext*    mDevcon;
-    int                     mStride;
 };
 
 
@@ -62,12 +62,14 @@ public:
 
     virtual bool getInteropResourceHandle(CUgraphicsResource& handle);
 
-private:
-    virtual void writeBuffer(const void* srcData, physx::PxU32 srcStride, physx::PxU32 firstDestElement, physx::PxU32 numElements);
-    ID3D11Buffer*           mIndexBuffer;
     ID3D11Device*           mDevice;
     ID3D11DeviceContext*    mDevcon;
     physx::apex::NxRenderPrimitiveType::Enum  mPrimitiveType;
+    ID3D11Buffer*           mIndexBuffer;
+private:
+    virtual void writeBuffer(const void* srcData, physx::PxU32 srcStride, physx::PxU32 firstDestElement, physx::PxU32 numElements);
+    
+    
     int                     mStride;
 };
 
@@ -219,7 +221,12 @@ private:
     vector<ZeusVertexBuffer*>			mVertexBuffers;
     physx::PxU32				mNumVertexBuffers;
     
+	int							mVertexStart;
+	int							mVertexCount;
+    
     ZeusIndexBuffer*			mIndexBuffer;
+	int							mIndexStart;
+	int							mIndexCount;
 
     ZeusBoneBuffer*				mBoneBuffer;
 

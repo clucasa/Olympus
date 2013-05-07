@@ -76,6 +76,9 @@ struct Material
 	XMFLOAT4 Diffuse;
 	XMFLOAT4 Specular; // w = SpecPower
 	XMFLOAT4 Reflect;
+
+    int alphaKillOn;
+    XMFLOAT3 padding;
 };
 
 #endif // LIGHTHELPER_H

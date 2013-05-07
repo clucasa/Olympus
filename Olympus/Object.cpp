@@ -25,16 +25,12 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
 	numMeshes = Import( filename, &vertexes );
 	ID3D11Buffer* tempVB;
 
-	Material tempMat;
-
-	tempMat.Ambient		= XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
-	tempMat.Diffuse		= XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f);
-	tempMat.Specular	= XMFLOAT4(0.9f, 0.9f, 0.9f, 10.0f);
-	tempMat.Reflect		= XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
+	
 
 	for( int i = 0; i < numMeshes; i++ )
 	{
-		int numVerts = vertexes[i].size();
+	   
+        int numVerts = vertexes[i].size();
 		D3D11_BUFFER_DESC bd;
 		ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
 		bd.Usage = D3D11_USAGE_DEFAULT;
@@ -49,10 +45,6 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
 			return;
 
 		vertexBuffer.push_back( tempVB );
-
-		materials.push_back( tempMat );
-
-		
 	}
 	// Save the Vertex Buffer for easy access
 	//vertexBuffer = pVBuffer1;
@@ -178,6 +170,9 @@ void Object::AddInstance(ObjectInfo info)
 		}
 		mApex->LoadTriangleMesh(numVerts, vertices, info);
 	}
+
+    // For this instance, have these materials for the # of meshes
+    materials.push_back( info.materials );
 }
 
 
@@ -206,11 +201,11 @@ void Object::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 		// select which primtive type we are using
 		devcon1->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		cb.material = materials[i];
+		
 
 		for( int j = 0; j < mWorldMats.size(); j++)
 		{
-			
+			cb.material = materials[j][i]; // Per mesh
 
 			tempMat = XMLoadFloat4x4(&mWorldMats[j]);
 			tempMat = XMMatrixInverse(&XMMatrixDeterminant(tempMat), tempMat);
@@ -250,11 +245,11 @@ void Object::Depth()
 		// select which primtive type we are using
 		devcon1->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		cb.material = materials[i];
+		
 
 		for( int j = 0; j < mWorldMats.size(); j++)
 		{
-			
+			cb.material = materials[j][i]; // Per mesh
 
 			tempMat = XMLoadFloat4x4(&mWorldMats[j]);
 			tempMat = XMMatrixInverse(&XMMatrixDeterminant(tempMat), tempMat);

@@ -53,6 +53,9 @@ struct Material
 	float4 Diffuse;
 	float4 Specular; // w = SpecPower
 	float4 Reflect;
+
+    int AlphaKillOn;
+    float3 padding;
 };
 
 //---------------------------------------------------------------------------------------
