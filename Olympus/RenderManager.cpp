@@ -197,10 +197,10 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 	mDev->CreateBuffer(&bd, NULL, &dirLightCBuffer);
 
-	mDirLight[0].Ambient =		XMFLOAT4(.3f, .3f, .3f, 1);
-	mDirLight[0].Diffuse =		XMFLOAT4(.5f, .5f, .5f, 1);
+	mDirLight[0].Ambient =		XMFLOAT4(.4f, .4f, .4f, 1);
+	mDirLight[0].Diffuse =		XMFLOAT4(.6f, .6f, .6f, 1);
 	mDirLight[0].Direction =	XMFLOAT3(0.57735f, -0.68f, -0.866f);
-	mDirLight[0].Specular =		XMFLOAT4(0.9f, 0.9f, 0.9f, 1);
+	mDirLight[0].Specular =		XMFLOAT4(0.7f, 0.67f, 0.62f, 1);
 
 	mDirLight[1].Ambient =		XMFLOAT4(.3f, .3f, .3f, 1);
 	mDirLight[1].Diffuse =		XMFLOAT4(.6f, .6f, .6f, 1);

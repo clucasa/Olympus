@@ -16,6 +16,9 @@ ApexCloth::~ApexCloth()
 
 void ApexCloth::InitPipeline()
 {
+	HRESULT hre = D3DX11CreateShaderResourceViewFromFile(mDev, /*"Media/Textures/SoftParticle.dds"*/"Media/Textures/banner1.png", 0, 0, &clothTexture, 0 );
+
+
 	ID3D10Blob* pErrorBlob = NULL;
     LPVOID pError = NULL;
     char* errorStr = NULL;
@@ -161,6 +164,7 @@ void ApexCloth::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 
 	mDevcon->VSSetShader(mVS, 0, 0);
     mDevcon->PSSetShader(mPS, 0, 0);
+	mDevcon->PSSetShaderResources(0, 1, &clothTexture);
 	mDevcon->IASetInputLayout(mLayout);
 
 //    mDevcon->UpdateSubresource(mConstBuffer, 0, 0, &scBuffer, 0, 0);

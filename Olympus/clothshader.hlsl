@@ -60,7 +60,7 @@ VOut VShader( Vin input )
 
 	output.PosH		 = mul( sceneBuff.ViewProj, float4(input.Pos,1.0f));
 
-	output.Tex		 = input.Tex;
+	output.Tex		 = 1.f - input.Tex;
 
 	//output.CamPos    = sceneBuff.cameraPos;
 

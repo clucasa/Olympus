@@ -383,8 +383,13 @@ int System::initd3d()
     mApex->Init(dev, devcon);
     mApex->InitParticles();
     mApex->InitClothing();
+	mApex->UpdateViewProjMat(&mCam->View(),&mCam->Proj(), 1.0f, 10000.0f, 0.25f*MathHelper::Pi, mClientWidth, mClientHeight);
+
+	
 
 	rendManager = new RenderManager(devcon, dev, swapchain, mApex, mCam, &mViewport);
+
+	cController = new CharacterController(rendManager->mApex);
     return InitPipeline();
 }
 
@@ -543,7 +548,7 @@ void System::UpdateCamera(float dt)
 			else
 			{
 				XMFLOAT3 originalPos = mCam->GetPosition();
-				shootspeed = (state.Gamepad.bRightTrigger / 255) * 50.0f;
+				shootspeed = /*(state.Gamepad.bRightTrigger / 255) * */50.0f;
 				rendManager->projectile->Fire(mCam, shootspeed, rendManager->mCloth);	
 				/*for(int i = 0; i < 20; i++)
 				{
@@ -551,7 +556,7 @@ void System::UpdateCamera(float dt)
 					rendManager->projectile->Fire(mCam, shootspeed, rendManager->mCloth);	
 				}
 				mCam->SetPosition(originalPos.x, originalPos.y, originalPos.z);*/
-				cooldown += 0.5f;
+				cooldown += 0.3f;
 			}
         }
 		
@@ -582,7 +587,11 @@ void System::UpdateCamera(float dt)
             speed = 140.0f;
 
         if( GetAsyncKeyState('W') & 0x8000 )
+		{
             mCam->Walk(speed*dt);
+			//cController->move(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z, dt);
+			mCam->SetPosition(cController->getPosition().x, cController->getPosition().y, cController->getPosition().z);
+		}
 
         if( GetAsyncKeyState('S') & 0x8000 )
             mCam->Walk(-speed*dt);
