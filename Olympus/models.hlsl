@@ -160,7 +160,11 @@ float4 PShader(VOut input) : SV_TARGET
 
 
 	//return material.Specular;
-
+    
+    if(material.AlphaKillOn)
+    {
+        clip(diffuseTexture.Sample( samLinear, input.Tex ).a < 0.5f ? -1:1 );
+    }
 	float3 lightVec;
 	float diffuseFactor;
 	float specFactor;

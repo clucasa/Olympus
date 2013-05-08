@@ -16,7 +16,7 @@ ZeusVertexBuffer::ZeusVertexBuffer(const physx::apex::NxUserRenderVertexBufferDe
         
         if (apexFormat != physx::apex::NxRenderDataFormat::UNSPECIFIED)
         {
-            if (apexSemantic == physx::apex::NxRenderVertexSemantic::POSITION || apexSemantic == physx::apex::NxRenderVertexSemantic::TEXCOORD0)
+            if (apexSemantic == physx::apex::NxRenderVertexSemantic::POSITION || apexSemantic == physx::apex::NxRenderVertexSemantic::TEXCOORD0 || apexSemantic == physx::apex::NxRenderVertexSemantic::NORMAL)
                 mStride += physx::apex::NxRenderDataFormat::getFormatDataSize(apexFormat);
         }
     }
@@ -64,13 +64,12 @@ void ZeusVertexBuffer::writeBuffer(const physx::NxApexRenderVertexBufferData& da
     }
     physx::PxU32 currentStride = 0;
     physx::PxU32 numSem = 0;
-    physx::PxU32 totalStride = mStride;
 
     for (physx::PxU32 i = 0; i < physx::apex::NxRenderVertexSemantic::NUM_SEMANTICS; i++)
 	{
 		physx::apex::NxRenderVertexSemantic::Enum semantic = (physx::apex::NxRenderVertexSemantic::Enum)i;
 		const physx::apex::NxApexRenderSemanticData& semanticData = data.getSemanticData(semantic);
-        if (semantic == physx::apex::NxRenderVertexSemantic::POSITION || semantic == physx::apex::NxRenderVertexSemantic::TEXCOORD0)
+        if (semantic == physx::apex::NxRenderVertexSemantic::POSITION /*|| semantic == physx::apex::NxRenderVertexSemantic::TEXCOORD0 *//*|| semantic == physx::apex::NxRenderVertexSemantic::NORMAL*/)
         {
             if (semanticData.data)
             {
@@ -78,19 +77,28 @@ void ZeusVertexBuffer::writeBuffer(const physx::NxApexRenderVertexBufferData& da
                 const physx::PxU32 srcStride = semanticData.stride;
 
                 void* dstData = mappedResource.pData;
-                PX_ASSERT(dstData && totalStride);
-                if (dstData && totalStride)
+                PX_ASSERT(dstData && mStride);
+                if (dstData && mStride)
                 {
-                    dstData = ((physx::PxU8*)dstData) + (firstVertex * srcStride);//totalStride);
-                    physx::PxU32 formatSize = srcStride;
+                    dstData = ((physx::PxU8*)dstData) + (firstVertex * mStride) + currentStride;
 
                     for (physx::PxU32 j = 0; j < numVertices; j++)
                     {
-                        memcpy(dstData, srcData, formatSize); // This doesn't work for writin multiple semantics per buffer, think of a fix
+                        memcpy(dstData, srcData, srcStride); // This doesn't work for writing multiple semantics per buffer, think of a fix
                         srcData = ((physx::PxU8*)srcData) + srcStride;
-                        dstData = ((physx::PxU8*)dstData) + srcStride;//totalStride;
+                        dstData = ((physx::PxU8*)dstData) + srcStride;
+                        currentStride += srcStride;
                     }
                     //currentStride += srcStride;
+
+                    //dstData = ((physx::PxU8*)dstData) + (firstVertex * mStride);
+
+                    //for (physx::PxU32 j = 0; j < numVertices; j++)
+                    //{
+                    //    memcpy(dstData, srcData, srcStride); // This doesn't work for writing multiple semantics per buffer, think of a fix
+                    //    srcData = ((physx::PxU8*)srcData) + srcStride;
+                    //    dstData = ((physx::PxU8*)dstData) + srcStride;
+                    //}
                 }
             } 
         }

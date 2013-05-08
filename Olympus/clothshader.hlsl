@@ -27,14 +27,14 @@ struct Vin
 {
 	//float2 Tex		: TEXCOORD;
 	float3 Pos		: POSITION;
-	//float4 Normal	: NORMAL;
+	float3 Normal	: NORMAL;
 };
 
 struct VOut
 {
 	float4 PosH       : SV_POSITION;
 	//float3 PosW       : POSITION;
-	//float3 NormalW    : NORMAL;
+	float3 NormalW    : NORMALW;
 	//float3 TangentW   : TANGENT;
 	//float3 BiNormalW  : BINORM;
 	//float2 Tex        : TEXCOORD0;
@@ -48,7 +48,7 @@ VOut VShader( Vin input )
 {
 	VOut output;
 	//output.PosW		 = mul(matWorld, input.Pos);
-	//output.NormalW   = normalize(mul((float3x3)matWorldInvTrans, input.Normal));
+	output.NormalW   = normalize(input.Normal);//mul((float3x3)matWorldInvTrans, 
 	//output.TangentW  = normalize(mul((float3x3)matWorld, input.Tangent));//cross(input.Pos, input.Normal)));
 	//output.BiNormalW = normalize(mul((float3x3)matWorld, input.BiNormal));
 
@@ -67,7 +67,7 @@ VOut VShader( Vin input )
 
 float4 PShader(VOut input) : SV_TARGET
 {	
-	return float4(1.0,0.0,0.0,1.0);
+	return float4(input.NormalW,1.0);
 	//float4 textureColor;
  //   float3 lightDir;
  //   float lightIntensity;
