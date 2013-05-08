@@ -65,7 +65,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	mScreen = new ScreenQuad(mDevcon, mDev, geoGen);
 	//Special camera, doesn't move
 
-	//Scene* scene = new Scene(&renderables, dev, devcon, apex);
+	Scene* scene = new Scene(&renderables, dev, devcon, apex);
 
 	projectile = new Projectile(dev, devcon, apex);
 	renderables.push_back(projectile);

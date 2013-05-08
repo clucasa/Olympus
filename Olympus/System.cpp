@@ -375,7 +375,7 @@ int System::initd3d()
 	mLastMousePos.x = 0;
 	mLastMousePos.y = 0;
     mCam->SetPosition(-10.0f, 5.0f, 15.0f);
-	mCam->RotateY(2.3);
+	mCam->RotateY(-2.3);
 	mCam->SetLens(0.25f*MathHelper::Pi, (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 1.0f, 10000.0f);
     mCam->UpdateViewMatrix();
 
@@ -536,15 +536,23 @@ void System::UpdateCamera(float dt)
         // Shoot block with right trigger     
         if( state.Gamepad.bRightTrigger && state.Gamepad.bLeftTrigger < 256 )
         {
-			XMFLOAT3 originalPos = mCam->GetPosition();
-            shootspeed = (state.Gamepad.bRightTrigger / 255) * 100.0f;
-			rendManager->projectile->Fire(mCam, shootspeed);	
-			/*for(int i = 0; i < 20; i++)
+			if(cooldown > 0)
 			{
-				mCam->SetPosition(originalPos.x + 5 * sinf(i), originalPos.y, originalPos.z + 5 * cosf(i));
-				rendManager->projectile->Fire(mCam, shootspeed);	
+				cooldown -= dt;
 			}
-			mCam->SetPosition(originalPos.x, originalPos.y, originalPos.z);*/
+			else
+			{
+				XMFLOAT3 originalPos = mCam->GetPosition();
+				shootspeed = (state.Gamepad.bRightTrigger / 255) * 50.0f;
+				rendManager->projectile->Fire(mCam, shootspeed, rendManager->mCloth);	
+				/*for(int i = 0; i < 20; i++)
+				{
+					mCam->SetPosition(originalPos.x + 5 * sinf(i), originalPos.y, originalPos.z + 5 * cosf(i));
+					rendManager->projectile->Fire(mCam, shootspeed, rendManager->mCloth);	
+				}
+				mCam->SetPosition(originalPos.x, originalPos.y, originalPos.z);*/
+				cooldown += 0.5f;
+			}
         }
 		
 		if( state.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
@@ -603,7 +611,7 @@ void System::UpdateCamera(float dt)
 
 	if( (GetAsyncKeyState('B') & 0x8000) )
     {
-		rendManager->projectile->Fire(mCam, 100.0f);
+		rendManager->projectile->Fire(mCam, 100.0f, rendManager->mCloth);
     }
 
 	//Numpad 7

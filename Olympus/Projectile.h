@@ -10,7 +10,7 @@
 
 using namespace std;
 
-#define MAXBOXES 100000
+#define MAXBOXES 35
 
 class Projectile : public Renderable
 {
@@ -18,7 +18,7 @@ public:
 	Projectile(ID3D11Device* dev, ID3D11DeviceContext* devcon, Apex* apex );
 	~Projectile();
 
-	void Fire(Camera *mCam, float speed);
+	void Fire(Camera *mCam, float speed, ApexCloth* mCloth);
 	
 	void Update();
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
@@ -38,6 +38,7 @@ public:
 	ID3D11VertexShader			*opVS;			// the pointer to the vertex shader
 	ID3D11PixelShader			*opPS;          // the pointer to the vertex shader
 
+	vector<physx::apex::NxClothingSphere*> spheres;
 	
 	ID3D11Buffer *worldCBuffer;
 	vector<XMFLOAT4X4> mWorldMats;
@@ -47,6 +48,7 @@ private:
 	PxMaterial*					blockMaterial;
 	vector<PxRigidActor*> boxes;
 	int numBoxes;
+	int curBox;
 	Apex* mApex;
 };
 

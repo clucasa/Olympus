@@ -25,7 +25,7 @@ cbuffer PointLight : register(b3)
 
 struct Vin
 {
-	//float2 Tex		: TEXCOORD;
+	float2 Tex		: TEXCOORD;
 	float3 Pos		: POSITION;
 	float3 Normal	: NORMAL;
 };
@@ -33,28 +33,34 @@ struct Vin
 struct VOut
 {
 	float4 PosH       : SV_POSITION;
-	//float3 PosW       : POSITION;
+	float3 PosW       : POSITIONW;
 	float3 NormalW    : NORMALW;
 	//float3 TangentW   : TANGENT;
 	//float3 BiNormalW  : BINORM;
-	//float2 Tex        : TEXCOORD0;
+	float2 Tex        : TEXCOORD0;
 	//float3 CamPos     : CAMPOS;
 	//float4 lpos       : TEXCOORD2;
 };
 
+SamplerState samLinear
+{
+	Filter = MIN_MAG_MIP_LINEAR;
+	AddressU = Wrap;
+	AddressV = Wrap;
+};
 Texture2D theTexture : register(t0);
 
 VOut VShader( Vin input )
 {
 	VOut output;
-	//output.PosW		 = mul(matWorld, input.Pos);
+	output.PosW		 = normalize(input.Pos);//mul(matWorld, input.Pos);
 	output.NormalW   = normalize(input.Normal);//mul((float3x3)matWorldInvTrans, 
 	//output.TangentW  = normalize(mul((float3x3)matWorld, input.Tangent));//cross(input.Pos, input.Normal)));
 	//output.BiNormalW = normalize(mul((float3x3)matWorld, input.BiNormal));
 
 	output.PosH		 = mul( sceneBuff.ViewProj, float4(input.Pos,1.0f));
 
-	//output.Tex		 = input.Tex;
+	output.Tex		 = input.Tex;
 
 	//output.CamPos    = sceneBuff.cameraPos;
 
@@ -67,8 +73,8 @@ VOut VShader( Vin input )
 
 float4 PShader(VOut input) : SV_TARGET
 {	
-	return float4(input.NormalW,1.0);
-	//float4 textureColor;
+	
+	float4 textureColor;
  //   float3 lightDir;
  //   float lightIntensity;
  //   float3 reflection;
@@ -80,7 +86,9 @@ float4 PShader(VOut input) : SV_TARGET
 	//float4 totalAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	//float4 totalDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	//float4 color = theTexture.Sample( ss, input.texcoord );///*float4(0.3f, 0.502f, 0.753f, 1.0f);*/theTexture.Gather(samTriLinearSam, input.texcoord, int2(0,0));
+	textureColor = theTexture.Sample( samLinear, input.Tex );///*float4(0.3f, 0.502f, 0.753f, 1.0f);*/theTexture.Gather(samTriLinearSam, input.texcoord, int2(0,0));
+	textureColor.a = 1.0f;
+	return textureColor;
 	//
 
 	//for(int i = 0; i < 2; i++)

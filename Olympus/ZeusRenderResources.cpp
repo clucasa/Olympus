@@ -16,7 +16,7 @@ ZeusVertexBuffer::ZeusVertexBuffer(const physx::apex::NxUserRenderVertexBufferDe
         
         if (apexFormat != physx::apex::NxRenderDataFormat::UNSPECIFIED)
         {
-            if (apexSemantic == physx::apex::NxRenderVertexSemantic::POSITION || apexSemantic == physx::apex::NxRenderVertexSemantic::TEXCOORD0 || apexSemantic == physx::apex::NxRenderVertexSemantic::NORMAL)
+            if (apexSemantic == physx::apex::NxRenderVertexSemantic::POSITION || apexSemantic == physx::apex::NxRenderVertexSemantic::TEXCOORD0/* || apexSemantic == physx::apex::NxRenderVertexSemantic::NORMAL*/)
                 mStride += physx::apex::NxRenderDataFormat::getFormatDataSize(apexFormat);
         }
     }
@@ -69,7 +69,7 @@ void ZeusVertexBuffer::writeBuffer(const physx::NxApexRenderVertexBufferData& da
 	{
 		physx::apex::NxRenderVertexSemantic::Enum semantic = (physx::apex::NxRenderVertexSemantic::Enum)i;
 		const physx::apex::NxApexRenderSemanticData& semanticData = data.getSemanticData(semantic);
-        if (semantic == physx::apex::NxRenderVertexSemantic::POSITION /*|| semantic == physx::apex::NxRenderVertexSemantic::TEXCOORD0 *//*|| semantic == physx::apex::NxRenderVertexSemantic::NORMAL*/)
+        if (semantic == physx::apex::NxRenderVertexSemantic::POSITION || semantic == physx::apex::NxRenderVertexSemantic::TEXCOORD0 /*|| semantic == physx::apex::NxRenderVertexSemantic::NORMAL*/)
         {
             if (semanticData.data)
             {
@@ -87,7 +87,7 @@ void ZeusVertexBuffer::writeBuffer(const physx::NxApexRenderVertexBufferData& da
                         memcpy(dstData, srcData, srcStride); // This doesn't work for writing multiple semantics per buffer, think of a fix
                         srcData = ((physx::PxU8*)srcData) + srcStride;
                         dstData = ((physx::PxU8*)dstData) + srcStride;
-                        currentStride += srcStride;
+                        //currentStride += srcStride;
                     }
                     //currentStride += srcStride;
 
@@ -526,6 +526,12 @@ void ZeusRenderResource::Render()
         UINT* offsets = (UINT*) malloc(sizeof(UINT) * mVertexBuffers.size());
         ID3D11Buffer* buffers = (ID3D11Buffer*) malloc(sizeof(ID3D11Buffer) * mVertexBuffers.size());
         ID3D11Buffer* buffers2[2];
+		UINT strides2[2];
+		strides2[0] = 8;
+		strides2[1] = 12;
+        UINT offsets2[2];
+		offsets2[0] = offsets2[1] = 0;
+
         buffers2[0] = mVertexBuffers[0]->mVertexBuffer;
         buffers2[1] = mVertexBuffers[1]->mVertexBuffer;
 
@@ -540,7 +546,7 @@ void ZeusRenderResource::Render()
         
         UINT stride = (UINT)12;
 	    UINT offset = 0;
-        mIndexBuffer->mDevcon->IASetVertexBuffers(0, 1, &mVertexBuffers[1]->mVertexBuffer, &stride, &offset);
+        mIndexBuffer->mDevcon->IASetVertexBuffers(0, 2, buffers2, strides, offsets);
         
         mIndexBuffer->mDevcon->DrawIndexed(mIndexCount, mIndexStart, mVertexStart);
     }

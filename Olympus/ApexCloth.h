@@ -11,6 +11,7 @@
 #include "NxModuleClothing.h"
 #include "NxClothingAsset.h"
 #include "NxClothingActor.h"
+#include "NxClothingCollision.h"
 
 #include "NxParamUtils.h"
 #include <NxApexRenderVolume.h>
@@ -43,6 +44,8 @@ public:
 
 	void SetPosition(float x, float y, float z);
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
+
+	physx::apex::NxClothingActor* getClothingActor() {return clothingActor;}
 
 private:
 	ID3D11Device *mDev;

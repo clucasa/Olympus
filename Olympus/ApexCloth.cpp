@@ -52,13 +52,13 @@ void ApexCloth::InitPipeline()
 	// create the input element object
     D3D11_INPUT_ELEMENT_DESC clothied[] =
     {
-       // { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }, 
-        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{ "NORMAL",	  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }, 
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{ "NORMAL",	  0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
     // use the input element descriptions to create the input layout
-    mDev->CreateInputLayout(clothied, 2, sVS->GetBufferPointer(), sVS->GetBufferSize(), &mLayout);
+    mDev->CreateInputLayout(clothied, 3, sVS->GetBufferPointer(), sVS->GetBufferSize(), &mLayout);
 
     // create the constant buffer
     D3D11_BUFFER_DESC bd;
@@ -102,7 +102,7 @@ void ApexCloth::CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 
 
     // Initialize the global pose
-    PxMat44 currentPose = PxTransform(PxVec3(0.f,0.f,0.f));
+    PxMat44 currentPose = PxTransform(PxVec3(-40.f,-12.f,-39.f));
     NxParameterized::setParamMat44(*actorDesc, "globalPose", currentPose);
 
     {
@@ -119,29 +119,39 @@ void ApexCloth::CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
     clothingActor = static_cast<physx::apex::NxClothingActor*>(apexActor);
     if(clothingActor)
     {
+		//clothingActor->forcePhysicalLod(0);
         NxParameterized::Interface* actorDesc = clothingActor->getActorDesc();
-		clothingActor->createCollisionPlane(PxPlane(0,1,0,-1));
+		//clothingActor->createCollisionPlane(PxPlane(0,1,0,-1));
 		//clothingActor->createCollisionSphere(
         NxParameterized::setParamVec3(*actorDesc, "windParams.Velocity", PxVec3(2.0,0.0,17.0));
         NxParameterized::setParamF32(*actorDesc, "windParams.Adaption", 0.25f);
 
-        NxParameterized::setParamF32(*actorDesc, "lodWeights.maxDistance", 200.0f);
+        NxParameterized::setParamF32(*actorDesc, "lodWeights.maxDistance", 100.0f);
         NxParameterized::setParamF32(*actorDesc, "lodWeights.distanceWeight", 1.0);
-        NxParameterized::setParamF32(*actorDesc, "lodWeights.benefitsBias", 0.3);
+        NxParameterized::setParamF32(*actorDesc, "lodWeights.benefitsBias", 1.0);
 
     }
 
-     InitPipeline();
+    InitPipeline();
 }
 
 
 void ApexCloth::Update()
 {
-	//clothingActor->setGraphicalLOD(1000);
-    //clothingActor->setLODWeights(100,10,10,10);
+	float low = 0.0;
+    float high = 50.5;
+    float val = low + (float)rand()/((float)RAND_MAX/(high-low));
+ 
+    PxMat44 currentPose = PxTransform(PxVec3(-40.f,-12.f,-39.f));//0.f,-5.f,5.f));//
+	clothingActor->updateState(currentPose, NULL, 0, 0, ClothingTeleportMode::Continuous);
+    NxParameterized::Interface* actorDesc = clothingActor->getActorDesc();
+    NxParameterized::setParamVec3(*actorDesc, "windParams.Velocity", PxVec3(0.0+val,0.0+val,0.0+val));
+	
     clothingActor->lockRenderResources();
     clothingActor->updateRenderResources();
     clothingActor->unlockRenderResources();
+
+	
 }
 
 void ApexCloth::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)

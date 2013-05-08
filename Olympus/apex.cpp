@@ -6,7 +6,6 @@ Apex::Apex() :
     mFoundation(0),
     mCooking(0),
     mScene(0)
-
 {
     return;
 }
@@ -91,6 +90,7 @@ bool Apex::Init(ID3D11Device* dev, ID3D11DeviceContext* devcon)
     // Create the APEX scene...
     
     apexSceneDesc.scene = mScene;
+	
     if(apexSceneDesc.isValid())
         gApexScene = gApexSDK->createScene(apexSceneDesc);
     else
@@ -98,6 +98,8 @@ bool Apex::Init(ID3D11Device* dev, ID3D11DeviceContext* devcon)
 
     if(!gApexScene)
         return false;
+
+	gApexScene->setLODResourceBudget(10000.f);
 
 	static const physx::PxU32 viewIDlookAtRightHand = gApexScene->allocViewMatrix(physx::apex::ViewMatrixType::LOOK_AT_LH);
 	static const physx::PxU32 projIDperspectiveCubicRightHand = gApexScene->allocProjMatrix(physx::apex::ProjMatrixType::USER_CUSTOMIZED);
@@ -309,8 +311,9 @@ bool Apex::InitParticles()
     {
         NxParameterized::Interface* params = mParticleIosModule->getDefaultModuleDesc();
         mParticleIosModule->init(*params);
+		mParticleIosModule->setLODUnitCost(0.00000001f);
     }
-
+	
     
     mIofxModule = static_cast<NxModuleIofx*>(gApexSDK->createModule("IOFX", &errorCode));
     checkErrorCode(&errorCode);
@@ -321,6 +324,7 @@ bool Apex::InitParticles()
         mIofxModule->init(*params);
         /*mIofxModule->disableCudaInterop();
         mIofxModule->disableCudaModifiers();*/
+		mIofxModule->setLODUnitCost(0.00000001f);
     }
 
     mEmitterModule = static_cast<NxModuleEmitter*> ( gApexSDK->createModule("Emitter", &errorCode));
@@ -336,6 +340,7 @@ bool Apex::InitParticles()
         {
             NxApexParameter& p = *m_emitterModuleScalables[i];
             mEmitterModule->setIntValue(i, p.range.maximum);
+			mEmitterModule->setLODUnitCost(0.00000001f);
         }
     }
 
@@ -375,6 +380,7 @@ bool Apex::InitClothing()
         NxParameterized::setParamU32(*moduleDesc, "maxUnusedPhysXResources", 5);
 
         mApexClothingModule->init(*moduleDesc);
+		mApexClothingModule->setLODUnitCost(0.0001f);
     }
         
     return true;

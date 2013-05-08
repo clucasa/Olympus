@@ -1,7 +1,7 @@
 #include "Projectile.h"
 
 Projectile::Projectile( ID3D11Device* dev, ID3D11DeviceContext* devcon, Apex* apex ) :
-	numBoxes(0), mApex(apex), mDev(dev),mDevcon(devcon)
+	numBoxes(0), curBox(0), mApex(apex), mDev(dev), mDevcon(devcon)
 {
 	blockMaterial = mApex->getPhysics()->createMaterial(0.8f, 0.8f, 0.1f);    //static friction, dynamic friction, restitution
 	if(!blockMaterial)
@@ -70,7 +70,7 @@ Projectile::~Projectile()
 
 }
 
-void Projectile::Fire(Camera *mCam, float speed)
+void Projectile::Fire(Camera *mCam, float speed, ApexCloth* mCloth)
 {
 	if(numBoxes < MAXBOXES)
 	{
@@ -106,6 +106,7 @@ void Projectile::Fire(Camera *mCam, float speed)
 		boxes.push_back(boxActor);
 
 		numBoxes++;
+		curBox++;
 
 		XMFLOAT4X4 final;
 		XMMATRIX trans;
@@ -115,6 +116,32 @@ void Projectile::Fire(Camera *mCam, float speed)
 		XMStoreFloat4x4(&final, trans );
 
 		mWorldMats.push_back(final);
+		
+		spheres.push_back(mCloth->getClothingActor()->createCollisionSphere(pos, .5));
+	}
+	else
+	{
+		if(curBox >= MAXBOXES)
+			curBox = 0;
+		
+		PxVec3 look = PxVec3(mCam->GetLook().x,mCam->GetLook().y,mCam->GetLook().z);
+		look.normalize();
+		PxVec3 pos = PxVec3(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z) + (look * 4.);
+		PxTransform transform(pos, PxQuat::createIdentity());
+		
+		float vx = look.x * speed;
+		float vy = look.y * speed;
+		float vz = look.z * speed;
+
+		boxes[curBox]->setGlobalPose(transform);
+		PxRigidDynamic* boxDynamic = static_cast<PxRigidDynamic*>(boxes[curBox]);
+		boxDynamic->setLinearVelocity(PxVec3(vx,vy,vz));
+		boxDynamic->setGlobalPose(transform);
+
+		physx::apex::NxClothingSphere* sphere = spheres[curBox];
+		sphere->setPosition(pos);
+
+		curBox++;
 	}
 }
 
@@ -140,6 +167,11 @@ void Projectile::Update()
         mApex->PxtoXMMatrix(pt, &world);
 
 		XMStoreFloat4x4(&mWorldMats[i], world);
+
+        physx::apex::NxClothingSphere* sphere = spheres[i];
+
+		PxVec3 pos = pt.p;
+		sphere->setPosition(pos);
 	}
 }
 
