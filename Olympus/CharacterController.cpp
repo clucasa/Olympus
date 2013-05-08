@@ -4,9 +4,9 @@ const PxF32 CharacterController::minDist = 0.001;
 
 CharacterController::CharacterController(Apex *mApex)
 {
-	PxControllerManager* pManager = PxCreateControllerManager(*mApex->mFoundation);
+	PxControllerManager* pManager = PxCreateControllerManager(*mApex->getFoundation());
 
-	PxMaterial* mMaterial		= mApex->defaultMaterial;
+	PxMaterial* mMaterial		= mApex->getPhysics()->createMaterial(0.5f, 0.5f, 0.1f);
 	PxCapsuleControllerDesc desc;
 		desc.height					= 10.0f;
 		desc.radius					= 3.0f;
@@ -22,7 +22,7 @@ CharacterController::CharacterController(Apex *mApex)
 		desc.slopeLimit				= cosf(0.712f);
 		desc.invisibleWallHeight	= 700.0f;
 
-	pCharacter = pManager->createController( *mApex->mPhysics, mApex->mScene, desc );
+		pCharacter = pManager->createController( *mApex->getPhysics(), mApex->getScene(), desc );
 
 	pCharacter->setStepOffset( 5.0f*2.0f );
 	PxExtendedVec3 pos = PxExtendedVec3(0.0, 5.0, 0.0);

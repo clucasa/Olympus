@@ -103,6 +103,7 @@ public:
 	void LoadTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info);
 	PxScene*	getScene() {return mScene;}
 	PxPhysics*	getPhysics() {return mPhysics;}
+	PxFoundation* getFoundation() {return mFoundation;}
 
 private:
     bool InitPhysX();

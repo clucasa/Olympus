@@ -1,0 +1,6 @@
+# object windmill
+m Media/Models/windmill.fbx
+t Media/Textures/PRP_Ornatearch_A_DM.png
+n Media/Textures/PRP_Ornatearch_A_NM.png
+i 686.0 -78.5 -115.0 1.5 1.5 1.5 0.0 0.0 0.0
+a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.9 0.9 0.9 50.0 0.0 0.0 0.0 0.0 0

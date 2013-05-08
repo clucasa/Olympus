@@ -4,3 +4,6 @@ o Scene/torch.txt
 o Scene/bigbadman.txt
 o Scene/trees.txt
 o Scene/terrain.txt
+o Scene/windmill.txt
+o Scene/crate.txt
+o Scene/woodbridge.txt

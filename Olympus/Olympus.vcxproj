@@ -113,6 +113,7 @@
     <ClCompile Include="ApexDestructable.cpp" />
     <ClCompile Include="ApexParticles.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CharacterController.cpp" />
     <ClCompile Include="FontSheet.cpp" />
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="GeometryGenerator.cpp" />
@@ -145,10 +146,13 @@
     <None Include="OnScreen.hlsl" />
     <None Include="Scene\archway.txt" />
     <None Include="Scene\bigbadman.txt" />
+    <None Include="Scene\crate.txt" />
     <None Include="Scene\Scene.txt" />
     <None Include="Scene\terrain.txt" />
     <None Include="Scene\torch.txt" />
     <None Include="Scene\trees.txt" />
+    <None Include="Scene\windmill.txt" />
+    <None Include="Scene\woodbridge.txt" />
     <None Include="ScreenQuad.hlsl" />
     <None Include="Skybox.hlsl" />
     <None Include="Sphere.hlsl" />
@@ -160,6 +164,7 @@
     <ClInclude Include="ApexDestructable.h" />
     <ClInclude Include="ApexParticles.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CharacterController.h" />
     <ClInclude Include="ConstBuffers.h" />
     <ClInclude Include="FontSheet.h" />
     <ClInclude Include="GameTimer.h" />

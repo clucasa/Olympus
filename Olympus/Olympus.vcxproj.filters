@@ -170,6 +170,9 @@
     <ClCompile Include="ApexDestructable.cpp">
       <Filter>Rendering\Objects\ApexDestructable</Filter>
     </ClCompile>
+    <ClCompile Include="CharacterController.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="OnScreen.hlsl">
@@ -222,6 +225,15 @@
     </None>
     <None Include="clothshader.hlsl">
       <Filter>Rendering\Objects\ApexCloth</Filter>
+    </None>
+    <None Include="Scene\woodbridge.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\windmill.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\crate.txt">
+      <Filter>Resource Files\Scene</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -317,6 +329,9 @@
     </ClInclude>
     <ClInclude Include="ApexDestructable.h">
       <Filter>Rendering\Objects\ApexDestructable</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterController.h">
+      <Filter>Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

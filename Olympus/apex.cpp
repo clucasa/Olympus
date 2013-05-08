@@ -149,6 +149,7 @@ void Apex::PxtoXMMatrix(PxTransform input, XMMATRIX* start)
 
 void Apex::XMtoPxMatrix(XMMATRIX* input, PxMat44* start)
 {
+	//input->m
 	start->column0.w = input->_11;
 	start->column0.x = input->_12;
 	start->column0.y = input->_13;
