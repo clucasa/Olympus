@@ -590,7 +590,7 @@ void System::UpdateCamera(float dt)
 		{
             mCam->Walk(speed*dt);
 			//cController->move(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z, dt);
-			mCam->SetPosition(cController->getPosition().x, cController->getPosition().y, cController->getPosition().z);
+			//mCam->SetPosition(cController->getPosition().x, cController->getPosition().y, cController->getPosition().z);
 		}
 
         if( GetAsyncKeyState('S') & 0x8000 )

@@ -1,0 +1,6 @@
+# object arenapit
+m Media/Models/arenapit.fbx
+t Media/Textures/newdarkdirt.dds
+n Media/Textures/BlankNormalMap.png
+i -6.0 -250.5 1915.0 0.15 0.15 0.15 0.0 0.0 0.0
+a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.9 0.9 0.9 50.0 0.0 0.0 0.0 0.0 0

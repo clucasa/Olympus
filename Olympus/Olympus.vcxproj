@@ -145,8 +145,10 @@
     <None Include="models.hlsl" />
     <None Include="OnScreen.hlsl" />
     <None Include="Scene\archway.txt" />
+    <None Include="Scene\arenapit.txt" />
     <None Include="Scene\bigbadman.txt" />
     <None Include="Scene\crate.txt" />
+    <None Include="Scene\deadman.txt" />
     <None Include="Scene\Scene.txt" />
     <None Include="Scene\terrain.txt" />
     <None Include="Scene\torch.txt" />

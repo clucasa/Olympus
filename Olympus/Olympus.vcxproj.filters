@@ -235,6 +235,12 @@
     <None Include="Scene\crate.txt">
       <Filter>Resource Files\Scene</Filter>
     </None>
+    <None Include="Scene\arenapit.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\deadman.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="apex.h">
