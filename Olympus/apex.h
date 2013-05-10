@@ -101,13 +101,15 @@ private:
 // PhysX
 public:
 	void LoadTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info);
+	void LoadDynamicTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info);
 	PxScene*	getScene() {return mScene;}
 	PxPhysics*	getPhysics() {return mPhysics;}
 	PxFoundation* getFoundation() {return mFoundation;}
+	void getRigidDynamicPosition(int index, XMFLOAT4X4 *position);
 
-private:
     bool InitPhysX();
 	
+	vector<PxRigidActor*>		dynamicActors;
     PxFoundation*               mFoundation;
     PxPhysics*                  mPhysics;
     PxProfileZoneManager*       mProfileZoneManager;

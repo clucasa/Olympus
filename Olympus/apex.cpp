@@ -18,7 +18,7 @@ Apex::~Apex()
     gApexScene->fetchResults(true, NULL);                 // ensure scene is not busy
     gApexScene->release();
     mCpuDispatcher->release();
-
+	
 
     // remember to release the connection by manual in the end
     if (pvdConnection)
@@ -149,7 +149,6 @@ void Apex::PxtoXMMatrix(PxTransform input, XMMATRIX* start)
 
 void Apex::XMtoPxMatrix(XMMATRIX* input, PxMat44* start)
 {
-	//input->m
 	start->column0.w = input->_11;
 	start->column0.x = input->_12;
 	start->column0.y = input->_13;
@@ -169,7 +168,6 @@ void Apex::XMtoPxMatrix(XMMATRIX* input, PxMat44* start)
 	start->column3.x = input->_42;
 	start->column3.y = input->_43;
 	start->column3.z = input->_44;
-    
 }
 
 bool Apex::InitPhysX()
@@ -271,39 +269,128 @@ void Apex::LoadTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 	PxShape* meshShape;
 	if(meshActor)
 	{
-			PxTriangleMeshDesc meshDesc;
-			meshDesc.points.count           = numVerts;
-			meshDesc.points.stride          = sizeof(PxVec3);
-			meshDesc.points.data            = verts;
-
-			//meshDesc.triangles.count        = numInds/3.;
-			//meshDesc.triangles.stride       = 3*sizeof(int);
-			//meshDesc.triangles.data         = inds;
-
-			PxToolkit::MemoryOutputStream writeBuffer;
-			bool status = mCooking->cookTriangleMesh(meshDesc, writeBuffer);
-			if(!status)
-				return;
-
-			PxToolkit::MemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
-
-			PxTriangleMeshGeometry triGeom;
-			triGeom.triangleMesh = mPhysics->createTriangleMesh(readBuffer);
-			triGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
 		
-			meshShape = meshActor->createShape(triGeom, *defaultMaterial);
-			meshShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
-			meshShape->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
+		PxTriangleMeshDesc meshDesc;
+		meshDesc.points.count           = numVerts;
+		meshDesc.points.stride          = sizeof(PxVec3);
+		meshDesc.points.data            = verts;
 
-			mScene->addActor(*meshActor);
+		//meshDesc.triangles.count        = numInds/3.;
+		//meshDesc.triangles.stride       = 3*sizeof(int);
+		//meshDesc.triangles.data         = inds;
+
+		PxToolkit::MemoryOutputStream writeBuffer;
+		bool status = mCooking->cookTriangleMesh(meshDesc, writeBuffer);
+		if(!status)
+			return;
+
+		PxToolkit::MemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+
+		PxTriangleMeshGeometry triGeom;
+		triGeom.triangleMesh = mPhysics->createTriangleMesh(readBuffer);
+		triGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
+		
+		meshShape = meshActor->createShape(triGeom, *defaultMaterial);
+		meshShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
+		meshShape->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
+
+
+		meshShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+
+
+		mScene->addActor(*meshActor);
 	}
+}
+
+
+static const PxVec3 convexVerts[] = {PxVec3(1,1,0),PxVec3(-1,1,0),PxVec3(0,1,1),PxVec3(0,1,-1),PxVec3(1,0,0),PxVec3(-1,0,0),PxVec3(0,0,1),PxVec3(0,0,-1)};
+
+void Apex::LoadDynamicTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
+{
+	PxRigidDynamic* meshActor = mPhysics->createRigidDynamic(PxTransform::createIdentity());
+	PxShape* meshShape, *convexShape;
+	if(meshActor)
+	{
+		//meshActor->setRigidDynamicFlag(PxRigidDynamicFlag::eKINEMATIC, true);
+
+		PxTriangleMeshDesc meshDesc;
+		meshDesc.points.count           = numVerts;
+		meshDesc.points.stride          = sizeof(PxVec3);
+		meshDesc.points.data            = verts;
+
+		//meshDesc.triangles.count        = numInds/3.;
+		//meshDesc.triangles.stride       = 3*sizeof(int);
+		//meshDesc.triangles.data         = inds;
+
+		PxToolkit::MemoryOutputStream writeBuffer;
+		bool status = mCooking->cookTriangleMesh(meshDesc, writeBuffer);
+		if(!status)
+			return;
+
+		PxToolkit::MemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+
+		PxTriangleMeshGeometry triGeom;
+		triGeom.triangleMesh = mPhysics->createTriangleMesh(readBuffer);
+		//triGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
+		
+		meshShape = meshActor->createShape(triGeom, *defaultMaterial);
+		meshShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
+		meshShape->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
+
+		PxConvexMeshDesc convexDesc;
+		convexDesc.points.count     = 8;
+		convexDesc.points.stride    = sizeof(PxVec3);
+		convexDesc.points.data      = convexVerts;
+		convexDesc.flags            = PxConvexFlag::eCOMPUTE_CONVEX;
+
+		if(!convexDesc.isValid())
+			return;
+		PxToolkit::MemoryOutputStream buf;
+		if(!mCooking->cookConvexMesh(convexDesc, buf))
+			return;
+		PxToolkit::MemoryInputData input(buf.getData(), buf.getSize());
+		PxConvexMesh* convexMesh = mPhysics->createConvexMesh(input);
+		PxConvexMeshGeometry convexGeom = PxConvexMeshGeometry(convexMesh);
+		convexShape = meshActor->createShape(convexGeom, *defaultMaterial);
+		convexShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
+		//convexShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+
+		
+		convexShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+		meshShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+		meshActor->setRigidDynamicFlag(PxRigidDynamicFlag::eKINEMATIC, false);
+
+		mScene->addActor(*meshActor);
+		dynamicActors.push_back(meshActor);
+	}
+}
+
+void Apex::getRigidDynamicPosition(int index, XMFLOAT4X4 *position)
+{
+	PxU32 nShapes = 0;
+
+	if(dynamicActors[index])
+		nShapes = dynamicActors[index]->getNbShapes();
+	else	
+		return;
+
+	PxShape** shapes = new PxShape*[nShapes];
+ 
+	dynamicActors[index]->getShapes(shapes, nShapes);     
+	PxTransform pt = PxShapeExt::getGlobalPose(*shapes[0]);
+
+	delete [] shapes;
+
+    XMMATRIX world = XMLoadFloat4x4(position) ;
+    PxtoXMMatrix(pt, &world);
+
+	XMStoreFloat4x4(position, world);
 }
 
 bool Apex::InitParticles()
 {
     PX_ASSERT(gApexSDK);
     NxApexCreateError            errorCode;
-
 
     mParticleIosModule = static_cast<NxModuleParticleIos*>(gApexSDK->createModule("ParticleIOS", &errorCode));
     checkErrorCode(&errorCode);
@@ -315,7 +402,6 @@ bool Apex::InitParticles()
 		mParticleIosModule->setLODUnitCost(0.00000001f);
     }
 	
-    
     mIofxModule = static_cast<NxModuleIofx*>(gApexSDK->createModule("IOFX", &errorCode));
     checkErrorCode(&errorCode);
     PX_ASSERT(mIofxModule);
@@ -363,7 +449,6 @@ ApexCloth* Apex::CreateCloth(physx::apex::NxUserRenderer* renderer, const char* 
 
 bool Apex::InitClothing()
 {
-  
     PX_ASSERT(gApexSDK);
     NxApexCreateError            errorCode;
     mApexClothingModule = static_cast<physx::apex::NxModuleClothing*>(gApexSDK->createModule("Clothing", &errorCode));

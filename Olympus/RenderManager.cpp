@@ -32,46 +32,47 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	dev->CreateRenderTargetView(pBackBuffer, NULL, &mBackbuffer);
 	pBackBuffer->Release();
 
-	gRenderer = new ZeusRenderer();
+	
 
 	GeometryGenerator *geoGen = new GeometryGenerator();
 
-	mSkyBox = new SkyBox(mDevcon, mDev, geoGen);
-
-	mCloth = apex->CreateCloth(gRenderer, "curtainew");//"ctdm_Cape_400");//"bannercloth");//
-	renderables.push_back(mCloth);
-
-	emitter = apex->CreateEmitter(gRenderer, "SmokeEmitter");
-	emitter->SetPosition(-18.0f, -65.0f, -243.0f);
-	//emitter->SetEmit(true);
-
-    sphere2 = new Sphere(mDevcon, mDev, geoGen, apex, 2, 30, 30);
-	renderables.push_back(sphere2);
-	sphere2->MoveTo(0.0f,5.0f,-10.0f);//-18.0f, -65.0f, -243.0f);//-3.0f, 309.5f, -957.3f);
-    
-	torch1 = apex->CreateEmitter(gRenderer, "TorchEmitter");
-	torch1->SetPosition(-13.5f, -2.0f, -42.0f);
-    torch2 = apex->CreateEmitter(gRenderer, "TorchEmitter");
-    torch2->SetPosition(-67.6f, -2.0f, -42.0f);
-
-	particles = apex->CreateEmitter(gRenderer, "testSpriteEmitter4ParticleFluidIos");
-    particles->SetPosition(-19.0f, 45.0f, 206.0f);
-
-    mSphereMove = new Sphere(mDevcon, mDev, geoGen, apex, 2, 30, 30);
-	renderables.push_back(mSphereMove);
-	mSphereMove->MoveTo(-19.0f, 45.0f, 206.0f);
-	
 	//Special "renderable" case, do not add to the vector
 	mScreen = new ScreenQuad(mDevcon, mDev, geoGen);
 	//Special camera, doesn't move
 
-	Scene* scene = new Scene(&renderables, dev, devcon, apex);
+	mSkyBox = new SkyBox(mDevcon, mDev, geoGen);
 
-	projectile = new Projectile(dev, devcon, apex);
-	renderables.push_back(projectile);
+	
 
-	mGrid = new GroundPlane(mDevcon, mDev, geoGen, 400, 10);
-	//renderables.push_back(mGrid);
+	//mCloth = apex->CreateCloth(gRenderer, "curtainew");//"ctdm_Cape_400");//"bannercloth");//
+	//renderables.push_back(mCloth);
+
+	//emitter = apex->CreateEmitter(gRenderer, "SmokeEmitter");
+	//emitter->SetPosition(-18.0f, -65.0f, -243.0f);
+	////emitter->SetEmit(true);
+
+ //   
+	//torch1 = apex->CreateEmitter(gRenderer, "TorchEmitter");
+	//torch1->SetPosition(-13.5f, -2.0f, -42.0f);
+ //   torch2 = apex->CreateEmitter(gRenderer, "TorchEmitter");
+ //   torch2->SetPosition(-67.6f, -2.0f, -42.0f);
+
+	//particles = apex->CreateEmitter(gRenderer, "testSpriteEmitter4ParticleFluidIos");
+ //   particles->SetPosition(-19.0f, 45.0f, 206.0f);
+
+	/*projectile = new Projectile(dev, devcon, apex);
+	renderables.push_back(projectile);*/
+
+	//mGrid = new GroundPlane(mDevcon, mDev, geoGen, 400, 10);
+	////renderables.push_back(mGrid);
+
+
+	//renderables.push_back(emitter);
+	//renderables.push_back(particles);
+	//renderables.push_back(torch1);
+	//renderables.push_back(torch2);
+
+	
 
 	HRESULT hr;
 
@@ -231,16 +232,6 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	mPointLight[1].Range    = 15.0f;
 	mPointLight[1].Position = XMFLOAT3(-67.7f, -3.0f, -42.0f);
 
-	mSphere = new Sphere(mDevcon, mDev, geoGen, apex, 4, 60, 60);
-	renderables.push_back(mSphere);
-	mSphere->SetupReflective(&renderables, mSkyBox, mScreen, mZbuffer, mViewport);
-	mSphere->MoveTo(-37.0f, -12.0f, -85.0f);
-
-	renderables.push_back(emitter);
-	renderables.push_back(particles);
-	renderables.push_back(torch1);
-	renderables.push_back(torch2);
-
 	// Shadow Initialization
 
 	// Set the viewport
@@ -310,6 +301,8 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	sd.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
 	mDev->CreateSamplerState(&sd, &pSS);
 	mDevcon->PSSetSamplers(5, 1, &pSS);
+
+	scene = new Scene(&renderables, dev, devcon, apex, geoGen, mSkyBox, mScreen, mZbuffer, mViewport);
 }
 
 
@@ -345,12 +338,17 @@ void RenderManager::Update(float dt)
 
 	//SetPosition(x,y,z);
 	//mSphereMove->MoveTo(x,y,z);
-	projectile->Update();
+	/*projectile->Update();
 	particles->Update();
 	emitter->Update();
 	torch1->Update();
 	torch2->Update();
-	mCloth->Update();
+	mCloth->Update();*/
+	scene->Update();
+	for(int i = 0; i < renderables.size() ; i++)
+	{
+		renderables[i]->Update();
+	}
 }
 
 void RenderManager::GetScreenParams(int mClientWidth, int mClientHeight)
@@ -535,7 +533,7 @@ void RenderManager::Render()
 	//if(!((mCam->GetPosition().x > 6.0f || mCam->GetPosition().x < -44.0) ||
 	//	(mCam->GetPosition().y > 70.0f || mCam->GetPosition().y < 20.0) ||
 	//	(mCam->GetPosition().z > 231.0f || mCam->GetPosition().z < 181.0)) ){
-			mSphere->IsItReflective(true);
+			//mSphere->IsItReflective(true);
 	/*}
 	else{
 		mSphere->IsItReflective(false);

@@ -78,7 +78,9 @@ struct Material
 	XMFLOAT4 Reflect;
 
 	int alphaKillOn;
-    XMFLOAT3 padding;
+	int backCullOn;
+	int dynamicOn;
+    int padding;
 };
 
 #endif // LIGHTHELPER_H

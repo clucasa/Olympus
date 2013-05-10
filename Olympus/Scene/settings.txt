@@ -1,0 +1,5 @@
+# scene settings
+# p			max projectiles
+#
+#
+p 35

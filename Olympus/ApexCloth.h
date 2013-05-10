@@ -39,7 +39,7 @@ public:
     void CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 						ID3D11DeviceContext *devcon, 	ID3D11Device *dev,
 					  physx::apex::NxUserRenderer* renderer, const char* filename);
-	void Update();
+	virtual void Update();
 	virtual void RecompileShader();
 
 	void SetPosition(float x, float y, float z);

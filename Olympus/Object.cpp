@@ -29,7 +29,6 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
 
 	for( int i = 0; i < numMeshes; i++ )
 	{
-	   
         int numVerts = vertexes[i].size();
 		D3D11_BUFFER_DESC bd;
 		ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
@@ -112,7 +111,7 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
     bd.ByteWidth = sizeof(cbuffs);
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
-    dev1->CreateBuffer(&bd, NULL, &worldCBuffer);
+    hr = dev1->CreateBuffer(&bd, NULL, &worldCBuffer);
 }
 
 void Object::renderO( ID3D11DeviceContext * devcon)
@@ -168,7 +167,14 @@ void Object::AddInstance(ObjectInfo info)
 			vertices[j].y = vertexes[i][j].Pos.y;
 			vertices[j].z = vertexes[i][j].Pos.z;
 		}
-		mApex->LoadTriangleMesh(numVerts, vertices, info);
+		if(info.materials[i].dynamicOn)
+		{
+			mApex->LoadDynamicTriangleMesh(numVerts, vertices, info);
+		}
+		else
+		{
+			mApex->LoadTriangleMesh(numVerts, vertices, info);
+		}
 	}
 
     // For this instance, have these materials for the # of meshes

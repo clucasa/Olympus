@@ -20,7 +20,7 @@ public:
 
 	void Fire(Camera *mCam, float speed, ApexCloth* mCloth);
 	
-	void Update();
+	virtual void Update();
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
 	virtual void RecompileShader();
 	virtual void Depth();

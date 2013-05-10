@@ -374,8 +374,8 @@ int System::initd3d()
 	mCam = new Camera();
 	mLastMousePos.x = 0;
 	mLastMousePos.y = 0;
-    mCam->SetPosition(-10.0f, 5.0f, 15.0f);
-	mCam->RotateY(-2.3);
+    mCam->SetPosition(0.0f, 5.0f, 50.0f);
+	mCam->RotateY(-3.1415);
 	mCam->SetLens(0.25f*MathHelper::Pi, (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 1.0f, 10000.0f);
     mCam->UpdateViewMatrix();
 
@@ -522,16 +522,20 @@ void System::UpdateCamera(float dt)
 		XMFLOAT3 camPos = mCam->GetPosition();
 		if(mFlyMode == false)
 		{
+			if(!(state.Gamepad.sThumbLX < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)){
+				cController->move(mCam->GetRight().x, -9.8, mCam->GetRight().z, dt);
+			}
+			if(!(state.Gamepad.sThumbLX > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)){
+				cController->move(-mCam->GetRight().x, -9.8, -mCam->GetRight().z, dt);
+			}
+			if(!(state.Gamepad.sThumbLY < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)){
+				cController->move(mCam->GetLook().x, -9.8, mCam->GetLook().z, dt);
+			}
+			if(!(state.Gamepad.sThumbLY > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)){
+				cController->move(-mCam->GetLook().x, -9.8, -mCam->GetLook().z, dt);
+			} 
 			
-			mCam->SetPosition(camPos.x, 2.0f, camPos.z);
-	
-			//crouch
-			if(state.Gamepad.wButtons & XINPUT_GAMEPAD_B)
-				mCam->SetPosition(camPos.x, 1.0f, camPos.z);
-
-			//jump
-			if(state.Gamepad.wButtons & XINPUT_GAMEPAD_A)
-				mCam->SetPosition(camPos.x, 5.0f, camPos.z);
+		mCam->SetPosition(cController->pCharacter->getPosition().x, cController->pCharacter->getPosition().y, cController->pCharacter->getPosition().z); 
 		}
 		else
 		{
@@ -549,11 +553,11 @@ void System::UpdateCamera(float dt)
 			{
 				XMFLOAT3 originalPos = mCam->GetPosition();
 				shootspeed = /*(state.Gamepad.bRightTrigger / 255) * */50.0f;
-				rendManager->projectile->Fire(mCam, shootspeed, rendManager->mCloth);	
+				rendManager->scene->Fire(mCam, shootspeed);	
 				/*for(int i = 0; i < 20; i++)
 				{
 					mCam->SetPosition(originalPos.x + 5 * sinf(i), originalPos.y, originalPos.z + 5 * cosf(i));
-					rendManager->projectile->Fire(mCam, shootspeed, rendManager->mCloth);	
+					rendManager->scene->Fire(mCam, shootspeed);	
 				}
 				mCam->SetPosition(originalPos.x, originalPos.y, originalPos.z);*/
 				cooldown += 0.3f;
@@ -620,7 +624,7 @@ void System::UpdateCamera(float dt)
 
 	if( (GetAsyncKeyState('B') & 0x8000) )
     {
-		rendManager->projectile->Fire(mCam, 100.0f, rendManager->mCloth);
+		rendManager->scene->Fire(mCam, 100.0f);
     }
 
 	//Numpad 7
@@ -779,7 +783,7 @@ void System::OnResize()
 
 	dev->CreateDepthStencilView(rendManager->mDepthTargetTexture, &dsvd, &rendManager->mZbuffer);
 
-	rendManager->mSphere->mZbuffer = rendManager->mZbuffer;
+	rendManager->scene->mZbuffer = rendManager->mZbuffer;
 	
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 

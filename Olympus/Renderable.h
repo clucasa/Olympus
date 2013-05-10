@@ -14,6 +14,7 @@ public:
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType) {}
 	virtual void RecompileShader() {}
 	virtual void Depth() {}
+	virtual void Update() {}
 	
 	vector<ID3D11Buffer*> perCBuffers;
 };

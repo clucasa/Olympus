@@ -241,6 +241,15 @@
     <None Include="Scene\deadman.txt">
       <Filter>Resource Files\Scene</Filter>
     </None>
+    <None Include="Scene\physx.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\envirospheres.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\settings.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="apex.h">

@@ -6,7 +6,7 @@
 
 class CharacterController
 {
-private:
+public:
 	PxController*		pCharacter;
 
 	string				currentPos;
@@ -32,6 +32,7 @@ public:
 	{	
 		//this->pCharEntity->getNode()->setRotationAngleY( angle );
 	}
+
 	void update();
 
 	
