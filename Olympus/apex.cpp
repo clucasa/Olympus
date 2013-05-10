@@ -303,7 +303,7 @@ void Apex::LoadTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 }
 
 
-static const PxVec3 convexVerts[] = {PxVec3(1,1,0),PxVec3(-1,1,0),PxVec3(0,1,1),PxVec3(0,1,-1),PxVec3(1,0,0),PxVec3(-1,0,0),PxVec3(0,0,1),PxVec3(0,0,-1)};
+static const PxVec3 convexVerts[] = {PxVec3(1,1,0),PxVec3(-1,1,0),PxVec3(0,1,1),PxVec3(0,1,-1),PxVec3(1,-1,0),PxVec3(-1,-1,0),PxVec3(0,-1,1),PxVec3(0,-1,-1)};
 
 void Apex::LoadDynamicTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 {
@@ -334,7 +334,7 @@ void Apex::LoadDynamicTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 		//triGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
 		
 		meshShape = meshActor->createShape(triGeom, *defaultMaterial);
-		meshShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
+		//meshShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
 		meshShape->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
 
 		PxConvexMeshDesc convexDesc;
@@ -352,14 +352,14 @@ void Apex::LoadDynamicTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 		PxConvexMesh* convexMesh = mPhysics->createConvexMesh(input);
 		PxConvexMeshGeometry convexGeom = PxConvexMeshGeometry(convexMesh);
 		convexShape = meshActor->createShape(convexGeom, *defaultMaterial);
-		convexShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
+		//convexShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
 		//convexShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
 
 		
 		convexShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
 		meshShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
 		meshActor->setRigidDynamicFlag(PxRigidDynamicFlag::eKINEMATIC, false);
-
+        meshActor->setGlobalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
 		mScene->addActor(*meshActor);
 		dynamicActors.push_back(meshActor);
 	}
