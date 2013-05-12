@@ -5,18 +5,19 @@ Apex::Apex() :
     mPhysics(0),
     mFoundation(0),
     mCooking(0),
-    mScene(0)
+    mScene(0),
+	mCurrentScene(0)
 {
     return;
 }
 
 Apex::~Apex()
 {
-    gApexScene->setPhysXScene(0);
+    gApexScene[mCurrentScene]->setPhysXScene(0);
 
     // Now, it's safe to release the NxScene...
-    gApexScene->fetchResults(true, NULL);                 // ensure scene is not busy
-    gApexScene->release();
+    gApexScene[mCurrentScene]->fetchResults(true, NULL);                 // ensure scene is not busy
+    gApexScene[mCurrentScene]->release();
     mCpuDispatcher->release();
 	
 
@@ -46,16 +47,16 @@ bool Apex::advance(float dt)
 
 	//while (dt > mStepSize)
 	//{
-		gApexScene->simulate(mStepSize);
+		gApexScene[mCurrentScene]->simulate(mStepSize);
     //    dt -= mStepSize;
 	//}
-    //gApexScene->simulate(dt);
+    //gApexScene[mCurrentScene]->simulate(dt);
     return true;
 }
 
 void Apex::fetch()
 {
-    gApexScene->fetchResults(true, NULL);
+    gApexScene[mCurrentScene]->fetchResults(true, NULL);
 }
 
 bool Apex::Init(ID3D11Device* dev, ID3D11DeviceContext* devcon)
@@ -86,25 +87,25 @@ bool Apex::Init(ID3D11Device* dev, ID3D11DeviceContext* devcon)
     if(!gApexSDK)
         return false;
     
-    NxApexSceneDesc apexSceneDesc;
-    // Create the APEX scene...
-    
-    apexSceneDesc.scene = mScene;
-	
-    if(apexSceneDesc.isValid())
-        gApexScene = gApexSDK->createScene(apexSceneDesc);
-    else
-        return false;
+ //   NxApexSceneDesc apexSceneDesc;
+ //   // Create the APEX scene...
+ //   
+ //   apexSceneDesc.scene = mScene[mCurrentScene];
+	//
+ //   if(apexSceneDesc.isValid())
+ //       gApexScene[mCurrentScene] = gApexSDK->createScene(apexSceneDesc);
+ //   else
+ //       return false;
 
-    if(!gApexScene)
-        return false;
+ //   if(!gApexScene[mCurrentScene])
+ //       return false;
 
-	gApexScene->setLODResourceBudget(10000.f);
+	//gApexScene[mCurrentScene]->setLODResourceBudget(10000.f);
 
-	static const physx::PxU32 viewIDlookAtRightHand = gApexScene->allocViewMatrix(physx::apex::ViewMatrixType::LOOK_AT_LH);
-	static const physx::PxU32 projIDperspectiveCubicRightHand = gApexScene->allocProjMatrix(physx::apex::ProjMatrixType::USER_CUSTOMIZED);
+	//static const physx::PxU32 viewIDlookAtRightHand = gApexScene[mCurrentScene]->allocViewMatrix(physx::apex::ViewMatrixType::LOOK_AT_LH);
+	//static const physx::PxU32 projIDperspectiveCubicRightHand = gApexScene[mCurrentScene]->allocProjMatrix(physx::apex::ProjMatrixType::USER_CUSTOMIZED);
 
-	gApexScene->setUseViewProjMatrix(viewIDlookAtRightHand, projIDperspectiveCubicRightHand);
+	//gApexScene[mCurrentScene]->setUseViewProjMatrix(viewIDlookAtRightHand, projIDperspectiveCubicRightHand);
 
     return true;
 }
@@ -117,10 +118,10 @@ void Apex::UpdateViewProjMat(XMMATRIX *view, XMMATRIX *proj, float nearPlane, fl
 	PxMat44 pproj;
 	XMtoPxMatrix(proj, &pproj);
 
-	gApexScene->setViewMatrix(pview);
-	gApexScene->setProjMatrix(pproj);
+	gApexScene[mCurrentScene]->setViewMatrix(pview);
+	gApexScene[mCurrentScene]->setProjMatrix(pproj);
 
-	gApexScene->setProjParams(nearPlane, farPlane, fov, vWidth, vHeight);
+	gApexScene[mCurrentScene]->setProjParams(nearPlane, farPlane, fov, vWidth, vHeight);
 }
 
 void Apex::PxtoXMMatrix(PxTransform input, XMMATRIX* start)
@@ -194,37 +195,37 @@ bool Apex::InitPhysX()
         return false;
     
 
-    PxSceneDesc sceneDesc(mPhysics->getTolerancesScale());
-    sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+    //PxSceneDesc sceneDesc(mPhysics->getTolerancesScale());
+    //sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 
-    if(!sceneDesc.cpuDispatcher)
-    {
-        mCpuDispatcher = PxDefaultCpuDispatcherCreate(mNbThreads);
-        if(!mCpuDispatcher)
-            return false;
-        sceneDesc.cpuDispatcher    = mCpuDispatcher;
-    }
+    //if(!sceneDesc.cpuDispatcher)
+    //{
+    //    mCpuDispatcher = PxDefaultCpuDispatcherCreate(mNbThreads);
+    //    if(!mCpuDispatcher)
+    //        return false;
+    //    sceneDesc.cpuDispatcher    = mCpuDispatcher;
+    //}
 
-    if(!sceneDesc.filterShader)
-    {
-        sceneDesc.filterShader = PxDefaultSimulationFilterShader;
-    }
-    
-    /*#ifdef PX_WINDOWS
-    if(!sceneDesc.gpuDispatcher && mCudaContextManager)
-    {
-        sceneDesc.gpuDispatcher = mCudaContextManager->getGpuDispatcher();
-    }
-    #*/
-    mProfileZoneManager = &PxProfileZoneManager::createProfileZoneManager(mFoundation);
-    pxtask::CudaContextManagerDesc cudaContextManagerDesc;
-    mCudaContextManager = pxtask::createCudaContextManager(*mFoundation,cudaContextManagerDesc, mProfileZoneManager);
-    sceneDesc.gpuDispatcher = mCudaContextManager->getGpuDispatcher();
+    //if(!sceneDesc.filterShader)
+    //{
+    //    sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+    //}
+    //
+    ///*#ifdef PX_WINDOWS
+    //if(!sceneDesc.gpuDispatcher && mCudaContextManager)
+    //{
+    //    sceneDesc.gpuDispatcher = mCudaContextManager->getGpuDispatcher();
+    //}
+    //#*/
+    //mProfileZoneManager = &PxProfileZoneManager::createProfileZoneManager(mFoundation);
+    //pxtask::CudaContextManagerDesc cudaContextManagerDesc;
+    //mCudaContextManager = pxtask::createCudaContextManager(*mFoundation,cudaContextManagerDesc, mProfileZoneManager);
+    //sceneDesc.gpuDispatcher = mCudaContextManager->getGpuDispatcher();
 
 
-    mScene = mPhysics->createScene(sceneDesc);
-    if (!mScene)
-        return false;
+    //mScene[mCurrentScene] = mPhysics->createScene(sceneDesc);
+    //if (!mScene[mCurrentScene])
+    //    return false;
     
     defaultMaterial = mPhysics->createMaterial(0.5f, 0.5f, 0.1f);    //static friction, dynamic friction, restitution
     if(!defaultMaterial)
@@ -235,11 +236,11 @@ bool Apex::InitPhysX()
     if (!plane)
         return false;
 
-    mScene->addActor(*plane);
+    //mScene[mCurrentScene]->addActor(*plane);
 
     // Create a heightfield
     PhysXHeightfield* heightfield = new PhysXHeightfield();
-    //heightfield->InitHeightfield(mPhysics, mScene, "terrain5.raw");
+    //heightfield->InitHeightfield(mPhysics, mScene[mCurrentScene], "terrain5.raw");
 
     // check if PvdConnection manager is available on this platform
     if(mPhysics->getPvdConnectionManager() == NULL)
@@ -298,7 +299,7 @@ void Apex::LoadTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 		meshShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
 
 
-		mScene->addActor(*meshActor);
+		mScene[mCurrentScene]->addActor(*meshActor);
 	}
 }
 
@@ -360,7 +361,7 @@ void Apex::LoadDynamicTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 		meshShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
 		meshActor->setRigidDynamicFlag(PxRigidDynamicFlag::eKINEMATIC, false);
         meshActor->setGlobalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
-		mScene->addActor(*meshActor);
+		mScene[mCurrentScene]->addActor(*meshActor);
 		dynamicActors.push_back(meshActor);
 	}
 }
@@ -437,13 +438,13 @@ bool Apex::InitParticles()
 ApexParticles* Apex::CreateEmitter(physx::apex::NxUserRenderer* renderer, const char* filename)
 {
 	ApexParticles* emitter = new ApexParticles();
-	emitter->CreateEmitter(gApexSDK, gApexScene, mDevcon, mDev, renderer, mIofxModule, filename);
+	emitter->CreateEmitter(gApexSDK, gApexScene[mCurrentScene], mDevcon, mDev, renderer, mIofxModule, filename);
 	return emitter;
 }
 ApexCloth* Apex::CreateCloth(physx::apex::NxUserRenderer* renderer, const char* filename)
 {
     ApexCloth* cloth = new ApexCloth();
-    cloth->CreateCloth(gApexSDK, gApexScene, mDevcon, mDev, renderer, filename);
+    cloth->CreateCloth(gApexSDK, gApexScene[mCurrentScene], mDevcon, mDev, renderer, filename);
     return cloth;
 }
 
@@ -498,4 +499,61 @@ bool Apex::checkErrorCode(NxApexCreateError* err)
         break;
     }
     return retval;
+}
+
+bool Apex::CreateScene()
+{
+	PxSceneDesc sceneDesc(mPhysics->getTolerancesScale());
+    sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+
+    if(!sceneDesc.cpuDispatcher)
+    {
+        mCpuDispatcher = PxDefaultCpuDispatcherCreate(mNbThreads);
+        if(!mCpuDispatcher)
+            return false;
+        sceneDesc.cpuDispatcher    = mCpuDispatcher;
+    }
+
+    if(!sceneDesc.filterShader)
+    {
+        sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+    }
+    
+    /*#ifdef PX_WINDOWS
+    if(!sceneDesc.gpuDispatcher && mCudaContextManager)
+    {
+        sceneDesc.gpuDispatcher = mCudaContextManager->getGpuDispatcher();
+    }
+    #*/
+    mProfileZoneManager = &PxProfileZoneManager::createProfileZoneManager(mFoundation);
+    pxtask::CudaContextManagerDesc cudaContextManagerDesc;
+    mCudaContextManager = pxtask::createCudaContextManager(*mFoundation,cudaContextManagerDesc, mProfileZoneManager);
+    sceneDesc.gpuDispatcher = mCudaContextManager->getGpuDispatcher();
+
+
+	mScene.push_back(mPhysics->createScene(sceneDesc));
+
+    if (!mScene[mCurrentScene])
+        return false;
+
+
+	 NxApexSceneDesc apexSceneDesc;
+    // Create the APEX scene...
+    
+    apexSceneDesc.scene = mScene[mCurrentScene];
+	
+    if(apexSceneDesc.isValid())
+		gApexScene.push_back(gApexSDK->createScene(apexSceneDesc));
+    else
+        return false;
+
+    if(!gApexScene[mCurrentScene])
+        return false;
+
+	gApexScene[mCurrentScene]->setLODResourceBudget(10000.f);
+
+	static const physx::PxU32 viewIDlookAtRightHand = gApexScene[mCurrentScene]->allocViewMatrix(physx::apex::ViewMatrixType::LOOK_AT_LH);
+	static const physx::PxU32 projIDperspectiveCubicRightHand = gApexScene[mCurrentScene]->allocProjMatrix(physx::apex::ProjMatrixType::USER_CUSTOMIZED);
+
+	gApexScene[mCurrentScene]->setUseViewProjMatrix(viewIDlookAtRightHand, projIDperspectiveCubicRightHand);
 }

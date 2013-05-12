@@ -22,6 +22,7 @@
 #include "GameTimer.h"
 #include "ConstBuffers.h"
 #include "LightHelper.h"
+#include <string>
 using namespace std;
 
 enum renderTargets
@@ -101,8 +102,11 @@ public:
 	Camera *mScreenCam;
 	GroundPlane *mGrid;
 	
-	Scene* scene;
+	vector<Scene*> scene;
 	
+	int		mCurrentScene;
+
+
 	ID3D11Buffer *sceneCBuffer;
 	ID3D11Buffer *dirLightCBuffer;
 	ID3D11Buffer *pointLightCBuffer;

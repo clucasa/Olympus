@@ -23,7 +23,7 @@ CharacterController::CharacterController(Apex *mApex)
 		desc.slopeLimit				= cosf(0.712f);
 		desc.invisibleWallHeight    = 60.0f;
 
-	pCharacter = pManager->createController( *mApex->mPhysics, mApex->mScene, desc );
+	pCharacter = pManager->createController( *mApex->mPhysics, mApex->mScene[mApex->mCurrentScene], desc );
 	
 	pCharacter->setStepOffset( 5.0f*2.0f );
 	PxExtendedVec3 pos = PxExtendedVec3(0.0, 8.2, 0.0);

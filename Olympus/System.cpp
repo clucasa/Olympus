@@ -51,6 +51,12 @@ System::System(HINSTANCE hInstance, int nCmdShow) :
 
     ShowWindow(hWnd, nCmdShow);
 
+	mCurrentScene = 0;
+
+
+	
+	
+
 }
 
 System::~System() {}
@@ -70,6 +76,7 @@ int System::run()
 
 	//RenderFrame(100.0f); // skip forward 100 seconds!
 
+	rendManager->mCurrentScene = 0;
 
 	mTimer.Reset();
 
@@ -159,6 +166,24 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 {
 				    PostQuitMessage(0);	
 				    return 0;
+                }
+			    break;
+
+				case 0x30: // 0 key has been pressed
+                {
+					rendManager->mCurrentScene = 0;
+					rendManager->mApex->setScene(0);
+					cController->SetScene(0);
+					mCurrentScene = 0;
+                }
+			    break;
+
+				case 0x31: // 0 key has been pressed
+                {
+					rendManager->mCurrentScene = 1;
+					rendManager->mApex->setScene(1);
+					cController->SetScene(1);
+					mCurrentScene = 1;
                 }
 			    break;
 
@@ -383,7 +408,7 @@ int System::initd3d()
     mApex->Init(dev, devcon);
     mApex->InitParticles();
     mApex->InitClothing();
-	mApex->UpdateViewProjMat(&mCam->View(),&mCam->Proj(), 1.0f, 10000.0f, 0.25f*MathHelper::Pi, mClientWidth, mClientHeight);
+	//mApex->UpdateViewProjMat(&mCam->View(),&mCam->Proj(), 1.0f, 10000.0f, 0.25f*MathHelper::Pi, mClientWidth, mClientHeight);
 
 	
 
@@ -553,7 +578,7 @@ void System::UpdateCamera(float dt)
 			{
 				XMFLOAT3 originalPos = mCam->GetPosition();
 				shootspeed = /*(state.Gamepad.bRightTrigger / 255) * */50.0f;
-				rendManager->scene->Fire(mCam, shootspeed);	
+				rendManager->scene[mCurrentScene]->Fire(mCam, shootspeed);	
 				/*for(int i = 0; i < 20; i++)
 				{
 					mCam->SetPosition(originalPos.x + 5 * sinf(i), originalPos.y, originalPos.z + 5 * cosf(i));
@@ -624,7 +649,7 @@ void System::UpdateCamera(float dt)
 
 	if( (GetAsyncKeyState('B') & 0x8000) )
     {
-		rendManager->scene->Fire(mCam, 100.0f);
+		rendManager->scene[mCurrentScene]->Fire(mCam, 100.0f);
     }
 
 	//Numpad 7
@@ -783,7 +808,7 @@ void System::OnResize()
 
 	dev->CreateDepthStencilView(rendManager->mDepthTargetTexture, &dsvd, &rendManager->mZbuffer);
 
-	rendManager->scene->mZbuffer = rendManager->mZbuffer;
+	rendManager->scene[mCurrentScene]->mZbuffer = rendManager->mZbuffer;
 	
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 

@@ -302,7 +302,21 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	mDev->CreateSamplerState(&sd, &pSS);
 	mDevcon->PSSetSamplers(5, 1, &pSS);
 
-	scene = new Scene(&renderables, dev, devcon, apex, geoGen, mSkyBox, mScreen, mZbuffer, mViewport);
+	vector<String> sceneNames;
+	sceneNames.push_back("scene/scene0.txt");
+	sceneNames.push_back("scene/scene1.txt");
+
+	Scene *tempScene;
+
+	for(int i = 0; i < sceneNames.size(); i++)
+	{
+		apex->setScene(i);
+		tempScene = new Scene(&renderables, dev, devcon, apex, geoGen, mSkyBox, mScreen, mZbuffer, mViewport, sceneNames[i]);
+		scene.push_back(tempScene);
+	}
+	
+	apex->setScene(0);
+
 }
 
 
@@ -330,25 +344,9 @@ float timePassed = 0.0f;
 void RenderManager::Update(float dt)
 {
 	timePassed += dt;
-	// Other animation?
-	float x,y,z;
-	x = 200.0f * (float)sin((float)timePassed);
-	y = abs(50.f * (float)sin((float)timePassed/0.3f))-10.0f;
-	z = 200.0f * (float)cos((float)timePassed);
-
-	//SetPosition(x,y,z);
-	//mSphereMove->MoveTo(x,y,z);
-	/*projectile->Update();
-	particles->Update();
-	emitter->Update();
-	torch1->Update();
-	torch2->Update();
-	mCloth->Update();*/
-	scene->Update();
-	for(int i = 0; i < renderables.size() ; i++)
-	{
-		renderables[i]->Update();
-	}
+	
+	scene[mCurrentScene]->Update();
+	
 }
 
 void RenderManager::GetScreenParams(int mClientWidth, int mClientHeight)
@@ -542,9 +540,9 @@ void RenderManager::Render()
 
 void RenderManager::Render(int renderType)
 {
-	for(int i = 0; i < renderables.size() ; i++)
+	for(int i = 0; i < scene[mCurrentScene]->mRenderables.size() ; i++)
 	{
-		renderables[i]->Render(sceneCBuffer, mCam, renderType);
+		scene[mCurrentScene]->mRenderables[i]->Render(sceneCBuffer, mCam, renderType);
 	}
 }
 

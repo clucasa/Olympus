@@ -96,6 +96,9 @@ private:
     int					mClientWidth;
 	int					mClientHeight;
 
+	int					mCurrentScene;
+
+
 	bool				mAppPaused;
 	bool				mMinimized;
 	bool				mMaximized;

@@ -35,5 +35,7 @@ public:
 
 	void update();
 
+	int					mCurrentScene;
+	void				SetScene(int sceneNum){mCurrentScene = sceneNum;}
 	
 };

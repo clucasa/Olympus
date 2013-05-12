@@ -208,9 +208,6 @@
     <None Include="Scene\bigbadman.txt">
       <Filter>Resource Files\Scene</Filter>
     </None>
-    <None Include="Scene\Scene.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
     <None Include="Scene\terrain.txt">
       <Filter>Resource Files\Scene</Filter>
     </None>
@@ -248,6 +245,15 @@
       <Filter>Resource Files\Scene</Filter>
     </None>
     <None Include="Scene\settings.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\Scene1.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\Scene0.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\physx1.txt">
       <Filter>Resource Files\Scene</Filter>
     </None>
   </ItemGroup>
