@@ -1,11 +1,13 @@
 #include "Scene.h"
 
 Scene::Scene(vector<Renderable*>* renderables, ID3D11Device *dev, ID3D11DeviceContext *devcon, Apex* apex, GeometryGenerator *geoGen,
-			Renderable *skyBox,	ScreenQuad *screenQuad, ID3D11DepthStencilView *zbuff, D3D11_VIEWPORT *screenViewport) :
-			mRenderables(renderables), mDev(dev), mDevcon(devcon), mApex(apex), mGeoGen(geoGen), mSkyBox(skyBox), mScreen(screenQuad),
+			Renderable *skyBox,	ScreenQuad *screenQuad, ID3D11DepthStencilView *zbuff, D3D11_VIEWPORT *screenViewport, String sceneName) :
+			mDev(dev), mDevcon(devcon), mApex(apex), mGeoGen(geoGen), mSkyBox(skyBox), mScreen(screenQuad),
 			mZbuffer(zbuff), mScreenViewport(screenViewport)
 {
-	std::ifstream fin("Scene/scene.txt");
+	mApex->CreateScene();
+
+	std::ifstream fin(sceneName);
     if(!fin)
     {
         MessageBox(0, "Scene/scene.txt not found.", 0, 0);
@@ -78,7 +80,7 @@ Scene::Scene(vector<Renderable*>* renderables, ID3D11Device *dev, ID3D11DeviceCo
 		
 			PlacePins( XMFLOAT3(::atof(elems[1].c_str()), ::atof(elems[2].c_str()), ::atof(elems[3].c_str()) ), 15, 2.0f, bowlingPin);
 			
-			mRenderables->push_back(bowlingPin);
+			mRenderables.push_back(bowlingPin);
 			bowlingSets.push_back(bowlingPin);
 			elems.clear();
 		}
@@ -244,7 +246,7 @@ void Scene::LoadFBX(string filename)
 		object->AddInstance(objInfos[k]);
 	}
 
-	mRenderables->push_back(object);
+	mRenderables.push_back(object);
 
     textures.clear();
     normals.clear();
@@ -281,7 +283,7 @@ void Scene::LoadSpheres(string filename)
 
 			Sphere* sphere = new Sphere(mDevcon, mDev, mGeoGen, mApex, ::atoi(elems[1].c_str()), ::atoi(elems[2].c_str()), ::atoi(elems[3].c_str()) );
 			sphere->MoveTo( ::atof(elems[4].c_str()), ::atof(elems[5].c_str()), ::atof(elems[6].c_str()) );
-			mRenderables->push_back(sphere);
+			mRenderables.push_back(sphere);
 	
 			elems.clear();
 		}
@@ -296,8 +298,8 @@ void Scene::LoadSpheres(string filename)
 
 			Sphere* sphere = new Sphere(mDevcon, mDev, mGeoGen, mApex, ::atoi(elems[1].c_str()), ::atoi(elems[2].c_str()), ::atoi(elems[3].c_str()) );
 			sphere->MoveTo( ::atof(elems[4].c_str()), ::atof(elems[5].c_str()), ::atof(elems[6].c_str()) );
-			sphere->SetupReflective(mRenderables, mSkyBox, mScreen, mZbuffer, mScreenViewport);
-			mRenderables->push_back(sphere);
+			sphere->SetupReflective(&mRenderables, mSkyBox, mScreen, mZbuffer, mScreenViewport);
+			mRenderables.push_back(sphere);
 			
 			elems.clear();
 		}
@@ -336,7 +338,7 @@ void Scene::LoadPhysX(string filename)
 			}
 
 			ApexCloth* mCloth = mApex->CreateCloth(gRenderer, elems[1].c_str() );//"curtainew");//"ctdm_Cape_400");//"bannercloth");//
-			mRenderables->push_back(mCloth);
+			mRenderables.push_back(mCloth);
 			cloths.push_back(mCloth);
 			elems.clear();
 		}
@@ -351,7 +353,7 @@ void Scene::LoadPhysX(string filename)
 
 			ApexParticles* emitter = mApex->CreateEmitter(gRenderer, elems[1].c_str());//"SmokeEmitter");
 			emitter->SetPosition(::atof(elems[2].c_str()), ::atof(elems[3].c_str()), ::atof(elems[4].c_str()));
-			mRenderables->push_back(emitter);
+			mRenderables.push_back(emitter);
 
 			elems.clear();
 		}
@@ -370,7 +372,7 @@ void Scene::LoadPhysX(string filename)
 	oin.close();
 
 	projectile = new Projectile(mDev, mDevcon, mApex);
-	mRenderables->push_back(projectile);
+	mRenderables.push_back(projectile);
 }
 
 void Scene::Fire(Camera *mCam, float speed)
@@ -440,5 +442,10 @@ void Scene::Update()
 		{
 			mApex->getRigidDynamicPosition(j, &bowlingSets[i]->mWorldMats[j]);
 		}
+	}
+
+	for(int i = 0; i < mRenderables.size() ; i++)
+	{
+		mRenderables[i]->Update();
 	}
 }

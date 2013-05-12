@@ -7,7 +7,7 @@
 #include "Sphere.h"
 #include <vector>
 #include "Projectile.h"
-
+#include <string>
 class Apex;
 //class Camera;
 
@@ -17,7 +17,7 @@ class Scene
 {
 public:
 	Scene(	vector<Renderable*>* renderables,ID3D11Device *dev, ID3D11DeviceContext *devcon, Apex* apex, GeometryGenerator *geoGen,
-			Renderable *skyBox,	ScreenQuad *screenQuad, ID3D11DepthStencilView *zbuff, D3D11_VIEWPORT *screenViewport);
+			Renderable *skyBox,	ScreenQuad *screenQuad, ID3D11DepthStencilView *zbuff, D3D11_VIEWPORT *screenViewport, String sceneName);
 
 	~Scene();
 
@@ -41,7 +41,7 @@ public:
 	D3D11_VIEWPORT *mScreenViewport;
 	GeometryGenerator *mGeoGen;
 
-	vector<Renderable*>* mRenderables;
+	vector<Renderable*> mRenderables;
 	ID3D11Device *mDev;
 	ID3D11DeviceContext *mDevcon;
 	Apex* mApex;
