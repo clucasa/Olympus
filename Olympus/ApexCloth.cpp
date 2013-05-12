@@ -143,13 +143,13 @@ void ApexCloth::CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 void ApexCloth::Update()
 {
 	float low = 0.0;
-    float high = 550.5;
+    float high = 50.5;
     float val = low + (float)rand()/((float)RAND_MAX/(high-low));
  
     PxMat44 currentPose = PxTransform(PxVec3(0.0f, 0.0f, 0.0f), PxQuat(PxHalfPi, PxVec3(-1.,0.,0.) ) );//-40.f,-12.f,-39.f));//0.f,-5.f,5.f));//
 	clothingActor->updateState(currentPose, NULL, 0, 0, ClothingTeleportMode::Continuous);
     NxParameterized::Interface* actorDesc = clothingActor->getActorDesc();
-    //NxParameterized::setParamVec3(*actorDesc, "windParams.Velocity", PxVec3(0.0+val,0.0+val,0.0+val));
+    NxParameterized::setParamVec3(*actorDesc, "windParams.Velocity", PxVec3(0.0+val,0.0+val,0.0+val));
 	
     clothingActor->lockRenderResources();
     clothingActor->updateRenderResources();
