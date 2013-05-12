@@ -1,18 +1,18 @@
 # scene
 s Scene/settings.txt
 
-# b 0.0 0.0 10.0
+b 0.0 0.0 10.0
 
 # o Scene/arenapit.txt
 # o Scene/deadman.txt
 # o Scene/archway.txt
 # o Scene/torch.txt
 # o Scene/bigbadman.txt
-o Scene/trees.txt
-o Scene/terrain.txt
+#o Scene/trees.txt
+#o Scene/terrain.txt
 # o Scene/windmill.txt
 # o Scene/crate.txt
-# o Scene/woodbridge.txt
+o Scene/woodbridge.txt
 
 # s Scene/envirospheres.txt
 

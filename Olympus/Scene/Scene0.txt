@@ -1,7 +1,7 @@
 # scene
 s Scene/settings.txt
 
-b 0.0 0.0 10.0
+# b 0.0 0.0 10.0
 
 # o Scene/arenapit.txt
 # o Scene/deadman.txt
