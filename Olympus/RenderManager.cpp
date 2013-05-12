@@ -311,7 +311,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	for(int i = 0; i < sceneNames.size(); i++)
 	{
 		apex->setScene(i);
-		tempScene = new Scene(&renderables, dev, devcon, apex, geoGen, mSkyBox, mScreen, mZbuffer, mViewport, sceneNames[i]);
+		tempScene = new Scene( dev, devcon, apex, geoGen, mSkyBox, mScreen, mZbuffer, mViewport, sceneNames[i]);
 		scene.push_back(tempScene);
 	}
 	
@@ -492,9 +492,9 @@ void RenderManager::Render()
 
 	mDevcon->OMSetRenderTargets(0, 0, pShadowMapDepthView);
 	//obj->Depth(sceneCBuffer, mCam, depth);
-	for(int i = 0; i < renderables.size() ; i++)
+	for(int i = 0; i < scene[mCurrentScene]->mRenderables.size() ; i++)
 	{
-		renderables[i]->Depth();
+		scene[mCurrentScene]->mRenderables[i]->Depth();
 	}
 
 	mDevcon->OMSetRenderTargets(1, &mScreen->mTargetView/*mBackbuffer*/, mZbuffer);
@@ -579,8 +579,8 @@ void RenderManager::RecompShaders()
 {
 	mScreen->RecompileShader();
 
-	for(int i = 0; i < renderables.size() ; i++)
+	for(int i = 0; i < scene[mCurrentScene]->mRenderables.size() ; i++)
 	{
-		renderables[i]->RecompileShader();
+		scene[mCurrentScene]->mRenderables[i]->RecompileShader();
 	}
 }

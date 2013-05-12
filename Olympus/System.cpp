@@ -178,7 +178,7 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
 			    break;
 
-				case 0x31: // 0 key has been pressed
+				case 0x31: // 1 key has been pressed
                 {
 					rendManager->mCurrentScene = 1;
 					rendManager->mApex->setScene(1);
@@ -212,7 +212,7 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					else
 						rendManager->emitterOn = true;
 
-					rendManager->SetEmit(rendManager->emitterOn);
+					rendManager->scene[mCurrentScene]->ToggleParticles(rendManager->emitterOn);
                 }
 			    break;	
 
@@ -258,6 +258,12 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						rendManager->sceneBuff.pLightOn = 1;
 					else
 						rendManager->sceneBuff.pLightOn = 0;	
+                }
+			    break;
+
+				case 'T': // T key has been pressed
+                {
+					rendManager->scene[mCurrentScene]->ResetPins();	
                 }
 			    break;
 		    }
@@ -423,11 +429,29 @@ int System::initd3d()
 // this is the function used to render a single frame
 void System::RenderFrame(float dt)
 {
+	XMVECTOR camPos = mCam->GetPositionXM();
+	
+	XMVECTOR spherePos = XMLoadFloat3(&XMFLOAT3( -37.0 , -12.0 , -85.0 ) );
+	XMVECTOR vectorSub = XMVectorSubtract(camPos,spherePos);
+	XMVECTOR length = XMVector3Length(vectorSub);
+
+	float distance = 0.0f;
+	XMStoreFloat(&distance,length);
+	if(abs(distance) < 60.0f)
+	{
+		rendManager->mCurrentScene = 1;
+		rendManager->mApex->setScene(1);
+		cController->SetScene(1);
+		mCurrentScene = 1;
+	}
+
+
 	mApex->UpdateViewProjMat(&mCam->View(),&mCam->Proj(), 1.0f, 10000.0f, 0.25f*MathHelper::Pi, mClientWidth, mClientHeight);
 	bool fetch = mApex->advance(dt);
 
-	rendManager->Update(dt);
 	UpdateCamera(dt);
+	rendManager->scene[mCurrentScene]->UpdateReflective(mCam);
+	rendManager->Update(dt);
 
 	if(fetch)
         mApex->fetch();
@@ -568,25 +592,22 @@ void System::UpdateCamera(float dt)
 		}
 		float shootspeed;
         // Shoot block with right trigger     
-        if( state.Gamepad.bRightTrigger && state.Gamepad.bLeftTrigger < 256 )
+		if(cooldown > 0)
+		{
+			cooldown -= dt;
+		} 
+		else if( state.Gamepad.bRightTrigger && state.Gamepad.bLeftTrigger < 256 )
         {
-			if(cooldown > 0)
+			XMFLOAT3 originalPos = mCam->GetPosition();
+			shootspeed = /*(state.Gamepad.bRightTrigger / 255) * */50.0f;
+			rendManager->scene[mCurrentScene]->Fire(mCam, shootspeed);	
+			/*for(int i = 0; i < 20; i++)
 			{
-				cooldown -= dt;
+				mCam->SetPosition(originalPos.x + 5 * sinf(i), originalPos.y, originalPos.z + 5 * cosf(i));
+				rendManager->scene->Fire(mCam, shootspeed);	
 			}
-			else
-			{
-				XMFLOAT3 originalPos = mCam->GetPosition();
-				shootspeed = /*(state.Gamepad.bRightTrigger / 255) * */50.0f;
-				rendManager->scene[mCurrentScene]->Fire(mCam, shootspeed);	
-				/*for(int i = 0; i < 20; i++)
-				{
-					mCam->SetPosition(originalPos.x + 5 * sinf(i), originalPos.y, originalPos.z + 5 * cosf(i));
-					rendManager->scene->Fire(mCam, shootspeed);	
-				}
-				mCam->SetPosition(originalPos.x, originalPos.y, originalPos.z);*/
-				cooldown += 0.3f;
-			}
+			mCam->SetPosition(originalPos.x, originalPos.y, originalPos.z);*/
+			cooldown += 0.25f;
         }
 		
 		if( state.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
@@ -808,7 +829,10 @@ void System::OnResize()
 
 	dev->CreateDepthStencilView(rendManager->mDepthTargetTexture, &dsvd, &rendManager->mZbuffer);
 
-	rendManager->scene[mCurrentScene]->mZbuffer = rendManager->mZbuffer;
+	for(int i = 0; i <= mCurrentScene; i++)
+	{
+		rendManager->scene[i]->UpdateZbuffers(rendManager->mZbuffer);
+	}
 	
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 

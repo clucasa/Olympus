@@ -67,6 +67,7 @@ public:
 
     ApexParticles*				CreateEmitter(physx::apex::NxUserRenderer* renderer, const char* filename);
     ApexCloth*					CreateCloth(physx::apex::NxUserRenderer* renderer, const char* filename);
+	void						CreatePlane(float nx, float ny, float nz, float distance);
 
     bool						advance(float dt);
     void						fetch();
@@ -76,7 +77,8 @@ public:
 
 	bool						CreateScene();
 
-    void Render();
+
+    void						Render();
 	
 	int							mCurrentScene;
 	void						setScene(int sceneNum){mCurrentScene = sceneNum;}

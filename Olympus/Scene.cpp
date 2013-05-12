@@ -1,10 +1,15 @@
 #include "Scene.h"
 
-Scene::Scene(vector<Renderable*>* renderables, ID3D11Device *dev, ID3D11DeviceContext *devcon, Apex* apex, GeometryGenerator *geoGen,
+Scene::Scene( ID3D11Device *dev, ID3D11DeviceContext *devcon, Apex* apex, GeometryGenerator *geoGen,
 			Renderable *skyBox,	ScreenQuad *screenQuad, ID3D11DepthStencilView *zbuff, D3D11_VIEWPORT *screenViewport, String sceneName) :
 			mDev(dev), mDevcon(devcon), mApex(apex), mGeoGen(geoGen), mSkyBox(skyBox), mScreen(screenQuad),
 			mZbuffer(zbuff), mScreenViewport(screenViewport)
 {
+	//Used for resetting the pins
+	mPinStartPosition = XMFLOAT3(0,0,0);
+	mDist			  = 0;
+	mNumLevels		  = -1;
+
 	mApex->CreateScene();
 
 	std::ifstream fin(sceneName);
@@ -78,7 +83,7 @@ Scene::Scene(vector<Renderable*>* renderables, ID3D11Device *dev, ID3D11DeviceCo
 			char *modelname = "Media/Models/bowling_pin_lowres.fbx";
 			bowlingPin->objLoad(modelname, &texts, &norms, mDev, mDevcon, mApex );
 		
-			PlacePins( XMFLOAT3(::atof(elems[1].c_str()), ::atof(elems[2].c_str()), ::atof(elems[3].c_str()) ), 15, 2.0f, bowlingPin);
+			PlacePins( XMFLOAT3(::atof(elems[1].c_str()), ::atof(elems[2].c_str()), ::atof(elems[3].c_str()) ), 3, 1.1f, bowlingPin);
 			
 			mRenderables.push_back(bowlingPin);
 			bowlingSets.push_back(bowlingPin);
@@ -300,7 +305,7 @@ void Scene::LoadSpheres(string filename)
 			sphere->MoveTo( ::atof(elems[4].c_str()), ::atof(elems[5].c_str()), ::atof(elems[6].c_str()) );
 			sphere->SetupReflective(&mRenderables, mSkyBox, mScreen, mZbuffer, mScreenViewport);
 			mRenderables.push_back(sphere);
-			
+			reflectiveSpheres.push_back(sphere);
 			elems.clear();
 		}
 	}
@@ -338,8 +343,10 @@ void Scene::LoadPhysX(string filename)
 			}
 
 			ApexCloth* mCloth = mApex->CreateCloth(gRenderer, elems[1].c_str() );//"curtainew");//"ctdm_Cape_400");//"bannercloth");//
+			mCloth->SetPosition(::atof(elems[2].c_str()), ::atof(elems[3].c_str()), ::atof(elems[4].c_str()), ::atof(elems[5].c_str()), ::atof(elems[6].c_str()), ::atof(elems[7].c_str()) );
 			mRenderables.push_back(mCloth);
 			cloths.push_back(mCloth);
+
 			elems.clear();
 		}
 		else if (olines[0] == 'e') 
@@ -354,7 +361,7 @@ void Scene::LoadPhysX(string filename)
 			ApexParticles* emitter = mApex->CreateEmitter(gRenderer, elems[1].c_str());//"SmokeEmitter");
 			emitter->SetPosition(::atof(elems[2].c_str()), ::atof(elems[3].c_str()), ::atof(elems[4].c_str()));
 			mRenderables.push_back(emitter);
-
+			particles.push_back(emitter);
 			elems.clear();
 		}
 		else if (olines[0] == 'p') 
@@ -365,7 +372,10 @@ void Scene::LoadPhysX(string filename)
 			while(std::getline(ss, item, ' ')) {
 				elems.push_back(item);
 			}
+
 			// Create plane 
+			mApex->CreatePlane(::atof(elems[1].c_str()), ::atof(elems[2].c_str()), ::atof(elems[3].c_str()), ::atof(elems[4].c_str()));
+
 			elems.clear();
 		}
 	}
@@ -405,6 +415,11 @@ void Scene::PlacePins(XMFLOAT3 location, int numlevels, float dist, Object* pinM
 	object.sx = object.sy = object.sz = 7.0f;
 	object.materials.push_back(material);
 
+	//Used for resetting the pins
+	mPinStartPosition = location;
+	mDist			  = dist;
+	mNumLevels		  = numlevels;
+
 	XMFLOAT3 startLocation = location;
 	XMFLOAT3 tempLocation = location;
        
@@ -434,6 +449,59 @@ void Scene::PlacePins(XMFLOAT3 location, int numlevels, float dist, Object* pinM
 	}
 }
 
+void Scene::ResetPins()
+{	
+	if(mNumLevels < 0)
+		return;
+
+	XMFLOAT3 startLocation = mPinStartPosition;
+	XMFLOAT3 tempLocation = mPinStartPosition;
+    float dist = mDist;
+	int   numlevels = mNumLevels;
+
+	PxVec3 pos;
+	
+	int currentPin = 0;
+
+	for(int i = 0; i <= numlevels; i++)
+	{
+		for(int j = 0; j<=i; j++)
+		{
+			pos = PxVec3(tempLocation.x, tempLocation.y, tempLocation.z);
+
+			PxTransform transform(pos, PxQuat::createIdentity());
+
+
+			PxRigidDynamic* boxDynamic = static_cast<PxRigidDynamic*>(mApex->dynamicActors[currentPin++]);
+			boxDynamic->setLinearVelocity(PxVec3(0,0,0));
+			boxDynamic->setGlobalPose(transform);
+			boxDynamic->setAngularVelocity(PxVec3(0,0,0));
+			
+
+			
+			tempLocation.x -= dist;
+		}
+		
+		startLocation.x += dist/2.f;
+		startLocation.z += sqrt((dist)*(dist)*(1.f - (1.f/4.f)));
+
+		tempLocation = startLocation;              
+	}
+
+	if(numlevels == 0)
+	{
+		pos = PxVec3(tempLocation.x, tempLocation.y, tempLocation.z);
+		PxTransform transform(pos, PxQuat::createIdentity());
+
+		mApex->dynamicActors[0]->setGlobalPose(transform);
+		PxRigidDynamic* boxDynamic = static_cast<PxRigidDynamic*>(mApex->dynamicActors[0]);
+		boxDynamic->setLinearVelocity(PxVec3(0,0,0));
+		boxDynamic->setGlobalPose(transform);
+		boxDynamic->setAngularVelocity(PxVec3(0,0,0));
+
+	}
+}
+
 void Scene::Update()
 {
 	for(int i = 0; i < bowlingSets.size(); i++)
@@ -447,5 +515,45 @@ void Scene::Update()
 	for(int i = 0; i < mRenderables.size() ; i++)
 	{
 		mRenderables[i]->Update();
+	}
+}
+
+void Scene::UpdateZbuffers(ID3D11DepthStencilView *zbuffer)
+{
+	mZbuffer = zbuffer;
+	for(int i = 0; i < reflectiveSpheres.size(); i++)
+	{
+		reflectiveSpheres[i]->mZbuffer = zbuffer;
+	}
+}
+
+void Scene::UpdateReflective(Camera *cam)
+{
+	XMVECTOR camPos = cam->GetPositionXM();
+
+	for(int i = 0; i < reflectiveSpheres.size(); i++)
+	{
+		XMVECTOR spherePos = XMLoadFloat3(&XMFLOAT3(reflectiveSpheres[i]->mX,reflectiveSpheres[i]->mY,reflectiveSpheres[i]->mZ));
+		XMVECTOR vectorSub = XMVectorSubtract(camPos,spherePos);
+		XMVECTOR length = XMVector3Length(vectorSub);
+
+		float distance = 0.0f;
+		XMStoreFloat(&distance,length);
+		if(abs(distance) > 60.0f)
+		{
+			reflectiveSpheres[i]->IsItReflective(false);
+		}
+		else if(reflectiveSpheres[i]->reflective == false)
+		{
+			reflectiveSpheres[i]->IsItReflective(true);
+		}
+	}
+}
+
+void Scene::ToggleParticles(bool on)
+{
+	for(int i = 0; i < particles.size(); i++)
+	{
+		particles[i]->SetEmit(on);
 	}
 }

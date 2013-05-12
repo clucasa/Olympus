@@ -3,7 +3,7 @@
 Projectile::Projectile( ID3D11Device* dev, ID3D11DeviceContext* devcon, Apex* apex ) :
 	numBoxes(0), curBox(0), mApex(apex), mDev(dev), mDevcon(devcon)
 {
-	blockMaterial = mApex->getPhysics()->createMaterial(0.1f, 0.1f, 0.3f);    //static friction, dynamic friction, restitution
+	blockMaterial = mApex->getPhysics()->createMaterial(0.1f, 0.1f, 0.0f);    //static friction, dynamic friction, restitution
 	if(!blockMaterial)
 		return;
 	
@@ -77,11 +77,11 @@ void Projectile::Fire(Camera *mCam, float speed, ApexCloth* mCloth)
 		PxVec3 look = PxVec3(mCam->GetLook().x,mCam->GetLook().y,mCam->GetLook().z);
 		look.normalize();
 		PxVec3 pos = PxVec3(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z) + (look * 4.);
-		PxReal density = 10.0f;
+		PxReal density = 100.0f;
 		
 		PxTransform transform(pos, PxQuat::createIdentity());
 		PxVec3 dimensions(.5,.5,.5);
-		PxSphereGeometry geometry(0.5);
+		PxSphereGeometry geometry(.5f);
 		//PxBoxGeometry geometry(dimensions);
 		PxRigidDynamic* boxActor = PxCreateDynamic(*mApex->getPhysics(), transform, geometry, *blockMaterial, density);
 		if (!boxActor)

@@ -1,7 +1,8 @@
 # physx objects
-c FlagForWind_Med_v2 0.0 0.0 0.0
-# c curtainew 0.0 0.0 0.0
-# e SmokeEmitter -18.0 -65.0 -243.0
-# e TorchEmitter -13.5 -2.0 -42.0
-# e TorchEmitter -67.6 -2.0 -42.0
-# e testSpriteEmitter4ParticleFluidIos -19.0 45.0 206.0
+c FlagForWind_Med_v2 0.0 0.0 0.0 1.57 0.0 0.0
+# c curtainew -40.0 -12.0 -39.0 0.0 0.0 0.0 
+e SmokeEmitter -18.0 -65.0 -243.0
+e TorchEmitter -13.5 -2.0 -42.0
+e TorchEmitter -67.6 -2.0 -42.0
+e testSpriteEmitter4ParticleFluidIos -19.0 45.0 206.0
+p 0.0 1.0 0.0 700.0

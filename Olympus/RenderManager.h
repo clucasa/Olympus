@@ -121,7 +121,7 @@ public:
 	ApexParticles* torch2;
     ApexCloth* mCloth;
 	
-	vector<Renderable*> renderables;
+	
 
 	SceneBuff sceneBuff;
 

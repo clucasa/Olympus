@@ -292,12 +292,12 @@ void Apex::LoadTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 		triGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
 		
 		meshShape = meshActor->createShape(triGeom, *defaultMaterial);
-		meshShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
+		meshShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z), PxQuat(info.ry, PxVec3(0.0f,1.0f,0.0f))));
 		meshShape->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
 
 
 		meshShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
-
+		
 
 		mScene[mCurrentScene]->addActor(*meshActor);
 	}
@@ -339,9 +339,9 @@ void Apex::LoadDynamicTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 		meshShape->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
 
 		PxConvexMeshDesc convexDesc;
-		convexDesc.points.count     = 8;
+		convexDesc.points.count     = numVerts;
 		convexDesc.points.stride    = sizeof(PxVec3);
-		convexDesc.points.data      = convexVerts;
+		convexDesc.points.data      = verts;
 		convexDesc.flags            = PxConvexFlag::eCOMPUTE_CONVEX;
 
 		if(!convexDesc.isValid())
@@ -360,7 +360,8 @@ void Apex::LoadDynamicTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 		convexShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
 		meshShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
 		meshActor->setRigidDynamicFlag(PxRigidDynamicFlag::eKINEMATIC, false);
-        meshActor->setGlobalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
+
+		meshActor->setGlobalPose(PxTransform(PxVec3(info.x,info.y,info.z), PxQuat(info.ry, PxVec3(0.0f,1.0f,0.0f))));
 		mScene[mCurrentScene]->addActor(*meshActor);
 		dynamicActors.push_back(meshActor);
 	}
@@ -441,11 +442,22 @@ ApexParticles* Apex::CreateEmitter(physx::apex::NxUserRenderer* renderer, const 
 	emitter->CreateEmitter(gApexSDK, gApexScene[mCurrentScene], mDevcon, mDev, renderer, mIofxModule, filename);
 	return emitter;
 }
+
 ApexCloth* Apex::CreateCloth(physx::apex::NxUserRenderer* renderer, const char* filename)
 {
     ApexCloth* cloth = new ApexCloth();
     cloth->CreateCloth(gApexSDK, gApexScene[mCurrentScene], mDevcon, mDev, renderer, filename);
     return cloth;
+}
+
+void Apex::CreatePlane(float nx, float ny, float nz, float distance)
+{
+	// Create a plane
+    PxRigidStatic* plane = PxCreatePlane(*mPhysics, PxPlane(PxVec3(nx,ny,nz), distance), *defaultMaterial);
+    if (!plane)
+        return;
+
+	gApexScene[mCurrentScene]->getPhysXScene()->addActor(*plane);
 }
 
 bool Apex::InitClothing()

@@ -42,7 +42,7 @@ public:
 	virtual void Update();
 	virtual void RecompileShader();
 
-	void SetPosition(float x, float y, float z);
+	void SetPosition(float x, float y, float z, float rx, float ry, float rz);
 	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
 
 	physx::apex::NxClothingActor* getClothingActor() {return clothingActor;}
