@@ -73,10 +73,10 @@ Scene::Scene(vector<Renderable*>* renderables, ID3D11Device *dev, ID3D11DeviceCo
 			norms.push_back("Media/Textures/BlankNormalMap.png");
 
 			Object* bowlingPin = new Object();
-			char *modelname = "Media/Models/bowling_pin.fbx";
+			char *modelname = "Media/Models/bowling_pin_lowres.fbx";
 			bowlingPin->objLoad(modelname, &texts, &norms, mDev, mDevcon, mApex );
 		
-			PlacePins( XMFLOAT3(::atof(elems[1].c_str()), ::atof(elems[2].c_str()), ::atof(elems[3].c_str()) ), 3, 3.0f, bowlingPin);
+			PlacePins( XMFLOAT3(::atof(elems[1].c_str()), ::atof(elems[2].c_str()), ::atof(elems[3].c_str()) ), 15, 2.0f, bowlingPin);
 			
 			mRenderables->push_back(bowlingPin);
 			bowlingSets.push_back(bowlingPin);

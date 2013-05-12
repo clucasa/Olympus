@@ -3,7 +3,7 @@
 Projectile::Projectile( ID3D11Device* dev, ID3D11DeviceContext* devcon, Apex* apex ) :
 	numBoxes(0), curBox(0), mApex(apex), mDev(dev), mDevcon(devcon)
 {
-	blockMaterial = mApex->getPhysics()->createMaterial(0.8f, 0.8f, 0.1f);    //static friction, dynamic friction, restitution
+	blockMaterial = mApex->getPhysics()->createMaterial(0.1f, 0.1f, 0.3f);    //static friction, dynamic friction, restitution
 	if(!blockMaterial)
 		return;
 	

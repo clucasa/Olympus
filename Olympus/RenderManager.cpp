@@ -63,8 +63,8 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	/*projectile = new Projectile(dev, devcon, apex);
 	renderables.push_back(projectile);*/
 
-	//mGrid = new GroundPlane(mDevcon, mDev, geoGen, 400, 10);
-	////renderables.push_back(mGrid);
+	//mGrid = new GroundPlane(mDevcon, mDev, geoGen, 4000, 10);
+	//renderables.push_back(mGrid);
 
 
 	//renderables.push_back(emitter);

@@ -10,7 +10,7 @@
 
 using namespace std;
 
-#define MAXBOXES 35
+#define MAXBOXES 40
 
 class Projectile : public Renderable
 {

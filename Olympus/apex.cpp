@@ -99,7 +99,7 @@ bool Apex::Init(ID3D11Device* dev, ID3D11DeviceContext* devcon)
     if(!gApexScene)
         return false;
 
-	gApexScene->setLODResourceBudget(10000.f);
+	//gApexScene->setLODResourceBudget(100000.0f);
 
 	static const physx::PxU32 viewIDlookAtRightHand = gApexScene->allocViewMatrix(physx::apex::ViewMatrixType::LOOK_AT_LH);
 	static const physx::PxU32 projIDperspectiveCubicRightHand = gApexScene->allocProjMatrix(physx::apex::ProjMatrixType::USER_CUSTOMIZED);
@@ -226,7 +226,7 @@ bool Apex::InitPhysX()
     if (!mScene)
         return false;
     
-    defaultMaterial = mPhysics->createMaterial(0.5f, 0.5f, 0.1f);    //static friction, dynamic friction, restitution
+    defaultMaterial = mPhysics->createMaterial(0.1f, 0.1f, 0.2f);    //static friction, dynamic friction, restitution
     if(!defaultMaterial)
         return false;
 
@@ -291,13 +291,13 @@ void Apex::LoadTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 		triGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
 		
 		meshShape = meshActor->createShape(triGeom, *defaultMaterial);
-		meshShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
+		//meshShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
 		meshShape->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
 
 
 		meshShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
 
-
+		meshActor->setGlobalPose(PxTransform(PxVec3(info.x,info.y,info.z), PxQuat(info.ry, PxVec3(0.f,1.f,0.f) ) ) );
 		mScene->addActor(*meshActor);
 	}
 }
@@ -338,9 +338,9 @@ void Apex::LoadDynamicTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 		meshShape->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
 
 		PxConvexMeshDesc convexDesc;
-		convexDesc.points.count     = 8;
+		convexDesc.points.count     = numVerts;//8;
 		convexDesc.points.stride    = sizeof(PxVec3);
-		convexDesc.points.data      = convexVerts;
+		convexDesc.points.data      = verts;//convexVerts;
 		convexDesc.flags            = PxConvexFlag::eCOMPUTE_CONVEX;
 
 		if(!convexDesc.isValid())
@@ -399,7 +399,7 @@ bool Apex::InitParticles()
     {
         NxParameterized::Interface* params = mParticleIosModule->getDefaultModuleDesc();
         mParticleIosModule->init(*params);
-		mParticleIosModule->setLODUnitCost(0.00000001f);
+		//mParticleIosModule->setLODUnitCost(0.00000001f);
     }
 	
     mIofxModule = static_cast<NxModuleIofx*>(gApexSDK->createModule("IOFX", &errorCode));
@@ -411,7 +411,7 @@ bool Apex::InitParticles()
         mIofxModule->init(*params);
         /*mIofxModule->disableCudaInterop();
         mIofxModule->disableCudaModifiers();*/
-		mIofxModule->setLODUnitCost(0.00000001f);
+		//mIofxModule->setLODUnitCost(0.00000001f);
     }
 
     mEmitterModule = static_cast<NxModuleEmitter*> ( gApexSDK->createModule("Emitter", &errorCode));
@@ -427,7 +427,7 @@ bool Apex::InitParticles()
         {
             NxApexParameter& p = *m_emitterModuleScalables[i];
             mEmitterModule->setIntValue(i, p.range.maximum);
-			mEmitterModule->setLODUnitCost(0.00000001f);
+			//mEmitterModule->setLODUnitCost(0.00000001f);
         }
     }
 
@@ -466,7 +466,7 @@ bool Apex::InitClothing()
         NxParameterized::setParamU32(*moduleDesc, "maxUnusedPhysXResources", 5);
 
         mApexClothingModule->init(*moduleDesc);
-		mApexClothingModule->setLODUnitCost(0.0001f);
+		//mApexClothingModule->setLODUnitCost(0.0000001f);
     }
         
     return true;
