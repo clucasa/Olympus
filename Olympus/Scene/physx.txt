@@ -1,6 +1,10 @@
 # physx objects
-c FlagForWind_Med_v2 0.0 0.0 0.0 1.57 0.0 0.0
-# c curtainew -40.0 -12.0 -39.0 0.0 0.0 0.0 
+# c FlagForWind_Med_v2 0.0 0.0 0.0 1.57 0.0 0.0 nvidia_flag_d.dds
+c curtainew -40.0 -12.0 -39.0 0.0 0.0 0.0 banner1.png
+c curtainew -20.0 -12.0 -30.0 0.0 0.0 0.0 OSU_Flag.png
+c curtainew 0.0 -12.0 -20.0 0.0 0.0 0.0 NVIDIA_Flag.png
+c curtainew -60.0 -12.0 -30.0 0.0 0.0 0.0 OSU_Flag.png
+c curtainew -80.0 -12.0 -20.0 0.0 0.0 0.0 NVIDIA_Flag.png
 e SmokeEmitter -18.0 -65.0 -243.0
 e TorchEmitter -13.5 -2.0 -42.0
 e TorchEmitter -67.6 -2.0 -42.0

@@ -41,34 +41,34 @@ public:
     ApexParticles();
     ~ApexParticles();
 
-	void InitPipeline();
+    void InitPipeline();
     void CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
-						ID3D11DeviceContext *devcon, 	ID3D11Device *dev,
-					  physx::apex::NxUserRenderer* renderer, NxModuleIofx* iofxModule, const char* filename);
-	virtual void Update();
-	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
-	virtual void RecompileShader();
+                        ID3D11DeviceContext *devcon, 	ID3D11Device *dev,
+                      physx::apex::NxUserRenderer* renderer, NxModuleIofx* iofxModule, const char* filename);
+    virtual void Update();
+    virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
+    virtual void RecompileShader();
 
-	void SetPosition(float x, float y, float z);
-	void SetEmit(bool on);
+    void SetPosition(float x, float y, float z);
+    void SetEmit(bool on);
 
 private:
-	ID3D11Device *mDev;
-	ID3D11DeviceContext *mDevcon;
+    ID3D11Device *mDev;
+    ID3D11DeviceContext *mDevcon;
 
-	ID3D11InputLayout   *mLayout;           // the pointer to the input layout
+    ID3D11InputLayout   *mLayout;           // the pointer to the input layout
     ID3D11VertexShader  *mVS;               // the pointer to the vertex shader
     ID3D11GeometryShader  *mGS;             // the pointer to the vertex shader
     ID3D11PixelShader   *mPS;               // the pointer to the pixel shader
-	ID3D11Buffer*		mConstBuffer;
-	ID3D11ShaderResourceView *spriteTexture;
+    ID3D11Buffer*		mConstBuffer;
+    ID3D11ShaderResourceView *spriteTexture;
 
-	NxApexEmitterActor* emitterActor;
+    NxApexEmitterActor* emitterActor;
     physx::apex::NxApexRenderVolume*  mRenderVolume;
 
     NxModuleIofx* mIofxModule;
-		
-	apex::NxUserRenderer*      gRenderer;
+        
+    apex::NxUserRenderer*      gRenderer;
 };
 
 #endif

@@ -4,92 +4,92 @@
 
 Sphere::Sphere()
 {
-	
+    
 }
 
 Sphere::Sphere(ID3D11DeviceContext *mDevcon, ID3D11Device *mDev, GeometryGenerator *geoGen, Apex* apex, int radius, int slices, int stacks) : 
-	mDevcon(mDevcon), mDev(mDev), radius(radius), slices(slices), stacks(stacks), reflective(false), mApex(apex)
+    mDevcon(mDevcon), mDev(mDev), radius(radius), slices(slices), stacks(stacks), reflective(false), mApex(apex)
 {
-	mX = -20.0f;
-	mY = 4.0f;
-	mZ = 25.0f;
-	cb = new cbuffs();
+    mX = -20.0f;
+    mY = 4.0f;
+    mZ = 25.0f;
+    cb = new cbuffs();
 
-	CreateGeometry(geoGen);
-	SetupBuffer();
-	SetupPipeline();
-	SetupRenderTarget();
+    CreateGeometry(geoGen);
+    SetupBuffer();
+    SetupPipeline();
+    SetupRenderTarget();
 
-	PxVec3 pos = PxVec3(mX, mY, mZ);
-	PxReal density = 10.0f;
-		
-	PxTransform transform(pos, PxQuat::createIdentity());
-	//PxVec3 dimensions(radius,radius,radius);
-	PxSphereGeometry geometry(radius);
-	//PxBoxGeometry geometry(dimensions);
-	sphereActor = PxCreateStatic(*mApex->getPhysics(), transform, geometry, *mApex->getPhysics()->createMaterial(0.8f, 0.8f, 0.1f));
-	if (!sphereActor)
-		return;
+    PxVec3 pos = PxVec3(mX, mY, mZ);
+    PxReal density = 10.0f;
+        
+    PxTransform transform(pos, PxQuat::createIdentity());
+    //PxVec3 dimensions(radius,radius,radius);
+    PxSphereGeometry geometry((PxReal)radius);
+    //PxBoxGeometry geometry(dimensions);
+    sphereActor = PxCreateStatic(*mApex->getPhysics(), transform, geometry, *mApex->getPhysics()->createMaterial(0.8f, 0.8f, 0.1f));
+    if (!sphereActor)
+        return;
 
-	//CCD
-	PxShape** shapes = new PxShape*[1];
-	sphereActor->getShapes(shapes, 1, 0);
-	shapes[0]->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
-	delete [] shapes;
+    //CCD
+    PxShape** shapes = new PxShape*[1];
+    sphereActor->getShapes(shapes, 1, 0);
+    shapes[0]->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
+    delete [] shapes;
 
-	mApex->getScene()->addActor(*sphereActor);
+    mApex->getScene()->addActor(*sphereActor);
 }
 
 void Sphere::SetupRenderTarget()
 {
-	D3D11_TEXTURE2D_DESC textureDesc;
-	HRESULT result;
-	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+    D3D11_TEXTURE2D_DESC textureDesc;
+    HRESULT result;
+    D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+    D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 
 
-	// Initialize the render target texture description.
-	ZeroMemory(&textureDesc, sizeof(textureDesc));
+    // Initialize the render target texture description.
+    ZeroMemory(&textureDesc, sizeof(textureDesc));
 
-	// Setup the render target texture description.
-	textureDesc.Width = SCREEN_WIDTH;
-	textureDesc.Height = SCREEN_HEIGHT;
-	textureDesc.MipLevels = 1;
-	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	textureDesc.CPUAccessFlags = 0;
-	textureDesc.MiscFlags = 0;
+    // Setup the render target texture description.
+    textureDesc.Width = SCREEN_WIDTH;
+    textureDesc.Height = SCREEN_HEIGHT;
+    textureDesc.MipLevels = 1;
+    textureDesc.ArraySize = 1;
+    textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    textureDesc.SampleDesc.Count = 1;
+    textureDesc.Usage = D3D11_USAGE_DEFAULT;
+    textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    textureDesc.CPUAccessFlags = 0;
+    textureDesc.MiscFlags = 0;
 
-	// Create the render target texture.
-	result = mDev->CreateTexture2D(&textureDesc, NULL, &mTargetTexture);
+    // Create the render target texture.
+    result = mDev->CreateTexture2D(&textureDesc, NULL, &mTargetTexture);
 
-	// Setup the description of the render target view.
-	renderTargetViewDesc.Format = textureDesc.Format;
-	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	renderTargetViewDesc.Texture2D.MipSlice = 0;
+    // Setup the description of the render target view.
+    renderTargetViewDesc.Format = textureDesc.Format;
+    renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+    renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	// Create the render target view.
-	result = mDev->CreateRenderTargetView(mTargetTexture, &renderTargetViewDesc, &mTargetView);
+    // Create the render target view.
+    result = mDev->CreateRenderTargetView(mTargetTexture, &renderTargetViewDesc, &mTargetView);
 
 
-	// Setup the description of the shader resource view.
-	shaderResourceViewDesc.Format = textureDesc.Format;
-	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+    // Setup the description of the shader resource view.
+    shaderResourceViewDesc.Format = textureDesc.Format;
+    shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+    shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
-	// Create the shader resource view.
-	result = mDev->CreateShaderResourceView(mTargetTexture, &shaderResourceViewDesc, &mShaderResourceView);
+    // Create the shader resource view.
+    result = mDev->CreateShaderResourceView(mTargetTexture, &shaderResourceViewDesc, &mShaderResourceView);
 
 }
 
 void Sphere::SetupPipeline()
 {
     // load and compile the two shaders
-	ID3D10Blob *VS, *PS;
+    ID3D10Blob *VS, *PS;
     D3DX11CompileFromFile("Sphere.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
     D3DX11CompileFromFile("Sphere.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
 
@@ -111,44 +111,44 @@ void Sphere::SetupPipeline()
 
     mDev->CreateInputLayout(ied, 4, VS->GetBufferPointer(), VS->GetBufferSize(), &mLayout);
    
-	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/cloudymountains2048new.dds", 0, 0, &mDynamicCubeMapSRVSphere, 0 );
+    HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/cloudymountains2048new.dds", 0, 0, &mDynamicCubeMapSRVSphere, 0 );
 }
 
 void Sphere::CreateGeometry(GeometryGenerator *geoGen)
 {
 
-	GeometryGenerator::MeshData SphereData;			   // geometry for the sky box
-	geoGen->CreateSphere(radius, slices, stacks, SphereData);
+    GeometryGenerator::MeshData SphereData;			   // geometry for the sky box
+    geoGen->CreateSphere((float)radius, slices, stacks, SphereData);
 
-	PosNormalTexTan temp;
+    PosNormalTexTan temp;
 
-	for(size_t i = 0; i < SphereData.Vertices.size(); i++)
+    for(size_t i = 0; i < SphereData.Vertices.size(); i++)
     {
         temp.Pos      = SphereData.Vertices[i].Position;
         temp.Normal   = SphereData.Vertices[i].Normal;
         temp.Tex      = SphereData.Vertices[i].TexC;
         temp.TangentU = SphereData.Vertices[i].TangentU;
 
-		vertices.push_back(temp);
+        vertices.push_back(temp);
     }
 
 
-	for(size_t i = 0; i < SphereData.Indices.size(); i++)
-	{
-		indices.push_back(SphereData.Indices[i]);
-	}
+    for(size_t i = 0; i < SphereData.Indices.size(); i++)
+    {
+        indices.push_back(SphereData.Indices[i]);
+    }
 
 }
 
 void Sphere::SetupBuffer()
 {
-	
+    
     // create the vertex buffer
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
 
     bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU
-	bd.ByteWidth = sizeof(PosNormalTexTan) * vertices.size();             // size is the VERTEX struct
+    bd.ByteWidth = sizeof(PosNormalTexTan) * vertices.size();             // size is the VERTEX struct
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
     bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
 
@@ -158,12 +158,12 @@ void Sphere::SetupBuffer()
     // copy the vertices into the buffer
     D3D11_MAPPED_SUBRESOURCE ms;
     mDevcon->Map(SphereVertBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer
-	memcpy(ms.pData, &vertices[0], sizeof(PosNormalTexTan) * vertices.capacity());                 // copy the data
+    memcpy(ms.pData, &vertices[0], sizeof(PosNormalTexTan) * vertices.capacity());                 // copy the data
     mDevcon->Unmap(SphereVertBuffer, NULL);                                      // unmap the buffer
 
-	// create the index buffer
+    // create the index buffer
     bd.Usage = D3D11_USAGE_DYNAMIC;
-	bd.ByteWidth = sizeof(UINT) * indices.size();    // 3 per triangle, 12 triangles
+    bd.ByteWidth = sizeof(UINT) * indices.size();    // 3 per triangle, 12 triangles
     bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
     bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     bd.MiscFlags = 0;
@@ -171,7 +171,7 @@ void Sphere::SetupBuffer()
     mDev->CreateBuffer(&bd, NULL, &SphereIndBuffer);
 
     mDevcon->Map(SphereIndBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);      // map the buffer
-	memcpy(ms.pData, &indices[0], sizeof(UINT) * indices.size());                     // copy the data
+    memcpy(ms.pData, &indices[0], sizeof(UINT) * indices.size());                     // copy the data
     mDevcon->Unmap(SphereIndBuffer, NULL);
 
 
@@ -184,7 +184,7 @@ void Sphere::SetupBuffer()
     HRESULT hr = mDev->CreateBuffer(&bd, NULL, &mConstBuffer);
 
 
-	ZeroMemory(&bd, sizeof(bd));
+    ZeroMemory(&bd, sizeof(bd));
 
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.ByteWidth = sizeof(EnvironBuff);
@@ -194,24 +194,24 @@ void Sphere::SetupBuffer()
 }
 
 void Sphere::SetupReflective(vector<Renderable*> *renderables, Renderable *skyBox,
-						ScreenQuad *screenQuad, ID3D11DepthStencilView *zbuff,
-						D3D11_VIEWPORT *screenViewport)
+                        ScreenQuad *screenQuad, ID3D11DepthStencilView *zbuff,
+                        D3D11_VIEWPORT *screenViewport)
 {
-	reflective = true;
+    reflective = true;
 
-	mRenderables = renderables;
-	mSkyBox = skyBox;
-	mScreen = screenQuad;
-	mZbuffer = zbuff;
-	mScreenViewport = screenViewport;
-	
-	BuildDynamicCubeMapViewsSphere();
-	BuildCubeFaceCamera(mX, mY, mZ);
+    mRenderables = renderables;
+    mSkyBox = skyBox;
+    mScreen = screenQuad;
+    mZbuffer = zbuff;
+    mScreenViewport = screenViewport;
+    
+    BuildDynamicCubeMapViewsSphere();
+    BuildCubeFaceCamera(mX, mY, mZ);
 }
 
 void Sphere::BuildCubeFaceCamera(float x, float y, float z)
 {
-	// Generate the cube map about the given position.
+    // Generate the cube map about the given position.
     XMFLOAT3 center(x, y, z);
     XMFLOAT3 worldUp(0.0f, 1.0f, 0.0f);
 
@@ -247,7 +247,7 @@ void Sphere::BuildCubeFaceCamera(float x, float y, float z)
 
 void Sphere::BuildDynamicCubeMapViewsSphere()
 {
-	// Cubemap is a special texture array with 6 elements.
+    // Cubemap is a special texture array with 6 elements.
     D3D11_TEXTURE2D_DESC texDesc;
     texDesc.Width = CubeMapSizeSphere;
     texDesc.Height = CubeMapSizeSphere;
@@ -326,114 +326,113 @@ void Sphere::BuildDynamicCubeMapViewsSphere()
 
 void Sphere::DynamicCubeMapRender(ID3D11Buffer *sceneBuff, int renderType, Camera cam)
 {
-	for(int i = 0; i < mRenderables->size() ; i++)
-	{
-		mRenderables[0][i]->Render(sceneBuff, &cam, renderTargets::environment);
-	}
+    for(int i = 0; i < (int)mRenderables->size() ; i++)
+    {
+        mRenderables[0][i]->Render(sceneBuff, &cam, renderTargets::environment);
+    }
 }
 
 void Sphere::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 {
-	
-	if(reflective)
-	{
-		if(renderType == renderTargets::environment)
-		{
-			return;
-		}
+    if(reflective)
+    {
+        if(renderType == renderTargets::environment)
+        {
+            return;
+        }
 
-		 // Sphere position
-		mDevcon->RSSetViewports(1, &mCubeMapViewport);
-		for(int i = 0; i < 6; ++i) // for mirror, just do (int i = 0; i < 1; ++i) for 1 camera mapped to mirror surface
-		{
-			// Clear cube map face and depth buffer.
-			mDevcon->ClearRenderTargetView(mDynamicCubeMapRTVSphere[i], reinterpret_cast<const float*>(&Colors::Blue));
-			mDevcon->ClearDepthStencilView(mDynamicCubeMapDSVSphere, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
+         // Sphere position
+        mDevcon->RSSetViewports(1, &mCubeMapViewport);
+        for(int i = 0; i < 6; ++i) // for mirror, just do (int i = 0; i < 1; ++i) for 1 camera mapped to mirror surface
+        {
+            // Clear cube map face and depth buffer.
+            mDevcon->ClearRenderTargetView(mDynamicCubeMapRTVSphere[i], reinterpret_cast<const float*>(&Colors::Blue));
+            mDevcon->ClearDepthStencilView(mDynamicCubeMapDSVSphere, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-			// Bind cube map face as render target.
-			mDevcon->OMSetRenderTargets(1, &mDynamicCubeMapRTVSphere[i], 0);
+            // Bind cube map face as render target.
+            mDevcon->OMSetRenderTargets(1, &mDynamicCubeMapRTVSphere[i], 0);
 
-			XMStoreFloat4x4(&sphereBuff.viewProj, mCubeMapCamera[i].ViewProj());
-			sphereBuff.camPos = mCubeMapCamera[i].GetPosition();
-			sphereBuff.ambientOn = 1;
-			sphereBuff.diffuseOn = 1;
-			sphereBuff.dirLightOn = 1;
-			sphereBuff.textures = 1;
-			mDevcon->UpdateSubresource(sceneBuff, 0, 0, &sphereBuff , 0, 0);
+            XMStoreFloat4x4(&sphereBuff.viewProj, mCubeMapCamera[i].ViewProj());
+            sphereBuff.camPos = mCubeMapCamera[i].GetPosition();
+            sphereBuff.ambientOn = 1;
+            sphereBuff.diffuseOn = 1;
+            sphereBuff.dirLightOn = 1;
+            sphereBuff.textures = 1;
+            mDevcon->UpdateSubresource(sceneBuff, 0, 0, &sphereBuff , 0, 0);
 
-			// Draw the scene with the exception of the center sphere to this cube map face
-			mSkyBox->Render(sceneBuff, &mCubeMapCamera[i], 0);
-	
+            // Draw the scene with the exception of the center sphere to this cube map face
+            mSkyBox->Render(sceneBuff, &mCubeMapCamera[i], 0);
+    
 
-			// Bind cube map face as render target.
-			mDevcon->OMSetRenderTargets(1, &mDynamicCubeMapRTVSphere[i], mDynamicCubeMapDSVSphere);
+            // Bind cube map face as render target.
+            mDevcon->OMSetRenderTargets(1, &mDynamicCubeMapRTVSphere[i], mDynamicCubeMapDSVSphere);
 
-			DynamicCubeMapRender(sceneBuff, 0, mCubeMapCamera[i]);
-		}
-		mDevcon->GenerateMips(mDynamicCubeMapSRVSphere);
+            DynamicCubeMapRender(sceneBuff, 0, mCubeMapCamera[i]);
+        }
+        mDevcon->GenerateMips(mDynamicCubeMapSRVSphere);
 
-		mDevcon->OMSetRenderTargets(1, &mScreen->mTargetView/*mBackbuffer*/, mZbuffer);
-		mDevcon->RSSetViewports(1, mScreenViewport);
-	}
+        mDevcon->OMSetRenderTargets(1, &mScreen->mTargetView/*mBackbuffer*/, mZbuffer);
+        mDevcon->RSSetViewports(1, mScreenViewport);
+    }
 
-	mDevcon->VSSetShader(mVS, 0, 0);
+    mDevcon->VSSetShader(mVS, 0, 0);
     mDevcon->PSSetShader(mPS, 0, 0);
     mDevcon->IASetInputLayout(mLayout);
 
 
 
-	 // select which vertex buffer to display
+     // select which vertex buffer to display
     UINT stride = sizeof(PosNormalTexTan);
     UINT offset = 0;
     mDevcon->IASetVertexBuffers(0, 1, &SphereVertBuffer, &stride, &offset);
 
-	mDevcon->IASetIndexBuffer(SphereIndBuffer, DXGI_FORMAT_R32_UINT, 0);
+    mDevcon->IASetIndexBuffer(SphereIndBuffer, DXGI_FORMAT_R32_UINT, 0);
 
     // select which primtive type we are using
     mDevcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	XMMATRIX matTrans;
-	
-	//matTrans = XMMatrixTranslation(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z);
-	matTrans = XMMatrixTranslation(mX,mY,mZ);
+    XMMATRIX matTrans;
+    
+    //matTrans = XMMatrixTranslation(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z);
+    matTrans = XMMatrixTranslation(mX,mY,mZ);
 
-	XMFLOAT4X4 mWorldMat[2];
-	XMStoreFloat4x4(&mWorldMat[0], matTrans);
+    XMFLOAT4X4 mWorldMat[2];
+    XMStoreFloat4x4(&mWorldMat[0], matTrans);
 
-	XMStoreFloat4x4(&mWorldMat[1], XMMatrixInverse(&XMMatrixDeterminant(matTrans), matTrans));
+    XMStoreFloat4x4(&mWorldMat[1], XMMatrixInverse(&XMMatrixDeterminant(matTrans), matTrans));
 
-	mDevcon->VSSetConstantBuffers(1, 1, &mConstBuffer);
-	//mDevcon->PSSetConstantBuffers(0, 1, &sceneBuff);
-	mDevcon->UpdateSubresource(mConstBuffer, 0, 0, &mWorldMat, 0, 0);
-	//mDevcon->PSSetShaderResources(0, 1, NULL);
-	if(reflective)
-	{
-		XMStoreFloat4x4(&sphereBuff.viewProj, mCam->ViewProj());
-		sphereBuff.camPos = mCam->GetPosition();
-		mDevcon->UpdateSubresource(sceneBuff, 0, 0, &sphereBuff, 0, 0);
-	}
-		mDevcon->PSSetShaderResources(0, 1, &mDynamicCubeMapSRVSphere);
-	
-	// else texture?
+    mDevcon->VSSetConstantBuffers(1, 1, &mConstBuffer);
+    //mDevcon->PSSetConstantBuffers(0, 1, &sceneBuff);
+    mDevcon->UpdateSubresource(mConstBuffer, 0, 0, &mWorldMat, 0, 0);
+    //mDevcon->PSSetShaderResources(0, 1, NULL);
+    if(reflective)
+    {
+        XMStoreFloat4x4(&sphereBuff.viewProj, mCam->ViewProj());
+        sphereBuff.camPos = mCam->GetPosition();
+        mDevcon->UpdateSubresource(sceneBuff, 0, 0, &sphereBuff, 0, 0);
+    }
+        mDevcon->PSSetShaderResources(0, 1, &mDynamicCubeMapSRVSphere);
+    
+    // else texture?
 
-	//mDevcon->PSSetShaderResources(0, 1, &mShaderResourceView);
-	
-	// set the new values for the constant buffer
-	//mDevcon->UpdateSubresource(sceneBuff, 0, 0, mCam->ViewProj().m , 0, 0);
-	//mDevcon->PSSetConstantBuffers(0, 1, &mConstBuffer);
-	//mDevcon->UpdateSubresource(mConstBuffer, 0, 0, cb, 0, 0);
+    //mDevcon->PSSetShaderResources(0, 1, &mShaderResourceView);
+    
+    // set the new values for the constant buffer
+    //mDevcon->UpdateSubresource(sceneBuff, 0, 0, mCam->ViewProj().m , 0, 0);
+    //mDevcon->PSSetConstantBuffers(0, 1, &mConstBuffer);
+    //mDevcon->UpdateSubresource(mConstBuffer, 0, 0, cb, 0, 0);
 
-	
+    
 
-	 // draw the vertex buffer to the back buffer
-	mDevcon->DrawIndexed(indices.size(), 0, 0);
+     // draw the vertex buffer to the back buffer
+    mDevcon->DrawIndexed(indices.size(), 0, 0);
 //	mDevcon->PSSetConstantBuffers(0, 1, NULL);
 }
 
 void Sphere::RecompileShader()
 {
-	// load and compile the two shaders
-	ID3D10Blob *VS, *PS;
+    // load and compile the two shaders
+    ID3D10Blob *VS, *PS;
     D3DX11CompileFromFile("Sphere.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
     D3DX11CompileFromFile("Sphere.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
 
@@ -445,20 +444,20 @@ void Sphere::RecompileShader()
 
 void Sphere::MoveTo(float x, float y, float z)
 {
-	mX = x;
-	mY = y;
-	mZ = z;
+    mX = x;
+    mY = y;
+    mZ = z;
 
-	if(reflective)
-	{
-		BuildCubeFaceCamera(mX, mY, mZ);
-	}
+    if(reflective)
+    {
+        BuildCubeFaceCamera(mX, mY, mZ);
+    }
 
-	sphereActor->setGlobalPose(PxTransform(PxVec3(mX,mY,mZ)));
+    sphereActor->setGlobalPose(PxTransform(PxVec3(mX,mY,mZ)));
 
 }
 
 void Sphere::IsItReflective(bool isReflective)
 {
-	reflective = isReflective;
+    reflective = isReflective;
 }

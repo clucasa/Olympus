@@ -6,7 +6,7 @@ Apex::Apex() :
     mFoundation(0),
     mCooking(0),
     mScene(0),
-	mCurrentScene(0)
+    mCurrentScene(0)
 {
     return;
 }
@@ -19,7 +19,7 @@ Apex::~Apex()
     gApexScene[mCurrentScene]->fetchResults(true, NULL);                 // ensure scene is not busy
     gApexScene[mCurrentScene]->release();
     mCpuDispatcher->release();
-	
+    
 
     // remember to release the connection by manual in the end
     if (pvdConnection)
@@ -45,11 +45,11 @@ bool Apex::advance(float dt)
     if(mCooldown > 0.0f)
         mCooldown -= mStepSize;
 
-	//while (dt > mStepSize)
-	//{
-		gApexScene[mCurrentScene]->simulate(mStepSize);
+    //while (dt > mStepSize)
+    //{
+        gApexScene[mCurrentScene]->simulate(mStepSize);
     //    dt -= mStepSize;
-	//}
+    //}
     //gApexScene[mCurrentScene]->simulate(dt);
     return true;
 }
@@ -65,8 +65,8 @@ bool Apex::Init(ID3D11Device* dev, ID3D11DeviceContext* devcon)
         return false;
 
 
-	mDev = dev;
-	mDevcon = devcon;
+    mDev = dev;
+    mDevcon = devcon;
     // Init Apex
     static PxDefaultErrorCallback gDefaultErrorCallback;
     ZeusResourceCallback* rcallback = new ZeusResourceCallback();
@@ -91,7 +91,7 @@ bool Apex::Init(ID3D11Device* dev, ID3D11DeviceContext* devcon)
  //   // Create the APEX scene...
  //   
  //   apexSceneDesc.scene = mScene[mCurrentScene];
-	//
+    //
  //   if(apexSceneDesc.isValid())
  //       gApexScene[mCurrentScene] = gApexSDK->createScene(apexSceneDesc);
  //   else
@@ -100,75 +100,75 @@ bool Apex::Init(ID3D11Device* dev, ID3D11DeviceContext* devcon)
  //   if(!gApexScene[mCurrentScene])
  //       return false;
 
-	//gApexScene[mCurrentScene]->setLODResourceBudget(10000.f);
+    //gApexScene[mCurrentScene]->setLODResourceBudget(10000.f);
 
-	//static const physx::PxU32 viewIDlookAtRightHand = gApexScene[mCurrentScene]->allocViewMatrix(physx::apex::ViewMatrixType::LOOK_AT_LH);
-	//static const physx::PxU32 projIDperspectiveCubicRightHand = gApexScene[mCurrentScene]->allocProjMatrix(physx::apex::ProjMatrixType::USER_CUSTOMIZED);
+    //static const physx::PxU32 viewIDlookAtRightHand = gApexScene[mCurrentScene]->allocViewMatrix(physx::apex::ViewMatrixType::LOOK_AT_LH);
+    //static const physx::PxU32 projIDperspectiveCubicRightHand = gApexScene[mCurrentScene]->allocProjMatrix(physx::apex::ProjMatrixType::USER_CUSTOMIZED);
 
-	//gApexScene[mCurrentScene]->setUseViewProjMatrix(viewIDlookAtRightHand, projIDperspectiveCubicRightHand);
+    //gApexScene[mCurrentScene]->setUseViewProjMatrix(viewIDlookAtRightHand, projIDperspectiveCubicRightHand);
 
     return true;
 }
 
 void Apex::UpdateViewProjMat(XMMATRIX *view, XMMATRIX *proj, float nearPlane, float farPlane, float fov, float vWidth, float vHeight)
 {
-	PxMat44 pview;
-	XMtoPxMatrix(view, &pview);
+    PxMat44 pview;
+    XMtoPxMatrix(view, &pview);
 
-	PxMat44 pproj;
-	XMtoPxMatrix(proj, &pproj);
+    PxMat44 pproj;
+    XMtoPxMatrix(proj, &pproj);
 
-	gApexScene[mCurrentScene]->setViewMatrix(pview);
-	gApexScene[mCurrentScene]->setProjMatrix(pproj);
+    gApexScene[mCurrentScene]->setViewMatrix(pview);
+    gApexScene[mCurrentScene]->setProjMatrix(pproj);
 
-	gApexScene[mCurrentScene]->setProjParams(nearPlane, farPlane, fov, vWidth, vHeight);
+    gApexScene[mCurrentScene]->setProjParams(nearPlane, farPlane, fov, (PxU32)vWidth, (PxU32)vHeight);
 }
 
 void Apex::PxtoXMMatrix(PxTransform input, XMMATRIX* start)
 {
-	PxMat33 quat = PxMat33(input.q);
+    PxMat33 quat = PxMat33(input.q);
 
-	start->_11 = quat.column0[0];
-	start->_12 = quat.column0[1];
-	start->_13 = quat.column0[2];
-
-
-	start->_21 = quat.column1[0];
-	start->_22 = quat.column1[1];
-	start->_23 = quat.column1[2];
+    start->_11 = quat.column0[0];
+    start->_12 = quat.column0[1];
+    start->_13 = quat.column0[2];
 
 
-	start->_31 = quat.column2[0];
-	start->_32 = quat.column2[1];
-	start->_33 = quat.column2[2];
+    start->_21 = quat.column1[0];
+    start->_22 = quat.column1[1];
+    start->_23 = quat.column1[2];
 
 
-	start->_41 = input.p.x;
-	start->_42 = input.p.y;
-	start->_43 = input.p.z; 
+    start->_31 = quat.column2[0];
+    start->_32 = quat.column2[1];
+    start->_33 = quat.column2[2];
+
+
+    start->_41 = input.p.x;
+    start->_42 = input.p.y;
+    start->_43 = input.p.z; 
 }
 
 void Apex::XMtoPxMatrix(XMMATRIX* input, PxMat44* start)
 {
-	start->column0.w = input->_11;
-	start->column0.x = input->_12;
-	start->column0.y = input->_13;
-	start->column0.z = input->_14;
+    start->column0.w = input->_11;
+    start->column0.x = input->_12;
+    start->column0.y = input->_13;
+    start->column0.z = input->_14;
 
-	start->column1.w = input->_21;
-	start->column1.x = input->_22;
-	start->column1.y = input->_23;
-	start->column1.z = input->_24;
+    start->column1.w = input->_21;
+    start->column1.x = input->_22;
+    start->column1.y = input->_23;
+    start->column1.z = input->_24;
 
-	start->column2.w = input->_31;
-	start->column2.x = input->_32;
-	start->column2.y = input->_33;
-	start->column2.z = input->_34;
+    start->column2.w = input->_31;
+    start->column2.x = input->_32;
+    start->column2.y = input->_33;
+    start->column2.z = input->_34;
 
-	start->column3.w = input->_41;
-	start->column3.x = input->_42;
-	start->column3.y = input->_43;
-	start->column3.z = input->_44;
+    start->column3.w = input->_41;
+    start->column3.x = input->_42;
+    start->column3.y = input->_43;
+    start->column3.z = input->_44;
 }
 
 bool Apex::InitPhysX()
@@ -244,9 +244,9 @@ bool Apex::InitPhysX()
 
     // check if PvdConnection manager is available on this platform
     if(mPhysics->getPvdConnectionManager() == NULL)
-	{
+    {
         return true;
-	}
+    }
 
     // setup connection parameters
     const char*     pvd_host_ip = "127.0.0.1";  // IP of the PC which is running PVD
@@ -266,41 +266,41 @@ bool Apex::InitPhysX()
 
 void Apex::LoadTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 {
-	PxRigidStatic* meshActor = mPhysics->createRigidStatic(PxTransform::createIdentity());
-	PxShape* meshShape;
-	if(meshActor)
-	{
-		
-		PxTriangleMeshDesc meshDesc;
-		meshDesc.points.count           = numVerts;
-		meshDesc.points.stride          = sizeof(PxVec3);
-		meshDesc.points.data            = verts;
+    PxRigidStatic* meshActor = mPhysics->createRigidStatic(PxTransform::createIdentity());
+    PxShape* meshShape;
+    if(meshActor)
+    {
+        
+        PxTriangleMeshDesc meshDesc;
+        meshDesc.points.count           = numVerts;
+        meshDesc.points.stride          = sizeof(PxVec3);
+        meshDesc.points.data            = verts;
 
-		//meshDesc.triangles.count        = numInds/3.;
-		//meshDesc.triangles.stride       = 3*sizeof(int);
-		//meshDesc.triangles.data         = inds;
+        //meshDesc.triangles.count        = numInds/3.;
+        //meshDesc.triangles.stride       = 3*sizeof(int);
+        //meshDesc.triangles.data         = inds;
 
-		PxToolkit::MemoryOutputStream writeBuffer;
-		bool status = mCooking->cookTriangleMesh(meshDesc, writeBuffer);
-		if(!status)
-			return;
+        PxToolkit::MemoryOutputStream writeBuffer;
+        bool status = mCooking->cookTriangleMesh(meshDesc, writeBuffer);
+        if(!status)
+            return;
 
-		PxToolkit::MemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+        PxToolkit::MemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
 
-		PxTriangleMeshGeometry triGeom;
-		triGeom.triangleMesh = mPhysics->createTriangleMesh(readBuffer);
-		triGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
-		
-		meshShape = meshActor->createShape(triGeom, *defaultMaterial);
-		meshShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z), PxQuat(info.ry, PxVec3(0.0f,1.0f,0.0f))));
-		meshShape->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
+        PxTriangleMeshGeometry triGeom;
+        triGeom.triangleMesh = mPhysics->createTriangleMesh(readBuffer);
+        triGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
+        
+        meshShape = meshActor->createShape(triGeom, *defaultMaterial);
+        meshShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z), PxQuat(info.ry, PxVec3(0.0f,1.0f,0.0f))));
+        meshShape->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
 
 
-		meshShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
-		
+        meshShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+        
 
-		mScene[mCurrentScene]->addActor(*meshActor);
-	}
+        mScene[mCurrentScene]->addActor(*meshActor);
+    }
 }
 
 
@@ -308,85 +308,85 @@ static const PxVec3 convexVerts[] = {PxVec3(1,1,0),PxVec3(-1,1,0),PxVec3(0,1,1),
 
 void Apex::LoadDynamicTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 {
-	PxRigidDynamic* meshActor = mPhysics->createRigidDynamic(PxTransform::createIdentity());
-	PxShape* meshShape, *convexShape;
-	if(meshActor)
-	{
-		//meshActor->setRigidDynamicFlag(PxRigidDynamicFlag::eKINEMATIC, true);
+    PxRigidDynamic* meshActor = mPhysics->createRigidDynamic(PxTransform::createIdentity());
+    PxShape* meshShape, *convexShape;
+    if(meshActor)
+    {
+        //meshActor->setRigidDynamicFlag(PxRigidDynamicFlag::eKINEMATIC, true);
 
-		PxTriangleMeshDesc meshDesc;
-		meshDesc.points.count           = numVerts;
-		meshDesc.points.stride          = sizeof(PxVec3);
-		meshDesc.points.data            = verts;
+        PxTriangleMeshDesc meshDesc;
+        meshDesc.points.count           = numVerts;
+        meshDesc.points.stride          = sizeof(PxVec3);
+        meshDesc.points.data            = verts;
 
-		//meshDesc.triangles.count        = numInds/3.;
-		//meshDesc.triangles.stride       = 3*sizeof(int);
-		//meshDesc.triangles.data         = inds;
+        //meshDesc.triangles.count        = numInds/3.;
+        //meshDesc.triangles.stride       = 3*sizeof(int);
+        //meshDesc.triangles.data         = inds;
 
-		PxToolkit::MemoryOutputStream writeBuffer;
-		bool status = mCooking->cookTriangleMesh(meshDesc, writeBuffer);
-		if(!status)
-			return;
+        PxToolkit::MemoryOutputStream writeBuffer;
+        bool status = mCooking->cookTriangleMesh(meshDesc, writeBuffer);
+        if(!status)
+            return;
 
-		PxToolkit::MemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+        PxToolkit::MemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
 
-		PxTriangleMeshGeometry triGeom;
-		triGeom.triangleMesh = mPhysics->createTriangleMesh(readBuffer);
-		//triGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
-		
-		meshShape = meshActor->createShape(triGeom, *defaultMaterial);
-		//meshShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
-		meshShape->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
+        PxTriangleMeshGeometry triGeom;
+        triGeom.triangleMesh = mPhysics->createTriangleMesh(readBuffer);
+        //triGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
+        
+        meshShape = meshActor->createShape(triGeom, *defaultMaterial);
+        //meshShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
+        meshShape->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
 
-		PxConvexMeshDesc convexDesc;
-		convexDesc.points.count     = numVerts;
-		convexDesc.points.stride    = sizeof(PxVec3);
-		convexDesc.points.data      = verts;
-		convexDesc.flags            = PxConvexFlag::eCOMPUTE_CONVEX;
+        PxConvexMeshDesc convexDesc;
+        convexDesc.points.count     = numVerts;
+        convexDesc.points.stride    = sizeof(PxVec3);
+        convexDesc.points.data      = verts;
+        convexDesc.flags            = PxConvexFlag::eCOMPUTE_CONVEX;
 
-		if(!convexDesc.isValid())
-			return;
-		PxToolkit::MemoryOutputStream buf;
-		if(!mCooking->cookConvexMesh(convexDesc, buf))
-			return;
-		PxToolkit::MemoryInputData input(buf.getData(), buf.getSize());
-		PxConvexMesh* convexMesh = mPhysics->createConvexMesh(input);
-		PxConvexMeshGeometry convexGeom = PxConvexMeshGeometry(convexMesh);
-		convexShape = meshActor->createShape(convexGeom, *defaultMaterial);
-		//convexShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
-		//convexShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+        if(!convexDesc.isValid())
+            return;
+        PxToolkit::MemoryOutputStream buf;
+        if(!mCooking->cookConvexMesh(convexDesc, buf))
+            return;
+        PxToolkit::MemoryInputData input(buf.getData(), buf.getSize());
+        PxConvexMesh* convexMesh = mPhysics->createConvexMesh(input);
+        PxConvexMeshGeometry convexGeom = PxConvexMeshGeometry(convexMesh);
+        convexShape = meshActor->createShape(convexGeom, *defaultMaterial);
+        //convexShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
+        //convexShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
 
-		
-		convexShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
-		meshShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
-		meshActor->setRigidDynamicFlag(PxRigidDynamicFlag::eKINEMATIC, false);
+        
+        convexShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+        meshShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+        meshActor->setRigidDynamicFlag(PxRigidDynamicFlag::eKINEMATIC, false);
 
-		meshActor->setGlobalPose(PxTransform(PxVec3(info.x,info.y,info.z), PxQuat(info.ry, PxVec3(0.0f,1.0f,0.0f))));
-		mScene[mCurrentScene]->addActor(*meshActor);
-		dynamicActors.push_back(meshActor);
-	}
+        meshActor->setGlobalPose(PxTransform(PxVec3(info.x,info.y,info.z), PxQuat(info.ry, PxVec3(0.0f,1.0f,0.0f))));
+        mScene[mCurrentScene]->addActor(*meshActor);
+        dynamicActors.push_back(meshActor);
+    }
 }
 
 void Apex::getRigidDynamicPosition(int index, XMFLOAT4X4 *position)
 {
-	PxU32 nShapes = 0;
+    PxU32 nShapes = 0;
 
-	if(dynamicActors[index])
-		nShapes = dynamicActors[index]->getNbShapes();
-	else	
-		return;
+    if(dynamicActors[index])
+        nShapes = dynamicActors[index]->getNbShapes();
+    else	
+        return;
 
-	PxShape** shapes = new PxShape*[nShapes];
+    PxShape** shapes = new PxShape*[nShapes];
  
-	dynamicActors[index]->getShapes(shapes, nShapes);     
-	PxTransform pt = PxShapeExt::getGlobalPose(*shapes[0]);
+    dynamicActors[index]->getShapes(shapes, nShapes);     
+    PxTransform pt = PxShapeExt::getGlobalPose(*shapes[0]);
 
-	delete [] shapes;
+    delete [] shapes;
 
     XMMATRIX world = XMLoadFloat4x4(position) ;
     PxtoXMMatrix(pt, &world);
 
-	XMStoreFloat4x4(position, world);
+    XMStoreFloat4x4(position, world);
 }
 
 bool Apex::InitParticles()
@@ -401,9 +401,9 @@ bool Apex::InitParticles()
     {
         NxParameterized::Interface* params = mParticleIosModule->getDefaultModuleDesc();
         mParticleIosModule->init(*params);
-		mParticleIosModule->setLODUnitCost(0.00000001f);
+        mParticleIosModule->setLODUnitCost(0.00000001f);
     }
-	
+    
     mIofxModule = static_cast<NxModuleIofx*>(gApexSDK->createModule("IOFX", &errorCode));
     checkErrorCode(&errorCode);
     PX_ASSERT(mIofxModule);
@@ -413,7 +413,7 @@ bool Apex::InitParticles()
         mIofxModule->init(*params);
         /*mIofxModule->disableCudaInterop();
         mIofxModule->disableCudaModifiers();*/
-		mIofxModule->setLODUnitCost(0.00000001f);
+        mIofxModule->setLODUnitCost(0.00000001f);
     }
 
     mEmitterModule = static_cast<NxModuleEmitter*> ( gApexSDK->createModule("Emitter", &errorCode));
@@ -429,7 +429,7 @@ bool Apex::InitParticles()
         {
             NxApexParameter& p = *m_emitterModuleScalables[i];
             mEmitterModule->setIntValue(i, p.range.maximum);
-			mEmitterModule->setLODUnitCost(0.00000001f);
+            mEmitterModule->setLODUnitCost(0.00000001f);
         }
     }
 
@@ -438,26 +438,26 @@ bool Apex::InitParticles()
 
 ApexParticles* Apex::CreateEmitter(physx::apex::NxUserRenderer* renderer, const char* filename)
 {
-	ApexParticles* emitter = new ApexParticles();
-	emitter->CreateEmitter(gApexSDK, gApexScene[mCurrentScene], mDevcon, mDev, renderer, mIofxModule, filename);
-	return emitter;
+    ApexParticles* emitter = new ApexParticles();
+    emitter->CreateEmitter(gApexSDK, gApexScene[mCurrentScene], mDevcon, mDev, renderer, mIofxModule, filename);
+    return emitter;
 }
 
-ApexCloth* Apex::CreateCloth(physx::apex::NxUserRenderer* renderer, const char* filename)
+ApexCloth* Apex::CreateCloth(physx::apex::NxUserRenderer* renderer, const char* filename, const char* texfile)
 {
     ApexCloth* cloth = new ApexCloth();
-    cloth->CreateCloth(gApexSDK, gApexScene[mCurrentScene], mDevcon, mDev, renderer, filename);
+    cloth->CreateCloth(gApexSDK, gApexScene[mCurrentScene], mDevcon, mDev, renderer, filename, texfile);
     return cloth;
 }
 
 void Apex::CreatePlane(float nx, float ny, float nz, float distance)
 {
-	// Create a plane
+    // Create a plane
     PxRigidStatic* plane = PxCreatePlane(*mPhysics, PxPlane(PxVec3(nx,ny,nz), distance), *defaultMaterial);
     if (!plane)
         return;
 
-	gApexScene[mCurrentScene]->getPhysXScene()->addActor(*plane);
+    gApexScene[mCurrentScene]->getPhysXScene()->addActor(*plane);
 }
 
 bool Apex::InitClothing()
@@ -479,7 +479,7 @@ bool Apex::InitClothing()
         NxParameterized::setParamU32(*moduleDesc, "maxUnusedPhysXResources", 5);
 
         mApexClothingModule->init(*moduleDesc);
-		mApexClothingModule->setLODUnitCost(0.0001f);
+        mApexClothingModule->setLODUnitCost(0.0001f);
     }
         
     return true;
@@ -515,7 +515,7 @@ bool Apex::checkErrorCode(NxApexCreateError* err)
 
 bool Apex::CreateScene()
 {
-	PxSceneDesc sceneDesc(mPhysics->getTolerancesScale());
+    PxSceneDesc sceneDesc(mPhysics->getTolerancesScale());
     sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 
     if(!sceneDesc.cpuDispatcher)
@@ -543,29 +543,30 @@ bool Apex::CreateScene()
     sceneDesc.gpuDispatcher = mCudaContextManager->getGpuDispatcher();
 
 
-	mScene.push_back(mPhysics->createScene(sceneDesc));
+    mScene.push_back(mPhysics->createScene(sceneDesc));
 
     if (!mScene[mCurrentScene])
         return false;
 
 
-	 NxApexSceneDesc apexSceneDesc;
+     NxApexSceneDesc apexSceneDesc;
     // Create the APEX scene...
     
     apexSceneDesc.scene = mScene[mCurrentScene];
-	
+    
     if(apexSceneDesc.isValid())
-		gApexScene.push_back(gApexSDK->createScene(apexSceneDesc));
+        gApexScene.push_back(gApexSDK->createScene(apexSceneDesc));
     else
         return false;
 
     if(!gApexScene[mCurrentScene])
         return false;
 
-	gApexScene[mCurrentScene]->setLODResourceBudget(10000.f);
+    gApexScene[mCurrentScene]->setLODResourceBudget(10000.f);
 
-	static const physx::PxU32 viewIDlookAtRightHand = gApexScene[mCurrentScene]->allocViewMatrix(physx::apex::ViewMatrixType::LOOK_AT_LH);
-	static const physx::PxU32 projIDperspectiveCubicRightHand = gApexScene[mCurrentScene]->allocProjMatrix(physx::apex::ProjMatrixType::USER_CUSTOMIZED);
+    static const physx::PxU32 viewIDlookAtRightHand = gApexScene[mCurrentScene]->allocViewMatrix(physx::apex::ViewMatrixType::LOOK_AT_LH);
+    static const physx::PxU32 projIDperspectiveCubicRightHand = gApexScene[mCurrentScene]->allocProjMatrix(physx::apex::ProjMatrixType::USER_CUSTOMIZED);
 
-	gApexScene[mCurrentScene]->setUseViewProjMatrix(viewIDlookAtRightHand, projIDperspectiveCubicRightHand);
+    gApexScene[mCurrentScene]->setUseViewProjMatrix(viewIDlookAtRightHand, projIDperspectiveCubicRightHand);
+    return true;
 }

@@ -17,7 +17,7 @@ struct SceneBuff
 	float      specularOn;
 	float      pLightOn;
 	float      dirLightOn;
-	float	   padding;
+	float	   shadowsOn;
 };
 
 struct EnvironBuff

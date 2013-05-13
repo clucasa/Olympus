@@ -37,34 +37,34 @@ public:
     ApexDestructable();
     ~ApexDestructable();
 
-	void InitPipeline();
+    void InitPipeline();
 
     void CreateDestructable(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
-						ID3D11DeviceContext *devcon, 	ID3D11Device *dev,
-					  physx::apex::NxUserRenderer* renderer, const char* filename);
-	void Update();
-	virtual void RecompileShader();
+                        ID3D11DeviceContext *devcon, 	ID3D11Device *dev,
+                      physx::apex::NxUserRenderer* renderer, const char* filename);
+    void Update();
+    virtual void RecompileShader();
 
-	void SetPosition(float x, float y, float z);
-	virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
+    void SetPosition(float x, float y, float z);
+    virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
 
 private:
-	ID3D11Device *mDev;
-	ID3D11DeviceContext *mDevcon;
+    ID3D11Device *mDev;
+    ID3D11DeviceContext *mDevcon;
 
-	ID3D11InputLayout   *mLayout;           // the pointer to the input layout
+    ID3D11InputLayout   *mLayout;           // the pointer to the input layout
     ID3D11VertexShader  *mVS;               // the pointer to the vertex shader
     ID3D11GeometryShader  *mGS;             // the pointer to the vertex shader
     ID3D11PixelShader   *mPS;               // the pointer to the pixel shader
-	ID3D11Buffer*		mConstBuffer;
-	ID3D11ShaderResourceView *clothTexture;
+    ID3D11Buffer*		mConstBuffer;
+    ID3D11ShaderResourceView *clothTexture;
 
 
-	//NxApexEmitterActor* emitterActor;
+    //NxApexEmitterActor* emitterActor;
    // physx::apex::NxApexRenderVolume*  mRenderVolume;
     physx::apex::NxClothingActor* clothingActor;
-        	
-	apex::NxUserRenderer*      gRenderer;
+            
+    apex::NxUserRenderer*      gRenderer;
 };
 
 #endif

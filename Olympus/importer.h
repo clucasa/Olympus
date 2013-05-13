@@ -2,7 +2,7 @@
 
 #ifndef IMPORTER_H
 #define IMPORTER_H
-
+//#define FBXSDK_NEW_API
 #include <fbxsdk.h>
 #include <stdio.h>
 #include <iostream>

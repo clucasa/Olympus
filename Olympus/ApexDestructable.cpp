@@ -16,13 +16,13 @@ ApexDestructable::~ApexDestructable()
 
 void ApexDestructable::InitPipeline()
 {
-	ID3D10Blob* pErrorBlob = NULL;
+    ID3D10Blob* pErrorBlob = NULL;
     LPVOID pError = NULL;
     char* errorStr = NULL;
-	// compile the shaders
-    ID3D10Blob *sVS, *sPS, *sGS;
+    // compile the shaders
+    ID3D10Blob *sVS, *sPS;
 
-	HRESULT hr = D3DX11CompileFromFile("clothshader.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &sVS, &pErrorBlob, 0);
+    HRESULT hr = D3DX11CompileFromFile("clothshader.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &sVS, &pErrorBlob, 0);
     if(pErrorBlob)
     {
         pError = pErrorBlob->GetBufferPointer();
@@ -49,13 +49,13 @@ void ApexDestructable::InitPipeline()
     mDev->CreateVertexShader(sVS->GetBufferPointer(), sVS->GetBufferSize(), NULL, &mVS);
     mDev->CreatePixelShader(sPS->GetBufferPointer(), sPS->GetBufferSize(), NULL, &mPS);
 
-	// create the input element object
+    // create the input element object
     D3D11_INPUT_ELEMENT_DESC clothied[] =
     {
        // { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }, 
         {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		//{ "NORMAL",	  0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
+        //{ "NORMAL",	  0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+    };
 
     // use the input element descriptions to create the input layout
     mDev->CreateInputLayout(clothied, 1, sVS->GetBufferPointer(), sVS->GetBufferSize(), &mLayout);
@@ -64,7 +64,7 @@ void ApexDestructable::InitPipeline()
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
 
-	// Create sprite constant buffer
+    // Create sprite constant buffer
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.ByteWidth = 80;    // 4 for each float, float 4x4 = 4 * 4 * 4 + float 3 eyepos
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -74,12 +74,12 @@ void ApexDestructable::InitPipeline()
 
 
 void ApexDestructable::CreateDestructable(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
-						ID3D11DeviceContext *devcon, 	ID3D11Device *dev,
-					  physx::apex::NxUserRenderer* renderer, const char* filename)
+                        ID3D11DeviceContext *devcon, 	ID3D11Device *dev,
+                      physx::apex::NxUserRenderer* renderer, const char* filename)
 {
     mDev = dev;
-	mDevcon = devcon;
-	gRenderer = renderer;
+    mDevcon = devcon;
+    gRenderer = renderer;
 
     NxClothingAsset* clothAsset;
     physx::apex::NxApexAsset* asset = reinterpret_cast<physx::apex::NxApexAsset*>(gApexSDK->getNamedResourceProvider()->getResource(NX_CLOTHING_AUTHORING_TYPE_NAME, filename/*"ctdm_Cape_400"*/));
@@ -136,11 +136,11 @@ void ApexDestructable::Update()
 void ApexDestructable::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 {
     //SPRITECBUFFER scBuffer;
-	//scBuffer.EyePos = mCam->GetPosition();
+    //scBuffer.EyePos = mCam->GetPosition();
 
-	mDevcon->VSSetShader(mVS, 0, 0);
+    mDevcon->VSSetShader(mVS, 0, 0);
     mDevcon->PSSetShader(mPS, 0, 0);
-	mDevcon->IASetInputLayout(mLayout);
+    mDevcon->IASetInputLayout(mLayout);
 
 //    mDevcon->UpdateSubresource(mConstBuffer, 0, 0, &scBuffer, 0, 0);
 
@@ -150,10 +150,10 @@ void ApexDestructable::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderT
 
 void ApexDestructable::RecompileShader()
 {
-	//// compile the shaders
+    //// compile the shaders
  //   ID3D10Blob *sVS, *sPS, *sGS;
-	//HRESULT hr;
-	//hr = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &sVS, 0, 0);
+    //HRESULT hr;
+    //hr = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &sVS, 0, 0);
 
  //   hr = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "GShader", "gs_5_0", 0, 0, 0, &sGS, 0, 0);
 
