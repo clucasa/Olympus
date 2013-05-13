@@ -5,8 +5,8 @@ The pinnacle of creation.
 
 Features:
 Render to screen quad for post processing:
-    Depth of field
-	Gamma and Luminance correction
+Depth of field
+Gamma and Luminance correction
 Skybox
 Apex Particles
 FBX Loader
@@ -19,6 +19,7 @@ To get working:
 1. Move all dlls in the main folder into the sln's Checked folder.
 
 Controls:
+
 (Controller)
 L Stick - Movement
 R Stick - Aim
@@ -42,6 +43,7 @@ F4 - Toggle Emitters
 F5 - Toggle Ambient Lighting
 F6 - Toggle Diffuse Lighting
 F7 - Toggle Specular Lighting
+
 (Numpad)
 7 - Up luminance
 4 - Down Luminance
