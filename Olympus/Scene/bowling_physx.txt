@@ -1,0 +1,5 @@
+# bowling scene physx objects
+# c curtainew 0.0 2.0 100.0 0.0 0.0 0.0 banner1.png
+p 0.0 1.0 0.0 0.0
+p 1.0 0.0 0.0 54.0
+p -1.0 0.0 0.0 54.0

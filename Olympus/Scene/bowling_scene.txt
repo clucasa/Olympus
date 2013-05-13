@@ -1,0 +1,11 @@
+# Bowling lane scene
+s Scene/settings.txt
+
+b 0.0 0.1 10.0 20
+# 82
+
+o Scene/bowling_hallway.txt
+o Scene/bowling_plane.txt
+
+p Scene/bowling_physx.txt
+

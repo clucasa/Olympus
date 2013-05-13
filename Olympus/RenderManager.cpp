@@ -305,7 +305,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
     vector<String> sceneNames;
     sceneNames.push_back("scene/scene0.txt");
-    sceneNames.push_back("scene/scene1.txt");
+    sceneNames.push_back("scene/bowling_scene.txt");
 
     Scene *tempScene;
 

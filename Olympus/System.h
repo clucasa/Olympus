@@ -38,7 +38,7 @@ using namespace std;
 class System
 {
 public:
-	System();
+    System();
     System(HINSTANCE hInstance, int nCmdShow);
     ~System();
 
@@ -59,32 +59,35 @@ public:
     void CleanD3D(void);                    // closes Direct3D and releases memory
     int InitPipeline(void);                 // loads and prepares the shaders
 
+	void SwitchScene(int scene);
+
     // call backs
     void OnMouseDown(WPARAM btnState, int x, int y);
     void OnMouseUp(WPARAM btnState, int x, int y);
     void OnMouseMove(WPARAM btnState, int x, int y);
     void UpdateCamera(float dt);
     void OnResize();
-	void fpsCalc();
+    void fpsCalc();
+    
 
-	// Random Helper
-	float randomf(float low, float high);
+    // Random Helper
+    float randomf(float low, float high);
 private:
     // global declarations
     IDXGISwapChain      *swapchain;         // the pointer to the swap chain interface
     ID3D11Device        *dev;               // the pointer to our Direct3D device interface
     ID3D11DeviceContext *devcon;            // the pointer to our Direct3D device context
-	D3D11_VIEWPORT mViewport;
+    D3D11_VIEWPORT mViewport;
 
-	bool				mFlyMode;
-	int					mFovFlag;
+    bool				mFlyMode;
+    int					mFovFlag;
 
-	GameTimer			mTimer;
+    GameTimer			mTimer;
 
     HWND                hWnd;               // The main window
     Camera              *mCam;				// the camera
     Apex*               mApex;
-	CharacterController *cController;
+    CharacterController *cController;
 
     RenderManager       *rendManager; 
     POINT               mLastMousePos;		// the last mouse position
@@ -94,15 +97,16 @@ private:
     HRESULT             hr;                 // Error checking
 
     int					mClientWidth;
-	int					mClientHeight;
+    int					mClientHeight;
 
-	int					mCurrentScene;
+    CurrentScene		mCurrentScene;
 
 
-	bool				mAppPaused;
-	bool				mMinimized;
-	bool				mMaximized;
-	bool				mResizing;
+    bool				mAppPaused;
+    bool				mMinimized;
+    bool				mMaximized;
+    bool				mResizing;
     bool                mInitialized;
+    bool				boolRun;
 };
 #endif

@@ -13,6 +13,13 @@ class Apex;
 
 using namespace std;
 
+enum CurrentScene
+{
+	HUB,
+	BOWLING
+};
+
+
 class Scene
 {
 public:

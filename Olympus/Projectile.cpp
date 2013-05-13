@@ -99,7 +99,7 @@ void Projectile::Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths)
         
         PxTransform transform(pos, PxQuat::createIdentity());
         PxVec3 dimensions(.5,.5,.5);
-        PxSphereGeometry geometry(.5f);
+        PxSphereGeometry geometry(0.5f);
         //PxBoxGeometry geometry(dimensions);
         PxRigidDynamic* boxActor = PxCreateDynamic(*mApex->getPhysics(), transform, geometry, *blockMaterial, density);
         if (!boxActor)
@@ -134,7 +134,8 @@ void Projectile::Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths)
         XMStoreFloat4x4(&final, trans );
 
         mWorldMats.push_back(final);
-        spheres.push_back(mCloths[0]->getClothingActor()->createCollisionSphere(pos, .5));
+        if(mCloths.size() > 0)
+            spheres.push_back(mCloths[0]->getClothingActor()->createCollisionSphere(pos, .5));
     }
     else
     {
@@ -143,7 +144,7 @@ void Projectile::Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths)
         
         PxVec3 look = PxVec3(mCam->GetLook().x,mCam->GetLook().y,mCam->GetLook().z);
         look.normalize();
-        PxVec3 pos = PxVec3(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z) + (look * 4.);
+        PxVec3 pos = PxVec3(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z) + (look * 6.);
         PxTransform transform(pos, PxQuat::createIdentity());
         
         float vx = look.x * speed;
@@ -156,8 +157,11 @@ void Projectile::Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths)
         boxDynamic->setAngularVelocity(PxVec3(0,0,0));
         boxDynamic->setGlobalPose(transform);
 
-        physx::apex::NxClothingSphere* sphere = spheres[curBox];
-        sphere->setPosition(pos);
+        if(mCloths.size() > 0)
+        {
+            physx::apex::NxClothingSphere* sphere = spheres[curBox];
+            sphere->setPosition(pos);
+        }
 
         curBox++;
     }
@@ -186,10 +190,13 @@ void Projectile::Update()
 
         XMStoreFloat4x4(&mWorldMats[i], world);
 
-        physx::apex::NxClothingSphere* sphere = spheres[i];
+        if(spheres.size() > 0)
+        {
+            physx::apex::NxClothingSphere* sphere = spheres[i];
 
-        PxVec3 pos = pt.p;
-        sphere->setPosition(pos);
+            PxVec3 pos = pt.p;
+            sphere->setPosition(pos);
+        }
     }
 }
 

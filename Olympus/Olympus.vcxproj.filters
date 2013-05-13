@@ -247,13 +247,19 @@
     <None Include="Scene\settings.txt">
       <Filter>Resource Files\Scene</Filter>
     </None>
-    <None Include="Scene\Scene1.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
     <None Include="Scene\Scene0.txt">
       <Filter>Resource Files\Scene</Filter>
     </None>
-    <None Include="Scene\physx1.txt">
+    <None Include="Scene\bowling_plane.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\bowling_hallway.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\bowling_scene.txt">
+      <Filter>Resource Files\Scene</Filter>
+    </None>
+    <None Include="Scene\bowling_physx.txt">
       <Filter>Resource Files\Scene</Filter>
     </None>
   </ItemGroup>

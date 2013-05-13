@@ -120,13 +120,15 @@
     <None Include="Scene\archway.txt" />
     <None Include="Scene\arenapit.txt" />
     <None Include="Scene\bigbadman.txt" />
+    <None Include="Scene\bowling_plane.txt" />
     <None Include="Scene\crate.txt" />
     <None Include="Scene\deadman.txt" />
     <None Include="Scene\envirospheres.txt" />
+    <None Include="Scene\bowling_hallway.txt" />
     <None Include="Scene\physx.txt" />
-    <None Include="Scene\physx1.txt" />
+    <None Include="Scene\bowling_physx.txt" />
     <None Include="Scene\Scene0.txt" />
-    <None Include="Scene\Scene1.txt" />
+    <None Include="Scene\bowling_scene.txt" />
     <None Include="Scene\settings.txt" />
     <None Include="Scene\terrain.txt" />
     <None Include="Scene\torch.txt" />

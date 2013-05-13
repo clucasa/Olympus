@@ -83,7 +83,7 @@ Scene::Scene( ID3D11Device *dev, ID3D11DeviceContext *devcon, Apex* apex, Geomet
             char *modelname = "Media/Models/bowling_pin_lowres.fbx";
             bowlingPin->objLoad(modelname, &texts, &norms, mDev, mDevcon, mApex );
         
-            PlacePins( XMFLOAT3((float)::atof(elems[1].c_str()), (float)::atof(elems[2].c_str()), (float)::atof(elems[3].c_str()) ), 3, 1.1f, bowlingPin);
+            PlacePins( XMFLOAT3((float)::atof(elems[1].c_str()), (float)::atof(elems[2].c_str()), (float)::atof(elems[3].c_str()) ), (int)::atoi(elems[4].c_str()), 1.1f, bowlingPin);
             
             mRenderables.push_back(bowlingPin);
             bowlingSets.push_back(bowlingPin);
@@ -388,7 +388,7 @@ void Scene::LoadPhysX(string filename)
 
 void Scene::Fire(Camera *mCam, float speed)
 {
-    if( projectile && (cloths.size() > 0) )
+    if( projectile )
     {
         projectile->Fire(mCam, speed, cloths);
     }
@@ -413,7 +413,7 @@ void Scene::PlacePins(XMFLOAT3 location, int numlevels, float dist, Object* pinM
 
     ObjectInfo object;
     object.x = object.y = object.z = object.rx = object.ry = object.rz = 0.0f;
-    object.sx = object.sy = object.sz = 7.0f;
+    object.sx = object.sy = object.sz = 1.0f;
     object.materials.push_back(material);
 
     //Used for resetting the pins

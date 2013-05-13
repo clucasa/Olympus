@@ -332,7 +332,7 @@ void Apex::LoadDynamicTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
 
         PxTriangleMeshGeometry triGeom;
         triGeom.triangleMesh = mPhysics->createTriangleMesh(readBuffer);
-        //triGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
+        triGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
         
         meshShape = meshActor->createShape(triGeom, *defaultMaterial);
         //meshShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));

@@ -51,7 +51,7 @@ System::System(HINSTANCE hInstance, int nCmdShow) :
 
     ShowWindow(hWnd, nCmdShow);
 
-    mCurrentScene = 0;
+    mCurrentScene = (CurrentScene)0;
 }
 
 System::~System() {}
@@ -166,19 +166,13 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
                 case 0x30: // 0 key has been pressed
                 {
-                    rendManager->mCurrentScene = 0;
-                    rendManager->mApex->setScene(0);
-                    cController->SetScene(0);
-                    mCurrentScene = 0;
+                    SwitchScene(0);
                 }
                 break;
 
                 case 0x31: // 1 key has been pressed
                 {
-                    rendManager->mCurrentScene = 1;
-                    rendManager->mApex->setScene(1);
-                    cController->SetScene(1);
-                    mCurrentScene = 1;
+                    SwitchScene(1);
                 }
                 break;
 
@@ -433,22 +427,43 @@ int System::initd3d()
 // this is the function used to render a single frame
 void System::RenderFrame(float dt)
 {
-    XMVECTOR camPos = mCam->GetPositionXM();
+	// Teleporting Scene Switching
+	XMVECTOR camPos = mCam->GetPositionXM();
+	XMVECTOR spherePos;
+	XMVECTOR vectorSub;
+	XMVECTOR length;
+
+	float distance = 0.0f;
+
+	switch(mCurrentScene)
+	{
+	case CurrentScene::HUB:
+		spherePos = XMLoadFloat3(&XMFLOAT3( -3.5 , 5.0 , -235.0 ) );
+		vectorSub = XMVectorSubtract(camPos,spherePos);
+		length = XMVector3Length(vectorSub);
+
+		distance = 0.0f;
+		XMStoreFloat(&distance,length);
+		if(abs(distance) < 40.0f)
+		{
+			//SwitchScene(CurrentScene::BOWLING);
+		}
+		break;
+	case CurrentScene::BOWLING:
+		spherePos = XMLoadFloat3(&XMFLOAT3( -15.0 , 20.0 , 118.0 ) );
+		vectorSub = XMVectorSubtract(camPos,spherePos);
+		length = XMVector3Length(vectorSub);
+
+		distance = 0.0f;
+		XMStoreFloat(&distance,length);
+		if(abs(distance) < 40.0f)
+		{
+			//SwitchScene(CurrentScene::HUB);
+		}
+		break;
+	}
     
-    XMVECTOR spherePos = XMLoadFloat3(&XMFLOAT3( -37.0 , -12.0 , -85.0 ) );
-    XMVECTOR vectorSub = XMVectorSubtract(camPos,spherePos);
-    XMVECTOR length = XMVector3Length(vectorSub);
-
-    float distance = 0.0f;
-    XMStoreFloat(&distance,length);
-    if(abs(distance) < 60.0f)
-    {
-        rendManager->mCurrentScene = 1;
-        rendManager->mApex->setScene(1);
-        cController->SetScene(1);
-        mCurrentScene = 1;
-    }
-
+    
     UpdateCamera(dt);
     mApex->UpdateViewProjMat(&mCam->View(),&mCam->Proj(), 1.0f, 10000.0f, 0.25f*MathHelper::Pi, (float)mClientWidth, (float)mClientHeight);
     bool fetch = mApex->advance(dt);
@@ -508,8 +523,8 @@ void System::UpdateCamera(float dt)
  
     if( dwResult == ERROR_SUCCESS ){ // Controller is connected.
         float speed = 1.0f;
-        if( state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB )
-            speed = 40.0f;
+        /*if( state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB )
+            speed = 40.0f;*/
         
         ShowCursor(false);
 
@@ -517,7 +532,8 @@ void System::UpdateCamera(float dt)
         if((state.Gamepad.sThumbLX < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
             state.Gamepad.sThumbLX > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) &&
            (state.Gamepad.sThumbLY < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
-            state.Gamepad.sThumbLY > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)){    
+            state.Gamepad.sThumbLY > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
+        {    
                 state.Gamepad.sThumbLX = 0;
                 state.Gamepad.sThumbLY = 0;
         }
@@ -525,7 +541,8 @@ void System::UpdateCamera(float dt)
         if((state.Gamepad.sThumbRX < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE &&
             state.Gamepad.sThumbRX > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) &&
            (state.Gamepad.sThumbRY < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE &&
-            state.Gamepad.sThumbRY > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)){
+            state.Gamepad.sThumbRY > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE))
+        {
                 state.Gamepad.sThumbRX = 0;
                 state.Gamepad.sThumbRY = 0;
         }
@@ -535,24 +552,52 @@ void System::UpdateCamera(float dt)
         float rightThumbY = state.Gamepad.sThumbRY;
         float rightThumbX = state.Gamepad.sThumbRX;
 
-        if(mFovFlag == 1){
+        if(mFovFlag == 1)
+        {
             mCam->SetLens(0.25f*MathHelper::Pi, (float)mClientWidth/(float)mClientHeight, 1.0f, 10000.0f);
             mFovFlag = 0;
         }
 
+        //run
+        if(state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB)
+        {
+            boolRun = true;
+        }
+
+        if(boolRun)
+        {
+            if((state.Gamepad.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE ||
+                state.Gamepad.sThumbLX < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) ||
+                (state.Gamepad.sThumbLY > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE ||
+                state.Gamepad.sThumbLY < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
+            {    
+                cController->run(true);
+                speed = 40.0f; // for fly mode
+            }
+            else
+            {
+                cController->run(false);
+                boolRun = false;
+            }
+        }
+
         // Aiming with left trigger
-        if(state.Gamepad.bLeftTrigger && state.Gamepad.bRightTrigger < 256){ // 256 disables the right trigger
+        if(state.Gamepad.bLeftTrigger && state.Gamepad.bRightTrigger < 256)
+        { // 256 disables the right trigger
             cController->zoom(true);
             mCam->SetLens(0.1f*MathHelper::Pi, (float)mClientWidth/(float)mClientHeight, 1.0f, 10000.0f);
             mFovFlag = 1;
             XMFLOAT3 mLook = mCam->GetLook();
+            
+            mCam->Walk((leftThumbY / 30000.0f) * dt * speed);
+            mCam->Strafe((leftThumbX / 30000.0f) * dt * speed);
 
-            if(mLook.y < -0.98){ // looking down limit
+            if(mLook.y < -0.98f){ // looking down limit
                 if(-rightThumbY < 0){
                     mCam->Pitch((-rightThumbY / 102000.0f) * dt);
                 }
             }
-            else if(mLook.y > 0.98){ // looking up limit
+            else if(mLook.y > 0.98f){ // looking up limit
                 if(-rightThumbY > 0){
                     mCam->Pitch((-rightThumbY / 102000.0f) * dt);
                 }
@@ -563,12 +608,14 @@ void System::UpdateCamera(float dt)
 
             mCam->RotateY((rightThumbX / 85000.0f) * dt);
         }
-        else
-        {
+        else{	
+            mCam->Walk((leftThumbY / 3000.0f) * dt * speed);
+            mCam->Strafe((leftThumbX / 3000.0f) * dt * speed);
+
             cController->zoom(false);
 
             XMFLOAT3 mLook = mCam->GetLook();
-            if(mLook.y < -0.98){ // looking down limit
+            if(mLook.y < -0.98f){ // looking down limit
                 if(-rightThumbY < 0){
                     mCam->Pitch((-rightThumbY / 12000.0f) * dt);
                 }
@@ -584,12 +631,12 @@ void System::UpdateCamera(float dt)
 
             mCam->RotateY((rightThumbX / 8500.0f) * dt);	
         }
+
         XMFLOAT3 camPos = mCam->GetPosition();
         if(mFlyMode == false)
         {
             //jump
-            if(state.Gamepad.wButtons & XINPUT_GAMEPAD_A)
-            {
+            if(state.Gamepad.wButtons & XINPUT_GAMEPAD_A){
                 if((state.Gamepad.sThumbLX < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
                     state.Gamepad.sThumbLX > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) &&
                     (state.Gamepad.sThumbLY < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
@@ -641,11 +688,12 @@ void System::UpdateCamera(float dt)
                 }
             }
             
-            mCam->SetPosition((float)cController->pCharacter->getPosition().x, (float)cController->pCharacter->getPosition().y, (float)cController->pCharacter->getPosition().z); 
+            mCam->SetPosition(cController->pCharacter->getPosition().x, cController->pCharacter->getPosition().y, cController->pCharacter->getPosition().z); 
         }
+
         else
         {
-            mCam->SetPosition(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z);
+            mCam->SetPosition(camPos.x, camPos.y, camPos.z);
         }
 
 
@@ -658,7 +706,7 @@ void System::UpdateCamera(float dt)
         else if( state.Gamepad.bRightTrigger && state.Gamepad.bLeftTrigger < 256 )
         {
             XMFLOAT3 originalPos = mCam->GetPosition();
-            shootspeed = /*(state.Gamepad.bRightTrigger / 255) * */50.0f;
+            shootspeed = /*(state.Gamepad.bRightTrigger / 255) * */100.0f;
             rendManager->scene[mCurrentScene]->Fire(mCam, shootspeed);	
             /*for(int i = 0; i < 20; i++)
             {
@@ -669,80 +717,122 @@ void System::UpdateCamera(float dt)
             cooldown += 0.25f;
         }
         
-        if( state.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
+#ifdef _DEBUG
+
+        if(cooldown > 0)
         {
-            if(cooldown > 0)
-            {
-                cooldown--;
-            }
-            else
-            {
-                ofstream myfile;
-                myfile.open("treepositions.txt", ios::app);
-                float scale = randomf(0.12f,0.24f);
-                myfile  << "i " << camPos.x << " " << camPos.y << " " << camPos.z << " " 
-                        << scale << " " << scale << " " << scale << " " << "0.0" << " " << randomf(0.0f, 6.2832f) << " " << "0.0" << endl;
-                myfile  << "a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.9 0.9 0.9 10.0 0.0 0.0 0.0 0.0 0" << endl;
-                myfile  << "a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.9 0.9 0.9 70.0 0.0 0.0 0.0 0.0 1" << endl;
-                myfile.close();
-                cooldown += 10.0f;
-            }
+            cooldown--;
         }
+        else if( state.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
+        {
+            ofstream myfile;
+            myfile.open("treepositions.txt", ios::app);
+            float scale = randomf(0.12f,0.24f);
+            myfile  << "i " << camPos.x << " " << camPos.y << " " << camPos.z << " " 
+                    << scale << " " << scale << " " << scale << " " << "0.0" << " " << randomf(0.0f, 6.2832f) << " " << "0.0" << endl;
+            myfile  << "a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.9 0.9 0.9 10.0 0.0 0.0 0.0 0.0 0" << endl;
+            myfile  << "a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.9 0.9 0.9 70.0 0.0 0.0 0.0 0.0 1" << endl;
+            myfile.close();
+            cooldown += 10.0f;
+        }
+#endif
     }
     else // Controller is disconnected
     { 
         float speed = 10.0f;
         ShowCursor(true);
-        if( GetAsyncKeyState(0x10) & 0x8000 )
-            speed = 140.0f;
-
-        if( GetAsyncKeyState(0x20) & 0x8000 ){
-
-            if(!((GetAsyncKeyState('W') & 0x8000) && (GetAsyncKeyState('S') & 0x8000) &&
-                (GetAsyncKeyState('A') & 0x8000) && (GetAsyncKeyState('D') & 0x8000))){
-                cController->control(true, true, 0.0f, -9.8f, 0.0f, dt);
-            }
-
-            if( GetAsyncKeyState('W') & 0x8000 ){
-                cController->control(true, true, mCam->GetLook().x, -9.8f, mCam->GetLook().z, dt);
-            }
-                
-            if( GetAsyncKeyState('S') & 0x8000 ){
-                cController->control(true, true, -mCam->GetLook().x, -9.8f, -mCam->GetLook().z, dt);
-            }
-       
-            if( GetAsyncKeyState('A') & 0x8000 ){
-                cController->control(true, true, -mCam->GetRight().x, -9.8f, -mCam->GetRight().z, dt);
-            }
-
-            if( GetAsyncKeyState('D') & 0x8000 ){
-                cController->control(true, true, mCam->GetRight().x, -9.8f, mCam->GetRight().z, dt);
-            }
+        
+        //run
+        if(GetAsyncKeyState(0x10) & 0x8000)
+        {
+            boolRun = true;
         }
-        else{
-            if(!((GetAsyncKeyState('W') & 0x8000) && (GetAsyncKeyState('S') & 0x8000) &&
-                (GetAsyncKeyState('A') & 0x8000) && (GetAsyncKeyState('D') & 0x8000))){
-                cController->control(true, false, 0.0f, -9.8f, 0.0f, dt);
-            }
 
-            if( GetAsyncKeyState('W') & 0x8000 ){
-                cController->control(true, false, mCam->GetLook().x, -9.8f/2.f, mCam->GetLook().z, dt);
+        if(boolRun){
+            if((GetAsyncKeyState('W') & 0x8000) || (GetAsyncKeyState('S') & 0x8000) ||
+                (GetAsyncKeyState('A') & 0x8000) || (GetAsyncKeyState('D') & 0x8000))
+            {    
+                cController->run(true);
+                speed = 140.0f; // for fly mode
             }
-                
-            if( GetAsyncKeyState('S') & 0x8000 ){
-                cController->control(true, false, -mCam->GetLook().x, -9.8f/2.f, -mCam->GetLook().z, dt);
-            }
-       
-            if( GetAsyncKeyState('A') & 0x8000 ){
-                cController->control(true, false, -mCam->GetRight().x, -9.8f/2.f, -mCam->GetRight().z, dt);
-            }
-
-            if( GetAsyncKeyState('D') & 0x8000 ){
-                cController->control(true, false, mCam->GetRight().x, -9.8f/2.f, mCam->GetRight().z, dt);
+            else
+            {
+                cController->run(false);
+                boolRun = false;
             }
         }
 
-        mCam->SetPosition((float)cController->pCharacter->getPosition().x, (float)cController->pCharacter->getPosition().y, (float)cController->pCharacter->getPosition().z); 
+        if(mFlyMode == false)
+        {
+            if( GetAsyncKeyState(0x20) & 0x8000 )
+            {
+
+                if(!((GetAsyncKeyState('W') & 0x8000) && (GetAsyncKeyState('S') & 0x8000) &&
+                    (GetAsyncKeyState('A') & 0x8000) && (GetAsyncKeyState('D') & 0x8000)))
+                {
+                    cController->control(true, true, 0.0f, -9.8f, 0.0f, dt);
+                }
+
+                if( GetAsyncKeyState('W') & 0x8000 )
+                {
+                    cController->control(true, true, mCam->GetLook().x, -9.8f, mCam->GetLook().z, dt);
+                }
+                    
+                if( GetAsyncKeyState('S') & 0x8000 )
+                {
+                    cController->control(true, true, -mCam->GetLook().x, -9.8f, -mCam->GetLook().z, dt);
+                }
+           
+                if( GetAsyncKeyState('A') & 0x8000 )
+                {
+                    cController->control(true, true, -mCam->GetRight().x, -9.8f, -mCam->GetRight().z, dt);
+                }
+    
+                if( GetAsyncKeyState('D') & 0x8000 )
+                {
+                    cController->control(true, true, mCam->GetRight().x, -9.8f, mCam->GetRight().z, dt);
+                }
+            }
+            else
+            {
+                if(!((GetAsyncKeyState('W') & 0x8000) && (GetAsyncKeyState('S') & 0x8000) &&
+                    (GetAsyncKeyState('A') & 0x8000) && (GetAsyncKeyState('D') & 0x8000))){
+                    cController->control(true, false, 0.0f, -9.8, 0.0f, dt);
+                }
+    
+                if( GetAsyncKeyState('W') & 0x8000 ){
+                    cController->control(true, false, mCam->GetLook().x, -9.8f/2.f, mCam->GetLook().z, dt);
+                }
+                    
+                if( GetAsyncKeyState('S') & 0x8000 ){
+                    cController->control(true, false, -mCam->GetLook().x, -9.8f/2.f, -mCam->GetLook().z, dt);
+                }
+           
+                if( GetAsyncKeyState('A') & 0x8000 ){
+                    cController->control(true, false, -mCam->GetRight().x, -9.8f/2.f, -mCam->GetRight().z, dt);
+                }
+    
+                if( GetAsyncKeyState('D') & 0x8000 ){
+                    cController->control(true, false, mCam->GetRight().x, -9.8f/2.f, mCam->GetRight().z, dt);
+                }
+            }
+
+            mCam->SetPosition(cController->pCharacter->getPosition().x, cController->pCharacter->getPosition().y, cController->pCharacter->getPosition().z); 
+        }
+        else
+        {
+            if( GetAsyncKeyState('W') & 0x8000 )
+                mCam->Walk(speed*dt);
+    
+            if( GetAsyncKeyState('S') & 0x8000 )
+                mCam->Walk(-speed*dt);
+    
+            if( GetAsyncKeyState('A') & 0x8000 )
+                mCam->Strafe(-speed*dt);
+    
+            if( GetAsyncKeyState('D') & 0x8000 )
+                mCam->Strafe(speed*dt);	
+        }
     }
     
 
@@ -755,7 +845,8 @@ void System::UpdateCamera(float dt)
     if(GetAsyncKeyState('R') & 0x8000 )
         rendManager->RecompShaders();
 
-    if( GetAsyncKeyState('P') & 0x8000 ){ // Super Zoom
+    if( GetAsyncKeyState('P') & 0x8000 )
+    { // Super Zoom
           mCam->SetLens(0.01f*MathHelper::Pi, (float)mClientWidth/(float)mClientHeight, 1.0f, 10000.0f); 
           mFovFlag = 1;
     }
@@ -955,4 +1046,12 @@ void System::OnResize()
 float System::randomf(float low, float high)
 {
     return low + (float)rand()/((float)RAND_MAX/(high-low));
+}
+
+void System::SwitchScene(int scene)
+{
+	rendManager->mCurrentScene = scene;
+	rendManager->mApex->setScene(scene);
+	cController->SetScene(scene);
+	mCurrentScene = (CurrentScene)scene;
 }
