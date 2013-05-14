@@ -33,7 +33,7 @@ class Object : public Renderable
 public:
     int numMeshes;
     int alpha;
-
+    float mScale;
     Apex* mApex;
 
     ID3D11InputLayout* objLayout;

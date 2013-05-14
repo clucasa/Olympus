@@ -11,7 +11,6 @@ cbuffer worldBuffer	   : register(b1)
     float4x4 matWorld;
     float4x4 matWorldInvTrans;
     Material material;
-
 }
 
 cbuffer DirectionalLight : register(b2)
@@ -73,7 +72,7 @@ VOut VShader( Vin input )
     VOut output;
 
     output.PosW		 = mul(matWorld, input.Pos);
-    output.NormalW   = normalize(mul((float3x3)matWorldInvTrans, input.Normal));
+    output.NormalW   = normalize(mul((float3x3)matWorld, input.Normal));
     output.TangentW  = normalize(mul((float3x3)matWorld, input.Tangent));//cross(input.Pos, input.Normal)));
     output.BiNormalW = normalize(mul((float3x3)matWorld, input.BiNormal));
 
@@ -202,7 +201,7 @@ float4 PShader(VOut input) : SV_TARGET
     float4 pSpec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
     float shadow = 1.0f;
-    
+    //return float4(1.0f, diffuseFactor, 0.0f, 1.0f);
     if(sceneBuff.shadowsOn == 1.0f)
         shadow = shadowVal(input);
 
@@ -217,7 +216,7 @@ float4 PShader(VOut input) : SV_TARGET
         lightVec = -dirLight[i].Direction.xyz;
         lightVec = normalize(lightVec);
         diffuseFactor = dot(lightVec, bumpedNormalW);
-
+		
 
         if(diffuseFactor > 0.0f)
         {

@@ -352,14 +352,17 @@ void Apex::LoadDynamicTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
         PxToolkit::MemoryInputData input(buf.getData(), buf.getSize());
         PxConvexMesh* convexMesh = mPhysics->createConvexMesh(input);
         PxConvexMeshGeometry convexGeom = PxConvexMeshGeometry(convexMesh);
+		convexGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
         convexShape = meshActor->createShape(convexGeom, *defaultMaterial);
         //convexShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
         //convexShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
-
+		//meshActor->se
         
         convexShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
         meshShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
         meshActor->setRigidDynamicFlag(PxRigidDynamicFlag::eKINEMATIC, false);
+
+		meshActor->setMass(50.0f);
 
         meshActor->setGlobalPose(PxTransform(PxVec3(info.x,info.y,info.z), PxQuat(info.ry, PxVec3(0.0f,1.0f,0.0f))));
         mScene[mCurrentScene]->addActor(*meshActor);

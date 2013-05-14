@@ -18,6 +18,7 @@
 #include "FontSheet.h"
 #include "GroundPlane.h"
 #include "Sphere.h"
+#include "Box.h"
 #include "Projectile.h"
 #include "GameTimer.h"
 #include "ConstBuffers.h"

@@ -89,8 +89,26 @@
     <Filter Include="Rendering\Objects\Projectiles">
       <UniqueIdentifier>{860c1009-e313-465f-9f82-ff095ab77d19}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Scene">
+    <Filter Include="Resource Files\Scenes">
       <UniqueIdentifier>{8d7c2572-2f53-4144-8b01-b2e5c77cd94b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Scenes\Hub">
+      <UniqueIdentifier>{623ff2b4-7b3b-4b14-b780-a1765ba6235e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Scenes\Bowling Lane">
+      <UniqueIdentifier>{0e88b4fa-4a4e-4226-a71d-8c3222924aff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Scenes\DEBUG">
+      <UniqueIdentifier>{34daabe3-3368-437d-8621-ffb077318ab6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Scenes\Dark Arena">
+      <UniqueIdentifier>{3e5e0397-8e01-4d30-93b6-9864e8ce5bfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Scenes\Jenga Tower">
+      <UniqueIdentifier>{e481b04d-0ae3-46a2-b338-f1fbbb269064}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Objects\Box">
+      <UniqueIdentifier>{36735abf-aec6-4611-8b4c-f7767b9698b8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +191,9 @@
     <ClCompile Include="CharacterController.cpp">
       <Filter>Camera</Filter>
     </ClCompile>
+    <ClCompile Include="Box.cpp">
+      <Filter>Rendering\Objects\Box</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="OnScreen.hlsl">
@@ -202,65 +223,98 @@
     <None Include="ConstBuffers.hlsl">
       <Filter>Rendering\Objects\Helpers</Filter>
     </None>
-    <None Include="Scene\archway.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
-    <None Include="Scene\bigbadman.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
-    <None Include="Scene\terrain.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
-    <None Include="Scene\torch.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
-    <None Include="Scene\trees.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
     <None Include="destructableshader.hlsl">
       <Filter>Rendering\Objects\ApexDestructable</Filter>
     </None>
     <None Include="clothshader.hlsl">
       <Filter>Rendering\Objects\ApexCloth</Filter>
     </None>
-    <None Include="Scene\woodbridge.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
-    <None Include="Scene\windmill.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
-    <None Include="Scene\crate.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
-    <None Include="Scene\arenapit.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
-    <None Include="Scene\deadman.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
-    <None Include="Scene\physx.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
-    <None Include="Scene\envirospheres.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
-    <None Include="Scene\settings.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
-    <None Include="Scene\Scene0.txt">
-      <Filter>Resource Files\Scene</Filter>
+    <None Include="Scene\hub_scene.txt">
+      <Filter>Resource Files\Scenes\Hub</Filter>
     </None>
     <None Include="Scene\bowling_plane.txt">
-      <Filter>Resource Files\Scene</Filter>
+      <Filter>Resource Files\Scenes\Bowling Lane</Filter>
     </None>
     <None Include="Scene\bowling_hallway.txt">
-      <Filter>Resource Files\Scene</Filter>
-    </None>
-    <None Include="Scene\bowling_scene.txt">
-      <Filter>Resource Files\Scene</Filter>
+      <Filter>Resource Files\Scenes\Bowling Lane</Filter>
     </None>
     <None Include="Scene\bowling_physx.txt">
-      <Filter>Resource Files\Scene</Filter>
+      <Filter>Resource Files\Scenes\Bowling Lane</Filter>
+    </None>
+    <None Include="Scene\bowling_scene.txt">
+      <Filter>Resource Files\Scenes\Bowling Lane</Filter>
+    </None>
+    <None Include="Scene\woodbridge.txt">
+      <Filter>Resource Files\Scenes\DEBUG</Filter>
+    </None>
+    <None Include="Scene\bigbadman.txt">
+      <Filter>Resource Files\Scenes\DEBUG</Filter>
+    </None>
+    <None Include="Scene\crate.txt">
+      <Filter>Resource Files\Scenes\DEBUG</Filter>
+    </None>
+    <None Include="Scene\deadman.txt">
+      <Filter>Resource Files\Scenes\DEBUG</Filter>
+    </None>
+    <None Include="Scene\envirospheres.txt">
+      <Filter>Resource Files\Scenes\DEBUG</Filter>
+    </None>
+    <None Include="Scene\physx.txt">
+      <Filter>Resource Files\Scenes\DEBUG</Filter>
+    </None>
+    <None Include="Scene\Scene0.txt">
+      <Filter>Resource Files\Scenes\DEBUG</Filter>
+    </None>
+    <None Include="Scene\settings.txt">
+      <Filter>Resource Files\Scenes\DEBUG</Filter>
+    </None>
+    <None Include="Scene\terrain.txt">
+      <Filter>Resource Files\Scenes\DEBUG</Filter>
+    </None>
+    <None Include="Scene\windmill.txt">
+      <Filter>Resource Files\Scenes\DEBUG</Filter>
+    </None>
+    <None Include="Scene\hub_floor.txt">
+      <Filter>Resource Files\Scenes\Hub</Filter>
+    </None>
+    <None Include="Scene\hub_physx.txt">
+      <Filter>Resource Files\Scenes\Hub</Filter>
+    </None>
+    <None Include="Scene\hub_spheres.txt">
+      <Filter>Resource Files\Scenes\Hub</Filter>
+    </None>
+    <None Include="Scene\target.txt">
+      <Filter>Resource Files\Scenes\DEBUG</Filter>
+    </None>
+    <None Include="Scene\dark_scene.txt">
+      <Filter>Resource Files\Scenes\Dark Arena</Filter>
+    </None>
+    <None Include="Scene\dark_physx.txt">
+      <Filter>Resource Files\Scenes\Dark Arena</Filter>
+    </None>
+    <None Include="Scene\dark_arena.txt">
+      <Filter>Resource Files\Scenes\Dark Arena</Filter>
+    </None>
+    <None Include="Scene\dark_torch.txt">
+      <Filter>Resource Files\Scenes\Dark Arena</Filter>
+    </None>
+    <None Include="Scene\hub_trees.txt">
+      <Filter>Resource Files\Scenes\Hub</Filter>
+    </None>
+    <None Include="Scene\hub_archway.txt">
+      <Filter>Resource Files\Scenes\Hub</Filter>
+    </None>
+    <None Include="Scene\hub_torch.txt">
+      <Filter>Resource Files\Scenes\Hub</Filter>
+    </None>
+    <None Include="Scene\jenga_physx.txt">
+      <Filter>Resource Files\Scenes\Jenga Tower</Filter>
+    </None>
+    <None Include="Scene\jenga_plane.txt">
+      <Filter>Resource Files\Scenes\Jenga Tower</Filter>
+    </None>
+    <None Include="Scene\jenga_scene.txt">
+      <Filter>Resource Files\Scenes\Jenga Tower</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -359,6 +413,9 @@
     </ClInclude>
     <ClInclude Include="CharacterController.h">
       <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Box.h">
+      <Filter>Rendering\Objects\Box</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

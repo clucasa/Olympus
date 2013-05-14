@@ -1,0 +1,12 @@
+# HUB scene
+t Scene/settings.txt
+
+o Scene/hub_floor.txt
+o Scene/hub_archway.txt
+o Scene/hub_torch.txt
+
+# o Scene/hub_trees.txt
+
+s Scene/hub_spheres.txt
+
+p Scene/hub_physx.txt

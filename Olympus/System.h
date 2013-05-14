@@ -101,6 +101,7 @@ private:
 
     CurrentScene		mCurrentScene;
 
+	float				mSpeedScalar;
 
     bool				mAppPaused;
     bool				mMinimized;

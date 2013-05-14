@@ -4,6 +4,7 @@
 #define SCENE_H
 
 #include "Object.h"
+#include "Box.h"
 #include "Sphere.h"
 #include <vector>
 #include "Projectile.h"
@@ -16,7 +17,9 @@ using namespace std;
 enum CurrentScene
 {
 	HUB,
-	BOWLING
+	BOWLING,
+	DARKNESS,
+	JENGA
 };
 
 
@@ -35,8 +38,13 @@ public:
 	void LoadSpheres(string filename);
 	void LoadSettings(string filename);
 
-	void PlacePins(XMFLOAT3 location, int numlevels, float dist, Object* pinModel);
+	void PlacePins(XMFLOAT3 location, int numlevels, float dist, float scale, Object* pinModel);
 	void ResetPins();
+
+	void PlaceJenga(XMFLOAT3 location, int numlevels, float dist, float length);
+	void PlaceBlock(XMFLOAT3 location, float length, float width, float height); 
+	void ResetJenga();
+
 	void Update();
 	void UpdateZbuffers(ID3D11DepthStencilView *zbuffer);
 	void UpdateReflective(Camera *cam);
@@ -47,12 +55,19 @@ public:
 	float    mDist;
 	int	     mNumLevels;
 
+	XMFLOAT3 mJengaStartPosition;
+	float    mJengaDist;
+	int	     mJengaNumLevels;
+	float	 mJengaLength;
+	vector<PxRigidActor*> blocks;
+
 	Renderable *mSkyBox;
 	Projectile *projectile;
 	vector<ApexParticles*> particles;
 	vector<Sphere*> reflectiveSpheres;
 	vector<ApexCloth*> cloths;
 	vector<Object*> bowlingSets;
+	vector<Box*> JengaBlocks;
 
 	ScreenQuad *mScreen;
 	ID3D11DepthStencilView *mZbuffer;

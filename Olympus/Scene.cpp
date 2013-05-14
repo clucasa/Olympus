@@ -83,10 +83,27 @@ Scene::Scene( ID3D11Device *dev, ID3D11DeviceContext *devcon, Apex* apex, Geomet
             char *modelname = "Media/Models/bowling_pin_lowres.fbx";
             bowlingPin->objLoad(modelname, &texts, &norms, mDev, mDevcon, mApex );
         
-            PlacePins( XMFLOAT3((float)::atof(elems[1].c_str()), (float)::atof(elems[2].c_str()), (float)::atof(elems[3].c_str()) ), (int)::atoi(elems[4].c_str()), 1.1f, bowlingPin);
+            PlacePins( XMFLOAT3((float)::atof(elems[1].c_str()), (float)::atof(elems[2].c_str()), (float)::atof(elems[3].c_str()) ),
+                (int)::atoi(elems[4].c_str()), (float)::atof(elems[5].c_str()), (float)::atof(elems[6].c_str()),  bowlingPin);
             
             mRenderables.push_back(bowlingPin);
             bowlingSets.push_back(bowlingPin);
+            elems.clear();
+        }
+		else if (lines[0] == 'j') 
+        {
+            string* sline;
+            sline = &lines;
+            stringstream ss(*sline);
+            while(std::getline(ss, item, ' ')) {
+                elems.push_back(item);
+            }
+            
+            PlaceJenga( XMFLOAT3((float)::atof(elems[1].c_str()), (float)::atof(elems[2].c_str()), (float)::atof(elems[3].c_str()) ),
+                (int)::atoi(elems[4].c_str()), (float)::atof(elems[5].c_str()), (float)::atof(elems[6].c_str()));
+            
+            /*mRenderables.push_back(bowlingPin);
+            bowlingSets.push_back(bowlingPin);*/
             elems.clear();
         }
     }
@@ -394,7 +411,7 @@ void Scene::Fire(Camera *mCam, float speed)
     }
 }
 
-void Scene::PlacePins(XMFLOAT3 location, int numlevels, float dist, Object* pinModel)
+void Scene::PlacePins(XMFLOAT3 location, int numlevels, float dist, float scale, Object* pinModel)
 {	
     Material material;
     material.Ambient.x = material.Ambient.y = material.Ambient.z = 0.2f;
@@ -413,7 +430,7 @@ void Scene::PlacePins(XMFLOAT3 location, int numlevels, float dist, Object* pinM
 
     ObjectInfo object;
     object.x = object.y = object.z = object.rx = object.ry = object.rz = 0.0f;
-    object.sx = object.sy = object.sz = 1.0f;
+    object.sx = object.sy = object.sz = scale;
     object.materials.push_back(material);
 
     //Used for resetting the pins
@@ -503,13 +520,141 @@ void Scene::ResetPins()
     }
 }
 
+void Scene::PlaceJenga(XMFLOAT3 location, int numlevels, float dist, float length)
+{
+    //Used for resetting the pins
+    mJengaStartPosition	  = location;
+    mJengaNumLevels		  = numlevels;
+
+    //mJengaDist is "fudge" factor, incase we need to add a bit less due to objects appearing inside each other
+    mJengaDist			  = dist;
+    
+    XMFLOAT3 startLocation = location;
+
+    float mJengaLength = length;
+    float width	 = (mJengaLength / 3.f);
+    float height = (mJengaLength / 5.f);
+
+	Box* jengaBlock1 = new Box(mDevcon, mDev, mApex, length, width, height);
+    Box* jengaBlock2 = new Box(mDevcon, mDev, mApex, width, length, height);
+
+    XMFLOAT3 midBlock, rightBlock, leftBlock;
+
+    for(int i = 0; i < mJengaNumLevels; i++)
+    {
+        if((i % 2) == 1)
+        {
+            midBlock	= startLocation;
+            midBlock.y  += (float)i*height + dist;
+
+            rightBlock = startLocation;
+            rightBlock.z += width + dist;
+            rightBlock.y += (float)i*height + dist;
+
+            leftBlock = startLocation;
+            leftBlock.z -= width + dist;
+            leftBlock.y += (float)i*height + dist;
+
+            PlaceBlock(midBlock, length, width, height);
+            PlaceBlock(rightBlock, length, width, height);
+            PlaceBlock(leftBlock, length, width, height);
+
+			jengaBlock1->AddInstance(midBlock.x, midBlock.y, midBlock.z);
+			jengaBlock1->AddInstance(rightBlock.x, rightBlock.y, rightBlock.z);
+			jengaBlock1->AddInstance(leftBlock.x, leftBlock.y, leftBlock.z);
+        }
+        else
+        {
+            midBlock	= startLocation;
+            midBlock.y  += (float)i*height + dist;
+
+            rightBlock = startLocation;
+            rightBlock.x += width + dist;
+            rightBlock.y += (float)i*height + dist;
+
+            leftBlock = startLocation;
+            leftBlock.x -= width + dist;
+            leftBlock.y += (float)i*height + dist;
+
+            PlaceBlock(midBlock, width, length, height);
+            PlaceBlock(rightBlock, width, length, height);
+            PlaceBlock(leftBlock, width, length, height);
+
+			jengaBlock2->AddInstance(midBlock.x, midBlock.y, midBlock.z);
+			jengaBlock2->AddInstance(rightBlock.x, rightBlock.y, rightBlock.z);
+			jengaBlock2->AddInstance(leftBlock.x, leftBlock.y, leftBlock.z);
+        }
+    }
+	mRenderables.push_back(jengaBlock1);
+	mRenderables.push_back(jengaBlock2);
+}
+
+void Scene::PlaceBlock(XMFLOAT3 location, float length, float width, float height)
+{
+    PxMaterial*	blockMaterial = mApex->getPhysics()->createMaterial(0.5f, 0.5f, 0.3f);    //static friction, dynamic friction, restitution
+    if(!blockMaterial)
+        return;
+
+    PxVec3 pos = PxVec3(location.x,location.y+(height/2.f),location.z);
+    PxReal density = 30.0f;
+        
+    PxTransform transform(pos, PxQuat::createIdentity());
+    PxVec3 dimensions(length/2.f, height/2.f, width/2.f);
+    PxBoxGeometry geometry(dimensions);
+    PxRigidDynamic* boxActor = PxCreateDynamic(*mApex->getPhysics(), transform, geometry, *blockMaterial, density);
+    if (!boxActor)
+        return;
+
+    boxActor->setLinearVelocity(PxVec3(0,0,0));
+    boxActor->setAngularDamping((PxReal)0.95f);
+    PxRigidBodyExt::updateMassAndInertia(*boxActor, density);
+
+    mApex->getScene()->addActor(*boxActor);
+    blocks.push_back(boxActor);
+}
+
+void Scene::ResetJenga()
+{
+    XMFLOAT3 startLocation = mJengaStartPosition;
+
+    float width	 = (mJengaLength / 3) + mJengaDist;
+    float height = (mJengaLength / 5) + mJengaDist;
+
+    XMFLOAT3 midBlock, rightBlock, leftBlock;
+
+    for(int i = 0; i < mJengaNumLevels; i++)
+    {
+        midBlock	= startLocation;
+        midBlock.y  = (float)i*height;
+
+        rightBlock = startLocation;
+        rightBlock.x += width;
+        rightBlock.y = (float)i*height;
+
+        leftBlock = startLocation;
+        leftBlock.x -= width;
+        leftBlock.y = (float)i*height;
+
+        if((i % 2) == 1)
+        {
+            //apply a 90 degree rotation
+        }
+    }		
+
+}
+
+
 void Scene::Update()
 {
+    XMMATRIX scale;
     for(int i = 0; i < (int)bowlingSets.size(); i++)
     {
         for(int j = 0; j < (int)bowlingSets[i]->mWorldMats.size(); j++)
         {
             mApex->getRigidDynamicPosition(j, &bowlingSets[i]->mWorldMats[j]);
+            
+            scale = XMMatrixScaling(bowlingSets[i]->mScale,bowlingSets[i]->mScale,bowlingSets[i]->mScale);
+            XMStoreFloat4x4(&bowlingSets[i]->mWorldMats[j], XMMatrixMultiply(scale,  XMLoadFloat4x4(&bowlingSets[i]->mWorldMats[j]) ));
         }
     }
 

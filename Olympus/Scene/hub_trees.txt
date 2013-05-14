@@ -1,0 +1,9 @@
+# object trees
+m Media/Models/tree1.fbx
+
+t Media/Textures/PRP_Log_A_DM.dds
+t Media/Textures/PRP_TreeLeaves_A.dds
+
+n Media/Textures/PRP_Log_A_NM.png
+n Media/Textures/BlankNormalMap.png
+

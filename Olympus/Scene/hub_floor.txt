@@ -1,0 +1,7 @@
+# object hub floor
+# m Media/Models/plane.fbx
+m Media/Models/hub.fbx
+t Media/Textures/newdarkdirt.dds
+n Media/Textures/BlankNormalMap.png
+i 0.0 -20.0 0.0 0.1 0.1 0.1 0.0 0.0 0.0
+a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.1 0.1 0.1 10.0 0.0 0.0 0.0 0.0 0

@@ -16,7 +16,7 @@ CharacterController::CharacterController(Apex *mApex)
 		desc.density				= 10.0f;
 		desc.scaleCoeff				= 0.899998f;
 		desc.material				= mMaterial;
-		desc.position				= PxExtendedVec3(0.0f, 58.0f, 0.0);
+		desc.position				= PxExtendedVec3(0.0, 58.0f, 0.0f);
 		desc.stepOffset				= 0.05f;
 		//desc.maxJumpHeight			= 20.0f;
 		desc.callback				= 0;
@@ -27,7 +27,7 @@ CharacterController::CharacterController(Apex *mApex)
 		pCharacter = pManager->createController( *mApex->mPhysics, mApex->mScene[mApex->mCurrentScene], desc );
 	
 	pCharacter->setStepOffset( 5.0f*2.0f );
-	PxExtendedVec3 pos = PxExtendedVec3(0.0f, 8.2f, 0.0f);
+	PxExtendedVec3 pos = desc.position;//PxExtendedVec3(0.0f, 8.2f, 0.0f);
 	pos.y = pCharacter->getFootPosition().y;
 	pCharacter->setPosition( pos );
 

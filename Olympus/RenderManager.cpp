@@ -218,20 +218,20 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
     mDev->CreateBuffer(&bd, NULL, &pointLightCBuffer);
-
+    
     mPointLight[0].Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
     mPointLight[0].Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
     mPointLight[0].Diffuse  = XMFLOAT4(1.7f, 0.6f, 0.0f, 1);
     mPointLight[0].Specular = XMFLOAT4(1, 1, 1, 1);
     mPointLight[0].Range    = 15.0f;
-    mPointLight[0].Position = XMFLOAT3(-13.5f, -3.0f, -42.0f);
+    mPointLight[0].Position = XMFLOAT3(377.7f, 1.0f, -252.9f);
 
     mPointLight[1].Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
     mPointLight[1].Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
     mPointLight[1].Diffuse  = XMFLOAT4(1.7f, 0.6f, 0.0f, 1);
     mPointLight[1].Specular = XMFLOAT4(1, 1, 1, 1);
     mPointLight[1].Range    = 15.0f;
-    mPointLight[1].Position = XMFLOAT3(-67.7f, -3.0f, -42.0f);
+    mPointLight[1].Position = XMFLOAT3(416.35f, 1.0f, -214.35f);
 
     // Shadow Initialization
 
@@ -295,17 +295,19 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
     //sd.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
     sd.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
     sd.MaxAnisotropy = 1;
-    sd.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR       ;
-    sd.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR       ;
-    sd.AddressW = D3D11_TEXTURE_ADDRESS_MIRROR       ;
+    sd.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR;
+    sd.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR;
+    sd.AddressW = D3D11_TEXTURE_ADDRESS_MIRROR;
 
     sd.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
     mDev->CreateSamplerState(&sd, &pSS);
     mDevcon->PSSetSamplers(5, 1, &pSS);
 
     vector<String> sceneNames;
-    sceneNames.push_back("scene/scene0.txt");
+    sceneNames.push_back("scene/hub_scene.txt");
     sceneNames.push_back("scene/bowling_scene.txt");
+    sceneNames.push_back("scene/dark_scene.txt");
+    sceneNames.push_back("scene/jenga_scene.txt");
 
     Scene *tempScene;
 

@@ -10,7 +10,7 @@ Object::Object()
 void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *NormTextures, ID3D11Device* devv, ID3D11DeviceContext *devcon, Apex* apex )
 {
     mApex = apex;
-    
+    mScale = 0;
     dev1 = devv;
     devcon1 = devcon;
     vector<XMFLOAT3> vertexices;
@@ -117,9 +117,7 @@ void Object::renderO( ID3D11DeviceContext * devcon)
 {
         UINT stride = sizeof(Vertex);
         UINT offset = 0;
-
-
-
+        
         for( int i = 0; i < numMeshes; i++ )
         {
             devcon->IASetInputLayout(objLayout);
@@ -144,7 +142,7 @@ void Object::AddInstance(ObjectInfo info)
 {
     XMFLOAT4X4 final;
     XMMATRIX scale, trans, rot;
-
+    mScale = info.sx;
     scale = XMMatrixScaling(info.sx,info.sy,info.sz);
 
     trans = XMMatrixTranslation(info.x,info.y,info.z);
@@ -206,8 +204,6 @@ void Object::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
         // select which primtive type we are using
         devcon1->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-        
-
         for( int j = 0; j < (int)mWorldMats.size(); j++)
         {
             cb.material = materials[j][i]; // Per mesh
@@ -258,7 +254,6 @@ void Object::Depth()
 
             tempMat = XMLoadFloat4x4(&mWorldMats[j]);
             tempMat = XMMatrixInverse(&XMMatrixDeterminant(tempMat), tempMat);
-            
             
             cb.matWorld = mWorldMats[j];
             XMStoreFloat4x4(&cb.matWorldInvTrans, tempMat);

@@ -99,7 +99,7 @@ void Projectile::Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths)
         
         PxTransform transform(pos, PxQuat::createIdentity());
         PxVec3 dimensions(.5,.5,.5);
-        PxSphereGeometry geometry(0.5f);
+        PxSphereGeometry geometry(1.0f);
         //PxBoxGeometry geometry(dimensions);
         PxRigidDynamic* boxActor = PxCreateDynamic(*mApex->getPhysics(), transform, geometry, *blockMaterial, density);
         if (!boxActor)
@@ -114,11 +114,11 @@ void Projectile::Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths)
 
         PxRigidBodyExt::updateMassAndInertia(*boxActor, density);
 
-        //CCD
-        PxShape** shapes = new PxShape*[1];
-        boxActor->getShapes(shapes, 1, 0);
-        shapes[0]->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
-        delete [] shapes;
+        ////CCD
+        //PxShape** shapes = new PxShape*[1];
+        //boxActor->getShapes(shapes, 1, 0);
+        //shapes[0]->setFlag(PxShapeFlag::eUSE_SWEPT_BOUNDS, true);
+        //delete [] shapes;
 
         mApex->getScene()->addActor(*boxActor);
         boxes.push_back(boxActor);
@@ -271,7 +271,7 @@ void Projectile::SetupSphereMesh()
     float radius = 1.0f;
     GeometryGenerator* geoGen = new GeometryGenerator();
     GeometryGenerator::MeshData SphereData;
-    geoGen->CreateSphere(0.5f, 15, 15, SphereData);
+    geoGen->CreateSphere(radius, 15, 15, SphereData);
 
     PosNormalTexTan temp;
     for(size_t i = 0; i < SphereData.Vertices.size(); i++)
