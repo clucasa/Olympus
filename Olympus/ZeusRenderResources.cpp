@@ -383,19 +383,25 @@ void ZeusSpriteBuffer::writeBuffer(const physx::apex::NxApexRenderSpriteBufferDa
             physx::apex::NxRenderVertexSemantic::Enum apexSemantic = physx::apex::NxRenderVertexSemantic::NUM_SEMANTICS;
             if(semantic == physx::apex::NxRenderSpriteSemantic::POSITION)
             {
-                physx::PxU32 semanticStride = mStride;
                 void* dstData = mappedResource.pData;
                 void* dstDataCopy = dstData;
-                PX_ASSERT(dstData && semanticStride);
-                if (dstData && semanticStride)
+                PX_ASSERT(dstData && mStride);
+                if (dstData && mStride)
                 {
-                    dstData = ((physx::PxU8*)dstData) + firstSprite * semanticStride;
-                    physx::PxU32 formatSize = mStride;
-                    for (physx::PxU32 j = 0; j < numSprites; j++)
+                    dstData = ((physx::PxU8*)dstData) + firstSprite * mStride;
+ 
+                    if (mStride == srcStride)
                     {
-                        memcpy(dstData, srcData, formatSize);
-                        srcData = ((physx::PxU8*)srcData) + srcStride;
-                        dstData = ((physx::PxU8*)dstData) + semanticStride;
+                        memcpy(dstData, srcData, mStride*numSprites);
+                    }
+                    else
+                    {
+                        for (physx::PxU32 j = 0; j < numSprites; j++)
+                        {
+                            memcpy(dstData, srcData, mStride);
+                            srcData = ((physx::PxU8*)srcData) + srcStride;
+                            dstData = ((physx::PxU8*)dstData) + mStride;
+                        }
                     }
                 }
             }

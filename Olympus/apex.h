@@ -85,7 +85,7 @@ public:
 
     bool						advance(float dt);
     void						fetch();
-    void						UpdateViewProjMat(XMMATRIX* view, XMMATRIX* proj, float nearPlane, float farPlane, float fov, float vWidth, float vHeight);
+    void						UpdateViewProjMat(XMMATRIX* view, XMMATRIX* proj, float nearPlane, float farPlane, float fov, float vWidth, float vHeight, int scene);
     void						PxtoXMMatrix(PxTransform input, XMMATRIX* start);
     void						XMtoPxMatrix(XMMATRIX* input, PxMat44* start);
 

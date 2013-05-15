@@ -36,27 +36,20 @@ float mCooldown = 0.0f;
 
 bool Apex::advance(float dt)
 {
-    mAccumulator  += dt;
-    if(mAccumulator < mStepSize)
-        return false;
-
-    mAccumulator -= mStepSize;
-
-    if(mCooldown > 0.0f)
-        mCooldown -= mStepSize;
-
-    //while (dt > mStepSize)
-    //{
+    while (dt > mStepSize)
+    {
         gApexScene[mCurrentScene]->simulate(mStepSize);
-    //    dt -= mStepSize;
-    //}
-    //gApexScene[mCurrentScene]->simulate(dt);
+        gApexScene[mCurrentScene]->fetchResults(false, NULL);
+        dt -= mStepSize;
+    }
+    gApexScene[mCurrentScene]->simulate(dt);
+    gApexScene[mCurrentScene]->fetchResults(true, NULL);
     return true;
 }
 
 void Apex::fetch()
 {
-    gApexScene[mCurrentScene]->fetchResults(true, NULL);
+    //gApexScene[mCurrentScene]->fetchResults(true, NULL);
 }
 
 bool Apex::Init(ID3D11Device* dev, ID3D11DeviceContext* devcon)
@@ -110,7 +103,7 @@ bool Apex::Init(ID3D11Device* dev, ID3D11DeviceContext* devcon)
     return true;
 }
 
-void Apex::UpdateViewProjMat(XMMATRIX *view, XMMATRIX *proj, float nearPlane, float farPlane, float fov, float vWidth, float vHeight)
+void Apex::UpdateViewProjMat(XMMATRIX *view, XMMATRIX *proj, float nearPlane, float farPlane, float fov, float vWidth, float vHeight, int scene)
 {
     PxMat44 pview;
     XMtoPxMatrix(view, &pview);
@@ -118,10 +111,10 @@ void Apex::UpdateViewProjMat(XMMATRIX *view, XMMATRIX *proj, float nearPlane, fl
     PxMat44 pproj;
     XMtoPxMatrix(proj, &pproj);
 
-    gApexScene[mCurrentScene]->setViewMatrix(pview);
-    gApexScene[mCurrentScene]->setProjMatrix(pproj);
+    gApexScene[scene]->setViewMatrix(pview);
+    gApexScene[scene]->setProjMatrix(pproj);
 
-    gApexScene[mCurrentScene]->setProjParams(nearPlane, farPlane, fov, (PxU32)vWidth, (PxU32)vHeight);
+    gApexScene[scene]->setProjParams(nearPlane, farPlane, fov, (PxU32)vWidth, (PxU32)vHeight);
 }
 
 void Apex::PxtoXMMatrix(PxTransform input, XMMATRIX* start)
@@ -352,17 +345,17 @@ void Apex::LoadDynamicTriangleMesh(int numVerts, PxVec3* verts, ObjectInfo info)
         PxToolkit::MemoryInputData input(buf.getData(), buf.getSize());
         PxConvexMesh* convexMesh = mPhysics->createConvexMesh(input);
         PxConvexMeshGeometry convexGeom = PxConvexMeshGeometry(convexMesh);
-		convexGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
+        convexGeom.scale = PxMeshScale(PxVec3(info.sx,info.sy,info.sz),physx::PxQuat::createIdentity());
         convexShape = meshActor->createShape(convexGeom, *defaultMaterial);
         //convexShape->setLocalPose(PxTransform(PxVec3(info.x,info.y,info.z)));
         //convexShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
-		//meshActor->se
+        //meshActor->se
         
         convexShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
         meshShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
         meshActor->setRigidDynamicFlag(PxRigidDynamicFlag::eKINEMATIC, false);
 
-		meshActor->setMass(50.0f);
+        meshActor->setMass(50.0f);
 
         meshActor->setGlobalPose(PxTransform(PxVec3(info.x,info.y,info.z), PxQuat(info.ry, PxVec3(0.0f,1.0f,0.0f))));
         mScene[mCurrentScene]->addActor(*meshActor);

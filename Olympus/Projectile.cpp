@@ -97,7 +97,7 @@ void Projectile::Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths)
         PxVec3 look = PxVec3(mCam->GetLook().x,mCam->GetLook().y,mCam->GetLook().z);
         look.normalize();
         PxVec3 pos = PxVec3(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z) + (look * 4.);
-        PxReal density = 10000.0f;
+        PxReal density = 100.0f;
         
         PxTransform transform(pos, PxQuat::createIdentity());
         PxVec3 dimensions(.5,.5,.5);
@@ -138,7 +138,7 @@ void Projectile::Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths)
         mWorldMats.push_back(final);
         if(mCloths.size() > 0)
             spheres.push_back(mCloths[0]->getClothingActor()->createCollisionSphere(pos, .5));
-		
+        
     }
     else
     {
@@ -164,7 +164,7 @@ void Projectile::Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths)
         {
             physx::apex::NxClothingSphere* sphere = spheres[curBox];
             sphere->setPosition(pos);
-			
+            
         }
 
         curBox++;
@@ -173,22 +173,22 @@ void Projectile::Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths)
 
 void Projectile::Clear()
 {
-	curBox = 0;
-	for(int i = 0; i < numBoxes; i++)
-	{
-		boxes[i]->release();
-		if(spheres.size() > i)
-			spheres[i]->release();
-	}
-	spheres.clear();
-	mWorldMats.clear();
-	boxes.clear();
-	numBoxes = 0;
+    curBox = 0;
+    for(int i = 0; i < numBoxes; i++)
+    {
+        boxes[i]->release();
+        if(spheres.size() > i)
+            spheres[i]->release();
+    }
+    spheres.clear();
+    mWorldMats.clear();
+    boxes.clear();
+    numBoxes = 0;
 }
 
 void Projectile::Update()
 {
-	if(mMaxBoxes <= 0)
+    if(mMaxBoxes <= 0)
         return;
     PxU32 nShapes = 0;
 

@@ -445,12 +445,15 @@ int System::initd3d()
     mApex->Init(dev, devcon);
     mApex->InitParticles();
     mApex->InitClothing();
-    Sleep(200);
-
+    //Sleep(200);
+    
     rendManager = new RenderManager(devcon, dev, swapchain, mApex, mCam, &mViewport);
 
-    //mApex->UpdateViewProjMat(&mCam->View(),&mCam->Proj(), 1.0f, 10000.0f, 0.25f*MathHelper::Pi, mClientWidth, mClientHeight);
-
+    for(int i = 0; i <= CurrentScene::JENGA; i++)
+    {
+        mApex->UpdateViewProjMat(&mCam->View(),&mCam->Proj(), 1.0f, 10000.0f, 0.25f*MathHelper::Pi, mClientWidth, mClientHeight, i);
+    }
+    
     return InitPipeline();
 }
 
@@ -506,13 +509,13 @@ void System::RenderFrame(float dt)
 
       
     case CurrentScene::BOWLING:
-        spherePos = XMLoadFloat3(&XMFLOAT3( -3.5f , 5.0f , -164.0f ) );
+        spherePos = XMLoadFloat3(&XMFLOAT3( -3.5f , 5.0f , -188.0f ) );
         vectorSub = XMVectorSubtract(camPos,spherePos);
         length = XMVector3Length(vectorSub);
 
         distance = 0.0f;
         XMStoreFloat(&distance,length);
-        if(abs(distance) < 11.0f)
+        if(abs(distance) < 20.0f)
         {
             SwitchScene(CurrentScene::HUB);
         }
@@ -528,7 +531,10 @@ void System::RenderFrame(float dt)
     
     
     UpdateCamera(dt);
-    mApex->UpdateViewProjMat(&mCam->View(),&mCam->Proj(), 1.0f, 10000.0f, 0.25f*MathHelper::Pi, (float)mClientWidth, (float)mClientHeight);
+    for(int i = 0; i <= CurrentScene::JENGA; i++)
+    {
+        mApex->UpdateViewProjMat(&mCam->View(),&mCam->Proj(), 1.0f, 10000.0f, 0.25f*MathHelper::Pi, mClientWidth, mClientHeight, i);
+    }
     bool fetch = mApex->advance(dt);
 
     rendManager->scene[mCurrentScene]->UpdateReflective(mCam);
@@ -571,6 +577,7 @@ int System::InitPipeline()
 // CAMERA STUFF
 /////////////////////////////////////
 float cooldown = 0.0f;
+static int buttonup = true;
 void System::UpdateCamera(float dt)
 {
     //////////////////////////////////
@@ -763,22 +770,19 @@ void System::UpdateCamera(float dt)
 
         float shootspeed;
         // Shoot block with right trigger     
-        if(cooldown > 0)
+        if( state.Gamepad.bRightTrigger && state.Gamepad.bLeftTrigger < 256 )
         {
-            cooldown -= dt;
-        } 
-        else if( state.Gamepad.bRightTrigger && state.Gamepad.bLeftTrigger < 256 )
-        {
-            XMFLOAT3 originalPos = mCam->GetPosition();
-            shootspeed = /*(state.Gamepad.bRightTrigger / 255) * */100.0f;
-            rendManager->scene[mCurrentScene]->Fire(mCam, shootspeed);	
-            /*for(int i = 0; i < 20; i++)
+            if(buttonup)
             {
-                mCam->SetPosition(originalPos.x + 5 * sinf(i), originalPos.y, originalPos.z + 5 * cosf(i));
-                rendManager->scene->Fire(mCam, shootspeed);	
+                shootspeed = 200.0f;
+                if(mCurrentScene = CurrentScene::JENGA)
+                    shootspeed = 500.0f;
+                rendManager->scene[mCurrentScene]->Fire(mCam, shootspeed);	
             }
-            mCam->SetPosition(originalPos.x, originalPos.y, originalPos.z);*/
-            cooldown += (0.25f * mSpeedScalar);
+        }
+        else
+        {
+            buttonup = true;
         }
         
 #ifdef _DEBUG
@@ -918,7 +922,17 @@ void System::UpdateCamera(float dt)
 
     if( (GetAsyncKeyState('B') & 0x8000) )
     {
-        rendManager->scene[mCurrentScene]->Fire(mCam, 100.0f);
+        if(buttonup)
+        {
+            float shootspeed = 200.0f;
+            /*if(mCurrentScene = CurrentScene::JENGA)
+                shootspeed = 500.0f;*/
+            rendManager->scene[mCurrentScene]->Fire(mCam, shootspeed);
+        }
+    }
+    else
+    {
+        buttonup = true;
     }
 
     //Numpad 7
@@ -1136,27 +1150,27 @@ void System::SwitchScene(int scene)
     mCurrentScene = (CurrentScene)scene;
 
     if(scene == CurrentScene::BOWLING)
-	{
-		mCam->SetPosition(XMFLOAT3(0.0f, 10.0f, -130.0f));
-		mCam->UpdateViewMatrix();
-	}
+    {
+        mCam->SetPosition(XMFLOAT3(0.0f, 10.0f, -130.0f));
+        mCam->UpdateViewMatrix();
+    }
 
-	if(scene == CurrentScene::DARKNESS)
-	{
-		mCam->SetPosition(XMFLOAT3(0.0f, 10.0f, -25.0f));
-		mCam->UpdateViewMatrix();
-	}
+    if(scene == CurrentScene::DARKNESS)
+    {
+        mCam->SetPosition(XMFLOAT3(0.0f, 10.0f, -25.0f));
+        mCam->UpdateViewMatrix();
+    }
 
-	if(scene == CurrentScene::JENGA)
-	{
-		mCam->SetPosition(XMFLOAT3(0.0f, 10.0f, -25.0f));
-		mCam->UpdateViewMatrix();
-	}
+    if(scene == CurrentScene::JENGA)
+    {
+        mCam->SetPosition(XMFLOAT3(0.0f, 10.0f, -25.0f));
+        mCam->UpdateViewMatrix();
+    }
 
-	if(scene == CurrentScene::HUB)
-	{
-		mCam->SetPosition(XMFLOAT3(-1.0f, -6.0f, 42.0f));
-		mCam->UpdateViewMatrix();
-	}
-	rendManager->scene[mCurrentScene]->cController->MoveTo(0.0, 58.0f, 0.0f);//Move to specific location
+    if(scene == CurrentScene::HUB)
+    {
+        mCam->SetPosition(XMFLOAT3(-1.0f, -6.0f, 42.0f));
+        mCam->UpdateViewMatrix();
+    }
+    rendManager->scene[mCurrentScene]->cController->MoveTo(0.0, 58.0f, 0.0f);//Move to specific location
 }
