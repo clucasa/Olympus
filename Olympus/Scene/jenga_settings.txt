@@ -2,6 +2,6 @@
 # g			max gravity
 # p			max projectiles
 # s			speed scaling
-g -32.0
+g -20.0
 p 10000
 s 1.0

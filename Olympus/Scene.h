@@ -90,6 +90,8 @@ public:
 	float mGravity;
 	int mMaxProjectile;
 	float mSpeedScale;
+
+	PointLight mPointLights[21];
 };
 
 #endif

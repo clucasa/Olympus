@@ -1,6 +1,6 @@
 #include "RenderManager.h"
 #include "GeometryGenerator.h"
-
+#include <stdlib.h>     /* srand, rand */
 
 RenderManager::RenderManager(ID3D11DeviceContext *devcon, 
 	ID3D11Device *dev, 
@@ -19,6 +19,9 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	sceneBuff.dirLightOn	= 1;
 	sceneBuff.pLightOn		= 1;
 	sceneBuff.shadowsOn		= 1;
+
+
+	PartyMode = 0;
 
 	emitterOn = true;
 
@@ -98,8 +101,9 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 
 	// create the depth buffer texture
-	//ID3D11RasterizerState*		pState;
+	//ID3D11RasterizerState*	pState;
 	//D3D11_RASTERIZER_DESC		raster;
+
 	ZeroMemory( &raster, sizeof(D3D11_RASTERIZER_DESC));
 
 	raster.FillMode = D3D11_FILL_SOLID;
@@ -194,7 +198,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	ZeroMemory(&bd, sizeof(bd));
 
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(DirectionalLight)*2;
+	bd.ByteWidth = sizeof(DirectionalLight)*10;
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
 	mDev->CreateBuffer(&bd, NULL, &dirLightCBuffer);
@@ -214,24 +218,10 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	ZeroMemory(&bd, sizeof(bd));
 
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(PointLight) * 2;
+	bd.ByteWidth = sizeof(PointLight) * MAX_NUM_POINT_LIGHTS;
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
 	mDev->CreateBuffer(&bd, NULL, &pointLightCBuffer);
-
-	mPointLight[0].Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
-	mPointLight[0].Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
-	mPointLight[0].Diffuse  = XMFLOAT4(1.7f, 0.6f, 0.0f, 1);
-	mPointLight[0].Specular = XMFLOAT4(1, 1, 1, 1);
-	mPointLight[0].Range    = 15.0f;
-	mPointLight[0].Position = XMFLOAT3(377.7f, 1.0f, -252.9f);
-
-	mPointLight[1].Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
-	mPointLight[1].Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
-	mPointLight[1].Diffuse  = XMFLOAT4(1.7f, 0.6f, 0.0f, 1);
-	mPointLight[1].Specular = XMFLOAT4(1, 1, 1, 1);
-	mPointLight[1].Range    = 15.0f;
-	mPointLight[1].Position = XMFLOAT3(416.35f, 1.0f, -214.35f);
 
 	// Setting up Cascade Light Shadow Maps
 	shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 250.0, 250.0);
@@ -315,6 +305,99 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 		scene.push_back(tempScene);
 	}
 
+	PointLight tempPointLight;
+
+	//SCENE0 - HUB
+	tempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
+	tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
+	tempPointLight.Diffuse  = XMFLOAT4(1.7f, 0.6f, 0.0f, 1);
+	tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
+	tempPointLight.Range    = 15.0f;
+	tempPointLight.Position = XMFLOAT3(414, 1.5f, -211.5f);
+
+
+	scene[0]->mPointLights[0] =  tempPointLight;
+	scene[0]->mPointLights[0].Pad =  2;
+
+	tempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
+	tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
+	tempPointLight.Diffuse  = XMFLOAT4(1.7f, 0.6f, 0.0f, 1);
+	tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
+	tempPointLight.Range    = 15.0f;
+	tempPointLight.Position = XMFLOAT3(375, 1.5f, -250.88);
+
+	scene[0]->mPointLights[1] = tempPointLight;
+
+
+	//SCENE1 - BOWLING
+	XMFLOAT3 startPos1(-25.0f, 10.0f, -160);
+	XMFLOAT3 startPos2( 25.0f, 10.0f, -160);
+	
+	
+
+	for(int i = 0; i < 10; i++)
+	{
+		tempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
+		tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
+		tempPointLight.Diffuse  = Colors::Green;
+		tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
+		tempPointLight.Range    = 30.0f;
+		tempPointLight.Position = startPos1;
+
+		startPos1.z += 20.0f;
+
+		scene[1]->mPointLights[i] = tempPointLight;
+	}
+
+	for(int i = 10; i < 20; i++)
+	{
+		tempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
+		tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
+		tempPointLight.Diffuse  = Colors::Green;
+		tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
+		tempPointLight.Range    = 30.0f;
+		tempPointLight.Position = startPos2;
+
+		startPos2.z += 20.0f;
+
+		scene[1]->mPointLights[i] = tempPointLight;
+	}
+
+		tempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
+		tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
+		tempPointLight.Diffuse  = Colors::Green;
+		tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
+		tempPointLight.Range    = 25.0f;
+		tempPointLight.Position = XMFLOAT3(0.0f, 16.0f, 27.5f);
+
+		scene[1]->mPointLights[20] = tempPointLight;
+
+		scene[1]->mPointLights[0].Pad = 21;
+
+	//SCENE2 - DARKNESS
+	tempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
+	tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
+	tempPointLight.Diffuse  = Colors::Magenta;
+	tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
+	tempPointLight.Range    = 15.0f;
+	tempPointLight.Position = XMFLOAT3(-0.5f, 2.5f, 73.0f);
+
+	scene[2]->mPointLights[0] = tempPointLight;
+	scene[2]->mPointLights[0].Pad = 1;
+
+
+
+	//SCENE3 - JENGA
+	tempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
+	tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
+	tempPointLight.Diffuse  = Colors::Blue;
+	tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
+	tempPointLight.Range    = 15.0f;
+	tempPointLight.Position = XMFLOAT3(0.0f, 4.5f, 17.0f);
+
+	scene[3]->mPointLights[0] = tempPointLight;
+	scene[3]->mPointLights[0].Pad = 1;
+
 	apex->setScene(0);
 
 }
@@ -354,6 +437,9 @@ void RenderManager::GetScreenParams(int mClientWidth, int mClientHeight)
 	SCREEN_WIDTH = mClientWidth;
 	SCREEN_HEIGHT = mClientHeight;
 }
+
+
+int cosmicFactor = 0;
 
 void RenderManager::Render()
 {
@@ -418,6 +504,46 @@ void RenderManager::Render()
 		}
 	}
 
+	//COSMIC BOOOWLAN
+	if((mCurrentScene == CurrentScene::BOWLING) && (cosmicFactor % 41 == 0) && PartyMode == 1)
+	{
+		int colorNum;
+
+		for(int i = 0; i < 21; i++)
+		{
+			srand(cosmicFactor++);
+			colorNum = rand() % 5;
+			
+			if(colorNum == 0)
+				scene[mCurrentScene]->mPointLights[i].Diffuse = Colors::Red; 
+			if(colorNum == 1)
+				scene[mCurrentScene]->mPointLights[i].Diffuse = Colors::Blue;  
+			if(colorNum == 2)
+				scene[mCurrentScene]->mPointLights[i].Diffuse = Colors::Green;  
+			if(colorNum == 3)
+				scene[mCurrentScene]->mPointLights[i].Diffuse = Colors::Cyan;  
+			if(colorNum == 4)
+				scene[mCurrentScene]->mPointLights[i].Diffuse = Colors::Magenta; 
+
+			scene[mCurrentScene]->mPointLights[i].Ambient = Colors::Black; 
+			scene[mCurrentScene]->mPointLights[i].Range   = 30.0f;
+		}
+	}
+	else if((mCurrentScene == CurrentScene::BOWLING) && (PartyMode == 0))
+	{
+		for(int i = 0; i < 21; i++)
+		{
+			scene[mCurrentScene]->mPointLights[i].Diffuse = Colors::NormalDiffuse; 
+			scene[mCurrentScene]->mPointLights[i].Ambient = Colors::NormalAmbient; 	
+			scene[mCurrentScene]->mPointLights[i].Range   = 40.0f; 	
+		}
+
+		PartyMode = -1;	
+	}
+
+
+	cosmicFactor++;
+
 
 	textPos.x = (LONG)((SCREEN_WIDTH - textWidth) - 2.0f);
 	textPos.y = 0;//SCREEN_HEIGHT;
@@ -460,7 +586,7 @@ void RenderManager::Render()
 	mDevcon->UpdateSubresource(dirLightCBuffer, 0, 0, &mDirLight, 0, 0);
 
 	mDevcon->PSSetConstantBuffers(3, 1, &pointLightCBuffer);
-	mDevcon->UpdateSubresource(pointLightCBuffer, 0, 0, &mPointLight, 0, 0);
+	mDevcon->UpdateSubresource(pointLightCBuffer, 0, 0, &scene[mCurrentScene]->mPointLights, 0, 0);
 	
 	//raster.CullMode = D3D11_CULL_FRONT;
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -612,5 +738,9 @@ void RenderManager::RecompShaders()
 	for(int i = 0; i < (int)scene[mCurrentScene]->mRenderables.size() ; i++)
 	{
 		scene[mCurrentScene]->mRenderables[i]->RecompileShader();
+	}
+	for(int i = 0; i < (int)scene[mCurrentScene]->mBlendRenderables.size() ; i++)
+	{
+		scene[mCurrentScene]->mBlendRenderables[i]->RecompileShader();
 	}
 }

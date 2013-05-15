@@ -23,12 +23,12 @@ cbuffer worldBuffer	   : register(b1)
 
 cbuffer DirectionalLight : register(b2)
 {
-    struct DirectionalLight dirLight[2];
+    struct DirectionalLight dirLight[10];
 };
 
 cbuffer PointLight : register(b3)
 {
-    struct PointLight pLight[2];
+    struct PointLight pLight[21];
 };
 
 
@@ -187,6 +187,8 @@ float shadowValPoint(VOut input, int start)
 float4 PShader(VOut input) : SV_TARGET
 {
 
+	//return float4(pLight[2].Diffuse.xyz, 1.0f);
+
     float4 textureColor = float4(1.0f,1.0f,0.0f,1.0f);//float4(0.0f, 0.0f, 0.0f, 1.0f);
 
     if(sceneBuff.textures == 1.0f)
@@ -328,14 +330,11 @@ float4 PShader(VOut input) : SV_TARGET
     }
 
 	[unroll]
-    for(int i = 0; i < NUMPOINTLIGHTS; i++)
+    for(int i = 0; i < pLight[0].pad; i++)
     {
         lightVec = pLight[i].Position - input.PosW;
 
         d = length(lightVec);
-
-        if(d > pLight[i].Range)
-            continue;
 
         lightVec /= d;
 
@@ -348,11 +347,14 @@ float4 PShader(VOut input) : SV_TARGET
         {
             v = reflect(-lightVec, bumpedNormalW);
 
-            specFactor = pow(max(dot(v, toEye), 0.0f), 5);
+            specFactor = pow(max(dot(v, toEye), 0.0f), material.Specular.w);
 
             pDiffuse = diffuseFactor * material.Diffuse * pLight[i].Diffuse;
             pSpec	= specFactor * material.Specular * pLight[i].Specular;
         }
+
+		if(d > pLight[i].Range)
+            continue;
 
         float att = 1.0f / dot(pLight[i].Att, float3(1.0f, d, d*d));
 
@@ -365,6 +367,7 @@ float4 PShader(VOut input) : SV_TARGET
         {
             pAmbient  *= 1.0f/((d/pLight[i].Range+1.0f)*(d/pLight[i].Range+1.0f));
             pDiffuse  *= 1.0f/((d/pLight[i].Range+1.0f)*(d/pLight[i].Range+1.0f));
+            pSpec  *= 1.0f/((d/pLight[i].Range+1.0f)*(d/pLight[i].Range+1.0f));
         }
         if( d > softie*pLight[i].Range )
         {
@@ -372,6 +375,8 @@ float4 PShader(VOut input) : SV_TARGET
             pAmbient *= (pLight[i].Range-d)/(pLight[i].Range-softie*pLight[i].Range);
             pDiffuse *= 1.0f/((softie*pLight[i].Range/pLight[i].Range+1.0f)*(softie*pLight[i].Range/pLight[i].Range+1.0f));
             pDiffuse *= (pLight[i].Range-d)/(pLight[i].Range-softie*pLight[i].Range);
+			pSpec *= 1.0f/((softie*pLight[i].Range/pLight[i].Range+1.0f)*(softie*pLight[i].Range/pLight[i].Range+1.0f));
+            pSpec *= (pLight[i].Range-d)/(pLight[i].Range-softie*pLight[i].Range);
         }
 		
 		[flatten]
@@ -400,8 +405,8 @@ float4 PShader(VOut input) : SV_TARGET
                 totalAmbient += (4.0f * pAmbient);
             if(sceneBuff.diffuseOn == 1.0f)
                 totalDiffuse += (4.0f * pDiffuse) * 10 * shadow;
-            //if(sceneBuff.specularOn == 1.0f)
-            //totalSpec	 += pSpec;
+            if(sceneBuff.specularOn == 1.0f)
+				totalSpec	 += pSpec;
         }
     }
 

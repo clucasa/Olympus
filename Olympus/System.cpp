@@ -188,6 +188,23 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
                 break;
 
+                case 'M': // M key has been pressed
+                {
+                    if(rendManager->PartyMode <= 0)
+                    {
+                        rendManager->PartyMode = 1;
+                        rendManager->emitterOn = true;
+                        rendManager->scene[mCurrentScene]->ToggleParticles(rendManager->emitterOn);
+                    }
+                    else
+                    {
+                        rendManager->PartyMode = 0;
+                        rendManager->emitterOn = false;
+                        rendManager->scene[mCurrentScene]->ToggleParticles(rendManager->emitterOn);
+                    }
+                }
+                break;
+
                 case 0x70: // F1 key has been pressed
                 {
                    if(rendManager->sceneBuff.textures == 0)
@@ -253,21 +270,21 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
                 break;
 
+                case 0x77: // F8 key has been pressed
+                {
+                    if(rendManager->sceneBuff.pLightOn == 0)
+                        rendManager->sceneBuff.pLightOn = 1;
+                    else
+                        rendManager->sceneBuff.pLightOn = 0;	
+                }
+                break;
+
                 case 0x78: // F9 key has been pressed
                 {
                     if(rendManager->sceneBuff.dirLightOn == 0)
                         rendManager->sceneBuff.dirLightOn = 1;
                     else
                         rendManager->sceneBuff.dirLightOn = 0;	
-                }
-                break;
-
-                case 0x79: // F10 key has been pressed
-                {
-                    if(rendManager->sceneBuff.pLightOn == 0)
-                        rendManager->sceneBuff.pLightOn = 1;
-                    else
-                        rendManager->sceneBuff.pLightOn = 0;	
                 }
                 break;
 
@@ -459,7 +476,7 @@ void System::RenderFrame(float dt)
 
         distance = 0.0f;
         XMStoreFloat(&distance,length);
-        if(abs(distance) < 10.0f)
+        if(abs(distance) < 11.0f)
         {
             SwitchScene(CurrentScene::JENGA);
         }
@@ -470,7 +487,7 @@ void System::RenderFrame(float dt)
 
         distance = 0.0f;
         XMStoreFloat(&distance,length);
-        if(abs(distance) < 10.0f)
+        if(abs(distance) < 11.0f)
         {
             SwitchScene(CurrentScene::BOWLING);
         }
@@ -481,7 +498,7 @@ void System::RenderFrame(float dt)
 
         distance = 0.0f;
         XMStoreFloat(&distance,length);
-        if(abs(distance) < 10.0f)
+        if(abs(distance) < 11.0f)
         {
             SwitchScene(CurrentScene::DARKNESS);
         }
@@ -495,7 +512,7 @@ void System::RenderFrame(float dt)
 
         distance = 0.0f;
         XMStoreFloat(&distance,length);
-        if(abs(distance) < 10.0f)
+        if(abs(distance) < 11.0f)
         {
             SwitchScene(CurrentScene::HUB);
         }
@@ -1117,5 +1134,29 @@ void System::SwitchScene(int scene)
     rendManager->mCurrentScene = scene;
     rendManager->mApex->setScene(scene);
     mCurrentScene = (CurrentScene)scene;
+
+    if(scene == CurrentScene::BOWLING)
+	{
+		mCam->SetPosition(XMFLOAT3(0.0f, 10.0f, -130.0f));
+		mCam->UpdateViewMatrix();
+	}
+
+	if(scene == CurrentScene::DARKNESS)
+	{
+		mCam->SetPosition(XMFLOAT3(0.0f, 10.0f, -25.0f));
+		mCam->UpdateViewMatrix();
+	}
+
+	if(scene == CurrentScene::JENGA)
+	{
+		mCam->SetPosition(XMFLOAT3(0.0f, 10.0f, -25.0f));
+		mCam->UpdateViewMatrix();
+	}
+
+	if(scene == CurrentScene::HUB)
+	{
+		mCam->SetPosition(XMFLOAT3(-1.0f, -6.0f, 42.0f));
+		mCam->UpdateViewMatrix();
+	}
 	rendManager->scene[mCurrentScene]->cController->MoveTo(0.0, 58.0f, 0.0f);//Move to specific location
 }

@@ -3,3 +3,11 @@
 p 0.0 1.0 0.0 0.0
 p 1.0 0.0 0.0 54.0
 p -1.0 0.0 0.0 54.0
+e TorchEmitter -26.7416 11.4389 -108.11 fire.png
+e TorchEmitter 26.7416 11.4389 -108.11 fire.png
+e TorchEmitter -26.7416 11.4389 -46.4472 fire.png
+e TorchEmitter 26.7416 11.4389 -46.4472 fire.png
+e TorchEmitter -31.9217 18.5588 -15.7842 fire.png
+e TorchEmitter 31.9217 18.5588 -15.7842 fire.png
+e TorchEmitter -31.9217 18.5588 -76.9391 fire.png
+e TorchEmitter 31.9217 18.5588 -76.9391 fire.png

@@ -35,20 +35,24 @@ enum renderTargets
     depth
 };
 
+#define MAX_NUM_POINT_LIGHTS 21
 
 namespace Colors
 {
-	XMGLOBALCONST XMVECTORF32 White     = {1.0f, 1.0f, 1.0f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 Black     = {0.0f, 0.0f, 0.0f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 Red       = {1.0f, 0.0f, 0.0f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 Green     = {0.0f, 1.0f, 0.0f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 Blue      = {0.0f, 0.0f, 1.0f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 Yellow    = {1.0f, 1.0f, 0.0f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 Cyan      = {0.0f, 1.0f, 1.0f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 Magenta   = {1.0f, 0.0f, 1.0f, 1.0f};
+	XMGLOBALCONST XMFLOAT4 White          = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	XMGLOBALCONST XMFLOAT4 Black          = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	XMGLOBALCONST XMFLOAT4 Red            = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	XMGLOBALCONST XMFLOAT4 Green          = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	XMGLOBALCONST XMFLOAT4 Blue           = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+	XMGLOBALCONST XMFLOAT4 Yellow         = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
+	XMGLOBALCONST XMFLOAT4 Cyan           = XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f);
+	XMGLOBALCONST XMFLOAT4 Magenta        = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
+				  
+	XMGLOBALCONST XMFLOAT4 Silver		  = XMFLOAT4(0.75f, 0.75f, 0.75f, 1.0f);
+	XMGLOBALCONST XMFLOAT4 LightSteelBlue = XMFLOAT4(0.69f, 0.77f, 0.87f, 1.0f);
 
-	XMGLOBALCONST XMVECTORF32 Silver    = {0.75f, 0.75f, 0.75f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 LightSteelBlue = {0.69f, 0.77f, 0.87f, 1.0f};
+	XMGLOBALCONST XMFLOAT4 NormalDiffuse  =	XMFLOAT4(.6f, .6f, .6f, 1);
+	XMGLOBALCONST XMFLOAT4 NormalAmbient  =	XMFLOAT4(.4f, .4f, .4f, 1);
 }
 
 class RenderManager
@@ -161,6 +165,9 @@ public:
 	ShadowBuff shadBuffer;
 	vector<ShadowManager*> shadows;
 	ShadowManager* shad;
+
+
+	int PartyMode;
 };
 
 
