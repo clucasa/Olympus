@@ -1,13 +1,6 @@
 # Dark Arena scene
-t Scene/settings.txt
+t Scene/dark_settings.txt
 
 o Scene/dark_arena.txt
-# o Scene/hub_floor.txt
-# o Scene/hub_wall_a.txt
-# o Scene/hub_wall_b.txt
-# o Scene/hub_wall_c.txt
-# o Scene/hub_wall_d.txt
-
-# s Scene/hub_spheres.txt
 
 p Scene/dark_physx.txt

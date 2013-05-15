@@ -1,5 +1,5 @@
 # Bowling lane scene
-t Scene/settings.txt
+t Scene/bowling_settings.txt
 
 b 0.0 4.0 10.0 10 3.3 3.0
 # 82

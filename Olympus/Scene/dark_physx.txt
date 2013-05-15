@@ -1,6 +1,6 @@
 # Dark Arena physx objects
 # e SmokeEmitter -18.0 -65.0 -243.0
-e TorchEmitter -13.5 -2.0 -42.0
-e TorchEmitter -67.6 -2.0 -42.0
+e TorchEmitter -13.5 -2.0 -42.0 fire3.png
+e TorchEmitter -67.6 -2.0 -42.0 fire3.png
 # e testSpriteEmitter4ParticleFluidIos -19.0 45.0 206.0
 p 0.0 1.0 0.0 1.0

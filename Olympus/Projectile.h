@@ -13,12 +13,12 @@
 
 using namespace std;
 
-#define MAXBOXES 32
+//#define MAXBOXES 32
 
 class Projectile : public Renderable
 {
 public:
-    Projectile(ID3D11Device* dev, ID3D11DeviceContext* devcon, Apex* apex );
+    Projectile(ID3D11Device* dev, ID3D11DeviceContext* devcon, Apex* apex, int maxBoxes );
     ~Projectile();
 
     void Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths);
@@ -27,6 +27,8 @@ public:
     virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
     virtual void RecompileShader();
     virtual void Depth();
+
+    void Clear();
 
     ID3D11Device *mDev;                     // the pointer to our Direct3D device interface
     ID3D11DeviceContext *mDevcon;           // the pointer to our Direct3D device context
@@ -54,6 +56,7 @@ private:
     vector<PxRigidActor*> boxes;
     int numBoxes;
     int curBox;
+    int mMaxBoxes;
     Apex* mApex;
 };
 

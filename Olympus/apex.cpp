@@ -439,16 +439,16 @@ bool Apex::InitParticles()
     return true;
 }
 
-ApexParticles* Apex::CreateEmitter(physx::apex::NxUserRenderer* renderer, const char* filename)
+ApexParticles* Apex::CreateEmitter(physx::apex::NxUserRenderer* renderer, const char* filename, const char* texfile)
 {
     ApexParticles* emitter = new ApexParticles();
-    emitter->CreateEmitter(gApexSDK, gApexScene[mCurrentScene], mDevcon, mDev, renderer, mIofxModule, filename);
+    emitter->CreateEmitter(gApexSDK, gApexScene[mCurrentScene], mDevcon, mDev, renderer, mIofxModule, filename, texfile);
     return emitter;
 }
 
-ApexCloth* Apex::CreateCloth(physx::apex::NxUserRenderer* renderer, const char* filename, const char* texfile)
+ApexCloth* Apex::CreateCloth(physx::apex::NxUserRenderer* renderer, const char* filename, const char* texfile, float maxWind)
 {
-    ApexCloth* cloth = new ApexCloth();
+    ApexCloth* cloth = new ApexCloth(maxWind);
     cloth->CreateCloth(gApexSDK, gApexScene[mCurrentScene], mDevcon, mDev, renderer, filename, texfile);
     return cloth;
 }
@@ -516,10 +516,10 @@ bool Apex::checkErrorCode(NxApexCreateError* err)
     return retval;
 }
 
-bool Apex::CreateScene()
+bool Apex::CreateScene(float gravity)
 {
     PxSceneDesc sceneDesc(mPhysics->getTolerancesScale());
-    sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+    sceneDesc.gravity = PxVec3(0.0f, gravity, 0.0f);
 
     if(!sceneDesc.cpuDispatcher)
     {

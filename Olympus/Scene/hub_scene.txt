@@ -1,5 +1,5 @@
 # HUB scene
-t Scene/settings.txt
+t Scene/hub_settings.txt
 
 o Scene/hub_floor.txt
 o Scene/hub_archway.txt

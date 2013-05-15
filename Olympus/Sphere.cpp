@@ -429,6 +429,42 @@ void Sphere::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 //	mDevcon->PSSetConstantBuffers(0, 1, NULL);
 }
 
+void Sphere::Depth()
+{
+    mDevcon->VSSetShader(mVS, 0, 0);
+    mDevcon->PSSetShader(NULL, 0, 0);
+    mDevcon->IASetInputLayout(mLayout);
+
+     // select which vertex buffer to display
+    UINT stride = sizeof(PosNormalTexTan);
+    UINT offset = 0;
+    mDevcon->IASetVertexBuffers(0, 1, &SphereVertBuffer, &stride, &offset);
+
+    mDevcon->IASetIndexBuffer(SphereIndBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+    // select which primtive type we are using
+    mDevcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    XMMATRIX matTrans;
+    
+    //matTrans = XMMatrixTranslation(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z);
+    matTrans = XMMatrixTranslation(mX,mY,mZ);
+
+    XMFLOAT4X4 mWorldMat[2];
+    XMStoreFloat4x4(&mWorldMat[0], matTrans);
+
+    XMStoreFloat4x4(&mWorldMat[1], XMMatrixInverse(&XMMatrixDeterminant(matTrans), matTrans));
+
+    mDevcon->VSSetConstantBuffers(1, 1, &mConstBuffer);
+    //mDevcon->PSSetConstantBuffers(0, 1, &sceneBuff);
+    mDevcon->UpdateSubresource(mConstBuffer, 0, 0, &mWorldMat, 0, 0);
+    //mDevcon->PSSetShaderResources(0, 1, NULL);
+    
+
+     // draw the vertex buffer to the back buffer
+    mDevcon->DrawIndexed(indices.size(), 0, 0);
+}
+
 void Sphere::RecompileShader()
 {
     // load and compile the two shaders

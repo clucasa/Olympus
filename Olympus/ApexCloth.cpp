@@ -1,11 +1,8 @@
 #include "ApexCloth.h"
 
 
-ApexCloth::ApexCloth()
+ApexCloth::ApexCloth(float maxWind) : mMaxWind(maxWind)
 {
-    
-   
-
     return;
 }
 
@@ -16,9 +13,6 @@ ApexCloth::~ApexCloth()
 
 void ApexCloth::InitPipeline()
 {
-    
-
-
     ID3D10Blob* pErrorBlob = NULL;
     LPVOID pError = NULL;
     char* errorStr = NULL;
@@ -146,7 +140,7 @@ void ApexCloth::CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 void ApexCloth::Update()
 {
     float low = 0.0;
-    float high = 50.5;
+    float high = mMaxWind;
     float val = low + (float)rand()/((float)RAND_MAX/(high-low));
  
     NxParameterized::Interface* actorDesc = clothingActor->getActorDesc();

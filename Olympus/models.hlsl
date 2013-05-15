@@ -1,6 +1,14 @@
 #include "LightHelper.hlsl"
 #include "ConstBuffers.hlsl"
 
+#define NUMDIRLIGHTS 1
+#define NUMPOINTLIGHTS 2
+
+#define NUMSHADOWS 15
+#define NUMDIRSHADOWS 3		// This is going to hold our cascade shadow maps for now
+#define NUMPOINTSHADOWS 12
+
+
 cbuffer SceneBuff : register(b0)
 {
     SceneBuffer sceneBuff;
@@ -24,16 +32,14 @@ cbuffer PointLight : register(b3)
 };
 
 
-cbuffer ShadowProj  : register(b5)
+cbuffer Shadows  : register(b5)
 {
-    float4x4 lightViewProj;
-    float3 lightPos;
-    float PADdyCake;
+	struct ShadowProj shadowProj[NUMSHADOWS];
 }
 
 Texture2D diffuseTexture : register(t0);
 Texture2D normalTexture : register(t1);
-Texture2D shadowTexture : register(t6);
+Texture2D shadowTexture[NUMSHADOWS] : register(t6);
 
 SamplerComparisonState ss : register(s5);
 
@@ -46,7 +52,7 @@ struct VOut
     float3 BiNormalW  : BINORM;
     float2 Tex        : TEXCOORD0;
     float3 CamPos     : CAMPOS;
-    float4 lpos    : TEXCOORD2;
+    float4 lpos[NUMSHADOWS]    : TEXCOORD2;
 };
 
 struct Vin
@@ -82,8 +88,11 @@ VOut VShader( Vin input )
 
     output.CamPos    = sceneBuff.cameraPos;
 
-    output.lpos = mul( matWorld, float4(input.Pos.xyz, 1.0) );
-    output.lpos = mul( lightViewProj, float4(output.lpos.xyz, 1.0) );
+	for( int i = 0; i < NUMSHADOWS; i++ )
+	{
+		output.lpos[i] = mul( matWorld, float4(input.Pos.xyz, 1.0) );
+		output.lpos[i] = mul( shadowProj[i].lightViewProj, float4(output.lpos[i].xyz, 1.0) );
+	}
 
     return output;
 }
@@ -96,50 +105,82 @@ float3 offset_lookup(Texture2D map, float4 loc, float2 offset)
 //return map.SampleCmp(ss, loc.xy + offset * (1/4096) * loc.w, loc.z).r;
 return map.SampleCmpLevelZero(ss, loc.xy + offset, loc.z).r;
 }
-float shadowVal(VOut input)
+float shadowVal(VOut input, int i)
 {
-    //return PADdyCake;
-    //return theShade.Sample( samLinear, input.texcoord );
+	//	input.lpos[i].xyz /= input.lpos[i].w;
 
-    //  return 1.0;
-    //  return float4( PADdyCake, PADdyCake, PADdyCake, 1.0 );
-    //  return float4( lightPos.x, lightPos.y, lightPos.z, 1.0 );
-    input.lpos.xy /= input.lpos.w;
+	if( input.lpos[i].x < -1.0f || input.lpos[i].x > 1.0f ||
+		input.lpos[i].y < -1.0f || input.lpos[i].y > 1.0f ||
+		input.lpos[i].z < 0.0f  || input.lpos[i].z > 1.0f ) return  1.0;
 
-    if( input.lpos.x < -1.0f || input.lpos.x > 1.0f ||
-        input.lpos.y < -1.0f || input.lpos.y > 1.0f ||
-        input.lpos.z < 0.0f  || input.lpos.z > 1.0f ) return 1.0;
+	//return 0.0;
 
-    //return 0.0;
+	input.lpos[i].x = input.lpos[i].x/2 + 0.5;
+	input.lpos[i].y = input.lpos[i].y/-2 + 0.5;
 
-    input.lpos.x = input.lpos.x/2 + 0.5;
-    input.lpos.y = input.lpos.y/-2 + 0.5;
+	if( i == 0 )
+		input.lpos[i].z -= .001;
+	if( i == 1 )
+		input.lpos[i].z -= .003;
+	if( i == 2 )
+		input.lpos[i].z -= .007;
 
-    input.lpos.z -= .0015;
+	//float samp = 1000 * 1/4096;
+	float samp = .0005;
+
+	float3 shadowCoeff = (
+		offset_lookup(shadowTexture[i], input.lpos[i], float2(0, 0))+
+		offset_lookup(shadowTexture[i], input.lpos[i], float2(0, -samp)) +
+		offset_lookup(shadowTexture[i], input.lpos[i], float2(0, samp)) +
+		offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, 0)) +
+		offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, -samp)) +
+		offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, samp)) +
+		offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, 0)) +
+		offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, -samp)) +
+		offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, samp)) 
+		) * 1.f/9.f;
+
+	return shadowCoeff.r;
+}
 
 
-    //float samp = 1000 * 1/4096;
-    float samp = .0005;
+float shadowValPoint(VOut input, int start)
+{
+	int test;
+	for( int i = start; i < (start+6); i++ )
+	{
+		input.lpos[i].xyz /= input.lpos[i].w;
 
-    float3 shadowCoeff = (
-        offset_lookup(shadowTexture, input.lpos, float2(0, 0))+
-        offset_lookup(shadowTexture, input.lpos, float2(0, -samp)) +
-        offset_lookup(shadowTexture, input.lpos, float2(0, samp)) +
-        offset_lookup(shadowTexture, input.lpos, float2(-samp, 0)) +
-        offset_lookup(shadowTexture, input.lpos, float2(-samp, -samp)) +
-        offset_lookup(shadowTexture, input.lpos, float2(-samp, samp)) +
-        offset_lookup(shadowTexture, input.lpos, float2( samp, 0)) +
-        offset_lookup(shadowTexture, input.lpos, float2( samp, -samp)) +
-        offset_lookup(shadowTexture, input.lpos, float2( samp, samp)) 
-        ) * 1.f/9.f;
+		if( input.lpos[i].x < -1.0f || input.lpos[i].x > 1.0f ||
+			input.lpos[i].y < -1.0f || input.lpos[i].y > 1.0f ||
+			input.lpos[i].z < 0.0f  || input.lpos[i].z > 1.0f ) test = 1;
+		else
+		{
+			//if( i == start )
+			//return 0.0;
+			input.lpos[i].x = input.lpos[i].x/2 + 0.5;
+			input.lpos[i].y = input.lpos[i].y/-2 + 0.5;
 
-    return shadowCoeff.r;
+			input.lpos[i].z -= .0005;
 
-    float shad = shadowTexture.Sample( samLinear, input.lpos.xy ).r;
-//	return shad;
-    if ( shad < input.lpos.z) return 0.0;
+			float samp = .0005;
 
-    return 1.0;
+			float3 shadowCoeff = (
+				offset_lookup(shadowTexture[i], input.lpos[i], float2(0, 0))+
+				offset_lookup(shadowTexture[i], input.lpos[i], float2(0, -samp)) +
+				offset_lookup(shadowTexture[i], input.lpos[i], float2(0, samp)) +
+				offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, 0)) +
+				offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, -samp)) +
+				offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, samp)) +
+				offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, 0)) +
+				offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, -samp)) +
+				offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, samp)) 
+				) * 1.f/9.f;
+
+			return shadowCoeff.r;
+		}
+	}
+	return 1.0;
 }
 
 
@@ -202,10 +243,10 @@ float4 PShader(VOut input) : SV_TARGET
 
     float shadow = 1.0f;
     //return float4(1.0f, diffuseFactor, 0.0f, 1.0f);
-    if(sceneBuff.shadowsOn == 1.0f)
-        shadow = shadowVal(input);
+   // if(sceneBuff.shadowsOn == 1.0f)
+       // shadow = shadowVal(input);
 
-    for(int i = 0; i < 1; i++)
+    for(int i = 0; i < NUMDIRLIGHTS; i++)
     {
         if(sceneBuff.ambientOn == 1.0f)
         {
@@ -220,9 +261,47 @@ float4 PShader(VOut input) : SV_TARGET
 
         if(diffuseFactor > 0.0f)
         {
+			float shadow = 1.0;
+			//if( i < NUMDIRSHADOWS )
+			//	shadow = shadowVal(input, i);
+			if(sceneBuff.shadowsOn == 1.0f)
+
+			for( int k = 0; k < NUMDIRSHADOWS; k++ )
+			{
+				input.lpos[k].xyz /= input.lpos[k].w;
+
+				if( input.lpos[k].x < -1.0f || input.lpos[k].x > 1.0f ||
+					input.lpos[k].y < -1.0f || input.lpos[k].y > 1.0f ||
+					input.lpos[k].z < 0.0f  || input.lpos[k].z > 1.0f ) shadow = 1.0;
+
+				else
+				{
+
+					//if( k == 0 )
+					//	return float4( 1.0, 0.0, 0.0, 1.0 );
+					//else if ( k == 1 )
+					//	return float4( 0.0, 1.0, 0.0, 1.0 );
+					//else if ( k == 2 )
+					//	return float4( 0.0, 0.0, 1.0, 1.0 );
+
+					shadow = shadowVal( input, k );
+					if( shadow < 1.0 )
+					{
+					//	if( k == 0 )
+					//	return float4( 1.0, 0.0, 0.0, 1.0 );
+					//else if ( k == 1 )
+					//	return float4( 0.0, 1.0, 0.0, 1.0 );
+					//else if ( k == 2 )
+					//	return float4( 0.0, 0.0, 1.0, 1.0 );
+						break;
+					}
+				}
+			}
+
+
             if(sceneBuff.diffuseOn == 1.0f)
             {
-                dirDiffuse += saturate(diffuseFactor * material.Diffuse * dirLight[i].Diffuse);
+                dirDiffuse += saturate(diffuseFactor * material.Diffuse * dirLight[i].Diffuse) * shadow;
             }
             v = reflect(-lightVec, bumpedNormalW);
 
@@ -230,7 +309,7 @@ float4 PShader(VOut input) : SV_TARGET
 
             if(sceneBuff.specularOn == 1.0f)
             {
-                dirSpec    += specFactor * material.Specular * dirLight[i].Specular;
+                dirSpec    += specFactor * material.Specular * dirLight[i].Specular * shadow;
             }
         }
 
@@ -242,13 +321,14 @@ float4 PShader(VOut input) : SV_TARGET
             totalAmbient += dirAmbient;
 
         if(sceneBuff.diffuseOn == 1.0f)
-            totalDiffuse += dirDiffuse*shadow;
+            totalDiffuse += dirDiffuse;
 
         if(sceneBuff.specularOn == 1.0f)
-            totalSpec	 += dirSpec*shadow;
+            totalSpec	 += dirSpec;
     }
 
-    for(int i = 0; i < 2; i++)
+	[unroll]
+    for(int i = 0; i < NUMPOINTLIGHTS; i++)
     {
         lightVec = pLight[i].Position - input.PosW;
 
@@ -293,13 +373,33 @@ float4 PShader(VOut input) : SV_TARGET
             pDiffuse *= 1.0f/((softie*pLight[i].Range/pLight[i].Range+1.0f)*(softie*pLight[i].Range/pLight[i].Range+1.0f));
             pDiffuse *= (pLight[i].Range-d)/(pLight[i].Range-softie*pLight[i].Range);
         }
-
+		
+		[flatten]
         if(sceneBuff.pLightOn == 1.0f)
         {
+			int val = 0;
+			float shadow = 1.0;
+			//if( 1 )
+			//{
+			if(sceneBuff.shadowsOn == 1.0f)
+
+			[flatten]
+			if( i*6+6 <= NUMPOINTSHADOWS )
+			{
+				if( i == 0 )
+					shadow = shadowValPoint( input, 0 + NUMDIRSHADOWS );
+				else if( i == 1 )
+					shadow = shadowValPoint( input, 6 + NUMDIRSHADOWS);
+				else if( i == 2 )
+					shadow = shadowValPoint( input, 12 + NUMDIRSHADOWS);
+				else if( i == 3 )
+					shadow = shadowValPoint( input, 18 + NUMDIRSHADOWS);
+			}
+
             if(sceneBuff.ambientOn == 1.0f)
                 totalAmbient += (4.0f * pAmbient);
             if(sceneBuff.diffuseOn == 1.0f)
-                totalDiffuse += (4.0f * pDiffuse);
+                totalDiffuse += (4.0f * pDiffuse) * 10 * shadow;
             //if(sceneBuff.specularOn == 1.0f)
             //totalSpec	 += pSpec;
         }

@@ -23,6 +23,7 @@
 #include "NxIofxAsset.h"
 #include <NxApexRenderVolume.h>
 
+#include <string>
 
 #include "Camera.h"
 #include <d3d11.h>
@@ -44,7 +45,7 @@ public:
     void InitPipeline();
     void CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
                         ID3D11DeviceContext *devcon, 	ID3D11Device *dev,
-                      physx::apex::NxUserRenderer* renderer, NxModuleIofx* iofxModule, const char* filename);
+                      physx::apex::NxUserRenderer* renderer, NxModuleIofx* iofxModule, const char* filename, const char* texfile);
     virtual void Update();
     virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
     virtual void RecompileShader();

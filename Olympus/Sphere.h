@@ -36,6 +36,7 @@ public:
 
     virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
     virtual void RecompileShader();
+    virtual void Depth();
     void IsItReflective(bool isReflective);
 
     ID3D11Buffer *SphereVertBuffer;               

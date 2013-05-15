@@ -8,7 +8,7 @@ Box::Box()
 Box::Box(ID3D11DeviceContext *mDevcon, ID3D11Device *mDev, Apex* apex, float length, float width, float height) : 
     mDevcon(mDevcon), mDev(mDev), mApex(apex), mLength(length), mWidth(width), mHeight(height)
 {
-	GeometryGenerator* geoGen = new GeometryGenerator();
+    GeometryGenerator* geoGen = new GeometryGenerator();
     mX = -20.0f;
     mY = 4.0f;
     mZ = 25.0f;
@@ -27,7 +27,7 @@ void Box::SetupPipeline()
     D3DX11CompileFromFile("models.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
     D3DX11CompileFromFile("models.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
 
-	// encapsulate both shaders into shader objects
+    // encapsulate both shaders into shader objects
     mDev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &mVS);
     
 
@@ -46,11 +46,11 @@ void Box::SetupPipeline()
     };
     HRESULT hr = mDev->CreateInputLayout(ied, 6, VS->GetBufferPointer(), VS->GetBufferSize(), &mLayout);
 
-	hr = D3DX11CreateShaderResourceViewFromFile( mDev, "Media/Textures/Wood.png", NULL, NULL, &mTexture, NULL );
+    hr = D3DX11CreateShaderResourceViewFromFile( mDev, "Media/Textures/Wood.png", NULL, NULL, &mTexture, NULL );
     if( FAILED( hr ) )
         return;
 
-	hr = D3DX11CreateShaderResourceViewFromFile( mDev, "Media/Textures/BlankNormalMap.png", NULL, NULL, &mNmap, NULL );
+    hr = D3DX11CreateShaderResourceViewFromFile( mDev, "Media/Textures/BlankNormalMap.png", NULL, NULL, &mNmap, NULL );
     if( FAILED( hr ) )
         return;
 }
@@ -153,12 +153,40 @@ void Box::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
     
     //matTrans = XMMatrixTranslation(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z);
     matTrans = XMMatrixTranslation(mX,mY,mZ);
-	mDevcon->VSSetConstantBuffers(1, 1, &mConstBuffer);
-	for(int i = 0; i < mWorldMats.size(); i++)
-	{
-		mDevcon->UpdateSubresource(mConstBuffer, 0, 0, &mWorldMats[i], 0, 0);
-		mDevcon->DrawIndexed(indices.size(), 0, 0);
-	}
+    mDevcon->VSSetConstantBuffers(1, 1, &mConstBuffer);
+    for(int i = 0; i < mWorldMats.size(); i++)
+    {
+        mDevcon->UpdateSubresource(mConstBuffer, 0, 0, &mWorldMats[i], 0, 0);
+        mDevcon->DrawIndexed(indices.size(), 0, 0);
+    }
+}
+
+void Box::Depth()
+{
+	mDevcon->VSSetShader(mVS, 0, 0);
+    mDevcon->PSSetShader(NULL, 0, 0);
+    mDevcon->IASetInputLayout(mLayout);
+
+     // select which vertex buffer to display
+    UINT stride = sizeof(PosNormalTexTan);
+    UINT offset = 0;
+    mDevcon->IASetVertexBuffers(0, 1, &BoxVertBuffer, &stride, &offset);
+
+    mDevcon->IASetIndexBuffer(BoxIndBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+    // select which primtive type we are using
+    mDevcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    XMMATRIX matTrans;
+    
+    //matTrans = XMMatrixTranslation(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z);
+    matTrans = XMMatrixTranslation(mX,mY,mZ);
+    mDevcon->VSSetConstantBuffers(1, 1, &mConstBuffer);
+    for(int i = 0; i < mWorldMats.size(); i++)
+    {
+        mDevcon->UpdateSubresource(mConstBuffer, 0, 0, &mWorldMats[i], 0, 0);
+        mDevcon->DrawIndexed(indices.size(), 0, 0);
+    }
 }
 
 void Box::RecompileShader()
@@ -176,12 +204,12 @@ void Box::RecompileShader()
 
 void Box::AddInstance(float x, float y, float z)
 {
-	XMMATRIX matTrans;
+    XMMATRIX matTrans;
     
     matTrans = XMMatrixTranslation(x,y,z);
-	XMFLOAT4X4 final;
-	XMStoreFloat4x4(&final, matTrans);
-	mWorldMats.push_back(final);
+    XMFLOAT4X4 final;
+    XMStoreFloat4x4(&final, matTrans);
+    mWorldMats.push_back(final);
 }
 
 void Box::Update()

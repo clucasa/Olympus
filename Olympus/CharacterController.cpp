@@ -26,7 +26,6 @@ CharacterController::CharacterController(Apex *mApex)
 
 		pCharacter = pManager->createController( *mApex->mPhysics, mApex->mScene[mApex->mCurrentScene], desc );
 	
-	pCharacter->setStepOffset( 5.0f*2.0f );
 	PxExtendedVec3 pos = desc.position;//PxExtendedVec3(0.0f, 8.2f, 0.0f);
 	pos.y = pCharacter->getFootPosition().y;
 	pCharacter->setPosition( pos );

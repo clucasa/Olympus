@@ -32,7 +32,7 @@ using namespace physx;
 class ApexCloth : public Renderable
 {
 public:
-    ApexCloth();
+    ApexCloth(float maxWind);
     ~ApexCloth();
 
     void InitPipeline();
@@ -59,9 +59,7 @@ private:
     ID3D11Buffer*		mConstBuffer;
     ID3D11ShaderResourceView *clothTexture;
 
-
-    //NxApexEmitterActor* emitterActor;
-   // physx::apex::NxApexRenderVolume*  mRenderVolume;
+    float mMaxWind;
     physx::apex::NxClothingActor* clothingActor;
             
     apex::NxUserRenderer*      gRenderer;

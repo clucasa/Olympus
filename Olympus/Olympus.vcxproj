@@ -103,6 +103,7 @@
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ScreenQuad.cpp" />
+    <ClCompile Include="ShadowManager.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="System.cpp" />
@@ -118,6 +119,8 @@
     <None Include="LightHelper.hlsl" />
     <None Include="models.hlsl" />
     <None Include="OnScreen.hlsl" />
+    <None Include="Scene\bowling_settings.txt" />
+    <None Include="Scene\dark_settings.txt" />
     <None Include="Scene\hub_archway.txt" />
     <None Include="Scene\dark_arena.txt" />
     <None Include="Scene\bigbadman.txt" />
@@ -136,11 +139,12 @@
     <None Include="Scene\jenga_physx.txt" />
     <None Include="Scene\jenga_plane.txt" />
     <None Include="Scene\jenga_scene.txt" />
+    <None Include="Scene\jenga_settings.txt" />
     <None Include="Scene\physx.txt" />
     <None Include="Scene\bowling_physx.txt" />
     <None Include="Scene\Scene0.txt" />
     <None Include="Scene\bowling_scene.txt" />
-    <None Include="Scene\settings.txt" />
+    <None Include="Scene\hub_settings.txt" />
     <None Include="Scene\target.txt" />
     <None Include="Scene\terrain.txt" />
     <None Include="Scene\dark_torch.txt" />
@@ -177,6 +181,7 @@
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ScreenQuad.h" />
+    <ClInclude Include="ShadowManager.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="struct.h" />

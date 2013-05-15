@@ -1,7 +1,7 @@
 #include "Projectile.h"
 
-Projectile::Projectile( ID3D11Device* dev, ID3D11DeviceContext* devcon, Apex* apex ) :
-    numBoxes(0), curBox(0), mApex(apex), mDev(dev), mDevcon(devcon)
+Projectile::Projectile( ID3D11Device* dev, ID3D11DeviceContext* devcon, Apex* apex, int maxBoxes ) :
+    numBoxes(0), curBox(0), mApex(apex), mDev(dev), mDevcon(devcon), mMaxBoxes(maxBoxes)
 {
     blockMaterial = mApex->getPhysics()->createMaterial(0.1f, 0.1f, 0.0f);    //static friction, dynamic friction, restitution
     if(!blockMaterial)
@@ -90,12 +90,14 @@ Projectile::~Projectile()
 
 void Projectile::Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths)
 {
-    if(numBoxes < MAXBOXES)
+    if(mMaxBoxes <= 0)
+        return;
+    if(numBoxes < mMaxBoxes)
     {
         PxVec3 look = PxVec3(mCam->GetLook().x,mCam->GetLook().y,mCam->GetLook().z);
         look.normalize();
         PxVec3 pos = PxVec3(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z) + (look * 4.);
-        PxReal density = 100.0f;
+        PxReal density = 10000.0f;
         
         PxTransform transform(pos, PxQuat::createIdentity());
         PxVec3 dimensions(.5,.5,.5);
@@ -136,10 +138,11 @@ void Projectile::Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths)
         mWorldMats.push_back(final);
         if(mCloths.size() > 0)
             spheres.push_back(mCloths[0]->getClothingActor()->createCollisionSphere(pos, .5));
+		
     }
     else
     {
-        if(curBox >= MAXBOXES)
+        if(curBox >= mMaxBoxes)
             curBox = 0;
         
         PxVec3 look = PxVec3(mCam->GetLook().x,mCam->GetLook().y,mCam->GetLook().z);
@@ -161,14 +164,32 @@ void Projectile::Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths)
         {
             physx::apex::NxClothingSphere* sphere = spheres[curBox];
             sphere->setPosition(pos);
+			
         }
 
         curBox++;
     }
 }
 
+void Projectile::Clear()
+{
+	curBox = 0;
+	for(int i = 0; i < numBoxes; i++)
+	{
+		boxes[i]->release();
+		if(spheres[i])
+			spheres[i]->release();
+	}
+	spheres.clear();
+	mWorldMats.clear();
+	boxes.clear();
+	numBoxes = 0;
+}
+
 void Projectile::Update()
 {
+	if(mMaxBoxes <= 0)
+        return;
     PxU32 nShapes = 0;
 
     for(int i = 0; i < numBoxes; i++)

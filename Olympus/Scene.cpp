@@ -10,7 +10,10 @@ Scene::Scene( ID3D11Device *dev, ID3D11DeviceContext *devcon, Apex* apex, Geomet
     mDist			  = 0;
     mNumLevels		  = -1;
 
-    mApex->CreateScene();
+    mGravity = 0;
+
+	mMaxProjectile = 0;
+	mSpeedScale = 0;
 
     std::ifstream fin(sceneName);
     if(!fin)
@@ -22,6 +25,7 @@ Scene::Scene( ID3D11Device *dev, ID3D11DeviceContext *devcon, Apex* apex, Geomet
     vector<string> objectFilenames;
     vector<string> sphereFilenames;
     vector<string> physxFilenames;
+    vector<string> settingsFilenames;
     std::vector<string> elems;
     string lines, olines;
     string item;
@@ -31,6 +35,17 @@ Scene::Scene( ID3D11Device *dev, ID3D11DeviceContext *devcon, Apex* apex, Geomet
         if (lines[0] == '#') //skip comments
         {
             continue;
+        }
+		else if (lines[0] == 't') 
+        {
+            string* sline;
+            sline = &lines;
+            stringstream ss(*sline);
+            while(std::getline(ss, item, ' ')) {
+                elems.push_back(item);
+            }
+			LoadSettings(elems[1]);
+            elems.clear();
         }
         else if (lines[0] == 'o') 
         {
@@ -53,7 +68,7 @@ Scene::Scene( ID3D11Device *dev, ID3D11DeviceContext *devcon, Apex* apex, Geomet
             }
             sphereFilenames.push_back(elems[1]);
             elems.clear();
-        }
+		}
         else if (lines[0] == 'p') 
         {
             string* sline;
@@ -90,7 +105,7 @@ Scene::Scene( ID3D11Device *dev, ID3D11DeviceContext *devcon, Apex* apex, Geomet
             bowlingSets.push_back(bowlingPin);
             elems.clear();
         }
-		else if (lines[0] == 'j') 
+        else if (lines[0] == 'j') 
         {
             string* sline;
             sline = &lines;
@@ -109,6 +124,10 @@ Scene::Scene( ID3D11Device *dev, ID3D11DeviceContext *devcon, Apex* apex, Geomet
     }
     fin.close();
 
+	/*for(int i = 0; i < (int)settingsFilenames.size(); i++)
+    {
+        LoadSettings(settingsFilenames[i]);
+    }*/
     for(int i = 0; i < (int)objectFilenames.size(); i++)
     {
         LoadFBX(objectFilenames[i]);
@@ -126,6 +145,63 @@ Scene::Scene( ID3D11Device *dev, ID3D11DeviceContext *devcon, Apex* apex, Geomet
 Scene::~Scene()
 {
 
+}
+
+void Scene::LoadSettings(string filename)
+{
+    std::vector<string> elems;
+    string olines;
+    string item;
+
+    std::ifstream oin(filename);
+    if(!oin)
+    {
+        MessageBox(0, "settings.txt not found.", 0, 0);
+        return;
+    }
+
+    while(getline(oin, olines))
+    {
+        if(!olines.length()) continue; //skip empty
+        if (olines[0] == '#') //skip comments
+        {
+            continue;
+        }
+        else if (olines[0] == 'g') 
+        {
+            stringstream ss(olines);
+            while(std::getline(ss, item, ' ')) 
+			{
+                elems.push_back(item);
+            }
+			mGravity = (float)::atof(elems[1].c_str());
+
+            elems.clear();
+        }
+        else if (olines[0] == 'p') 
+        {
+            stringstream ss(olines);
+            while(std::getline(ss, item, ' ')) 
+			{
+                elems.push_back(item);
+            }
+			mMaxProjectile = ::atoi(elems[1].c_str());
+            elems.clear();
+        }
+        else if (olines[0] == 's') 
+        {
+            stringstream ss(olines);
+            while(std::getline(ss, item, ' ')) 
+			{
+                elems.push_back(item);
+            }
+			mSpeedScale = (float)::atof(elems[1].c_str());
+            elems.clear();
+        }
+    }
+    oin.close();
+
+	mApex->CreateScene(mGravity);
 }
 
 void Scene::LoadFBX(string filename)
@@ -155,7 +231,8 @@ void Scene::LoadFBX(string filename)
         else if (olines[0] == 'm') 
         {
             stringstream ss(olines);
-            while(std::getline(ss, item, ' ')) {
+            while(std::getline(ss, item, ' ')) 
+			{
                 elems.push_back(item);
             }
             model = elems[1];
@@ -166,7 +243,8 @@ void Scene::LoadFBX(string filename)
             string* sline;
             sline = &olines;
             stringstream ss(*sline);
-            while(std::getline(ss, item, ' ')) {
+            while(std::getline(ss, item, ' ')) 
+			{
                 elems.push_back(item);
             }
             textures.push_back(elems[1]);
@@ -177,7 +255,8 @@ void Scene::LoadFBX(string filename)
             string* sline;
             sline = &olines;
             stringstream ss(*sline);
-            while(std::getline(ss, item, ' ')) {
+            while(std::getline(ss, item, ' ')) 
+			{
                 elems.push_back(item);
             }
             normals.push_back(elems[1]);
@@ -188,7 +267,8 @@ void Scene::LoadFBX(string filename)
             string* sline;
             sline = &olines;
             stringstream ss(*sline);
-            while(std::getline(ss, item, ' ')) {
+            while(std::getline(ss, item, ' ')) 
+			{
                 elems.push_back(item);
             }
             ObjectInfo object;
@@ -211,7 +291,8 @@ void Scene::LoadFBX(string filename)
             string* sline;
             sline = &olines;
             stringstream ss(*sline);
-            while(std::getline(ss, item, ' ')) {
+            while(std::getline(ss, item, ' ')) 
+			{
                 elems.push_back(item);
             }
 
@@ -299,7 +380,8 @@ void Scene::LoadSpheres(string filename)
         else if (olines[0] == 's') 
         {
             stringstream ss(olines);
-            while(std::getline(ss, item, ' ')) {
+            while(std::getline(ss, item, ' ')) 
+			{
                 elems.push_back(item);
             }
 
@@ -314,7 +396,8 @@ void Scene::LoadSpheres(string filename)
             string* sline;
             sline = &olines;
             stringstream ss(*sline);
-            while(std::getline(ss, item, ' ')) {
+            while(std::getline(ss, item, ' ')) 
+			{
                 elems.push_back(item);
             }
 
@@ -355,11 +438,12 @@ void Scene::LoadPhysX(string filename)
         else if (olines[0] == 'c') 
         {
             stringstream ss(olines);
-            while(std::getline(ss, item, ' ')) {
+            while(std::getline(ss, item, ' ')) 
+			{
                 elems.push_back(item);
             }
 
-            ApexCloth* mCloth = mApex->CreateCloth(gRenderer, elems[1].c_str(), elems[8].c_str() );//"curtainew");//"ctdm_Cape_400");//"bannercloth");//
+            ApexCloth* mCloth = mApex->CreateCloth(gRenderer, elems[1].c_str(), elems[8].c_str(), (float)::atof(elems[9].c_str()) );//"curtainew");//"ctdm_Cape_400");//"bannercloth");//
             mCloth->SetPosition((float)::atof(elems[2].c_str()), (float)::atof(elems[3].c_str()), (float)::atof(elems[4].c_str()),
                 (float)::atof(elems[5].c_str()), (float)::atof(elems[6].c_str()), (float)::atof(elems[7].c_str()) );
             mRenderables.push_back(mCloth);
@@ -372,13 +456,14 @@ void Scene::LoadPhysX(string filename)
             string* sline;
             sline = &olines;
             stringstream ss(*sline);
-            while(std::getline(ss, item, ' ')) {
+            while(std::getline(ss, item, ' ')) 
+			{
                 elems.push_back(item);
             }
 
-            ApexParticles* emitter = mApex->CreateEmitter(gRenderer, elems[1].c_str());//"SmokeEmitter");
+            ApexParticles* emitter = mApex->CreateEmitter( gRenderer, elems[1].c_str(), elems[5].c_str() );//"SmokeEmitter");
             emitter->SetPosition((float)::atof(elems[2].c_str()), (float)::atof(elems[3].c_str()), (float)::atof(elems[4].c_str()));
-            mRenderables.push_back(emitter);
+            mBlendRenderables.push_back(emitter);
             particles.push_back(emitter);
             elems.clear();
         }
@@ -387,7 +472,8 @@ void Scene::LoadPhysX(string filename)
             string* sline;
             sline = &olines;
             stringstream ss(*sline);
-            while(std::getline(ss, item, ' ')) {
+            while(std::getline(ss, item, ' ')) 
+			{
                 elems.push_back(item);
             }
 
@@ -399,7 +485,7 @@ void Scene::LoadPhysX(string filename)
     }
     oin.close();
 
-    projectile = new Projectile(mDev, mDevcon, mApex);
+    projectile = new Projectile(mDev, mDevcon, mApex, mMaxProjectile);
     mRenderables.push_back(projectile);
 }
 
@@ -408,6 +494,14 @@ void Scene::Fire(Camera *mCam, float speed)
     if( projectile )
     {
         projectile->Fire(mCam, speed, cloths);
+    }
+}
+
+void Scene::ClearProjectiles()
+{
+	if( projectile )
+    {
+        projectile->Clear();
     }
 }
 
@@ -531,11 +625,11 @@ void Scene::PlaceJenga(XMFLOAT3 location, int numlevels, float dist, float lengt
     
     XMFLOAT3 startLocation = location;
 
-    float mJengaLength = length;
+    mJengaLength = length;
     float width	 = (mJengaLength / 3.f);
     float height = (mJengaLength / 5.f);
 
-	Box* jengaBlock1 = new Box(mDevcon, mDev, mApex, length, width, height);
+    Box* jengaBlock1 = new Box(mDevcon, mDev, mApex, length, width, height);
     Box* jengaBlock2 = new Box(mDevcon, mDev, mApex, width, length, height);
 
     XMFLOAT3 midBlock, rightBlock, leftBlock;
@@ -555,13 +649,13 @@ void Scene::PlaceJenga(XMFLOAT3 location, int numlevels, float dist, float lengt
             leftBlock.z -= width + dist;
             leftBlock.y += (float)i*height + dist;
 
-            PlaceBlock(midBlock, length, width, height);
-            PlaceBlock(rightBlock, length, width, height);
-            PlaceBlock(leftBlock, length, width, height);
+            PlaceBlock(midBlock, length, width, height, 0);
+            PlaceBlock(rightBlock, length, width, height, 0);
+            PlaceBlock(leftBlock, length, width, height, 0);
 
-			jengaBlock1->AddInstance(midBlock.x, midBlock.y, midBlock.z);
-			jengaBlock1->AddInstance(rightBlock.x, rightBlock.y, rightBlock.z);
-			jengaBlock1->AddInstance(leftBlock.x, leftBlock.y, leftBlock.z);
+            jengaBlock1->AddInstance(midBlock.x, midBlock.y, midBlock.z);
+            jengaBlock1->AddInstance(rightBlock.x, rightBlock.y, rightBlock.z);
+            jengaBlock1->AddInstance(leftBlock.x, leftBlock.y, leftBlock.z);
         }
         else
         {
@@ -576,27 +670,29 @@ void Scene::PlaceJenga(XMFLOAT3 location, int numlevels, float dist, float lengt
             leftBlock.x -= width + dist;
             leftBlock.y += (float)i*height + dist;
 
-            PlaceBlock(midBlock, width, length, height);
-            PlaceBlock(rightBlock, width, length, height);
-            PlaceBlock(leftBlock, width, length, height);
+            PlaceBlock(midBlock, width, length, height, 1);
+            PlaceBlock(rightBlock, width, length, height, 1);
+            PlaceBlock(leftBlock, width, length, height, 1);
 
-			jengaBlock2->AddInstance(midBlock.x, midBlock.y, midBlock.z);
-			jengaBlock2->AddInstance(rightBlock.x, rightBlock.y, rightBlock.z);
-			jengaBlock2->AddInstance(leftBlock.x, leftBlock.y, leftBlock.z);
+            jengaBlock2->AddInstance(midBlock.x, midBlock.y, midBlock.z);
+            jengaBlock2->AddInstance(rightBlock.x, rightBlock.y, rightBlock.z);
+            jengaBlock2->AddInstance(leftBlock.x, leftBlock.y, leftBlock.z);
         }
     }
-	mRenderables.push_back(jengaBlock1);
-	mRenderables.push_back(jengaBlock2);
+    mRenderables.push_back(jengaBlock1);
+    mRenderables.push_back(jengaBlock2);
+    JengaBlocks.push_back(jengaBlock2);
+    JengaBlocks.push_back(jengaBlock1);
 }
 
-void Scene::PlaceBlock(XMFLOAT3 location, float length, float width, float height)
+void Scene::PlaceBlock(XMFLOAT3 location, float length, float width, float height, int side)
 {
     PxMaterial*	blockMaterial = mApex->getPhysics()->createMaterial(0.5f, 0.5f, 0.3f);    //static friction, dynamic friction, restitution
     if(!blockMaterial)
         return;
 
     PxVec3 pos = PxVec3(location.x,location.y+(height/2.f),location.z);
-    PxReal density = 30.0f;
+    PxReal density = 0.1f;
         
     PxTransform transform(pos, PxQuat::createIdentity());
     PxVec3 dimensions(length/2.f, height/2.f, width/2.f);
@@ -610,34 +706,80 @@ void Scene::PlaceBlock(XMFLOAT3 location, float length, float width, float heigh
     PxRigidBodyExt::updateMassAndInertia(*boxActor, density);
 
     mApex->getScene()->addActor(*boxActor);
-    blocks.push_back(boxActor);
+	if(side == 0)
+		blocks1.push_back(boxActor);
+	else
+		blocks2.push_back(boxActor);
 }
 
 void Scene::ResetJenga()
 {
-    XMFLOAT3 startLocation = mJengaStartPosition;
+    PxVec3 startLocation = PxVec3(mJengaStartPosition.x, mJengaStartPosition.y, mJengaStartPosition.z);
+	PxRigidDynamic* blockDynamic = 0;
 
-    float width	 = (mJengaLength / 3) + mJengaDist;
-    float height = (mJengaLength / 5) + mJengaDist;
+    float width	 = (mJengaLength / 3.f);
+    float height = (mJengaLength / 5.f);
 
-    XMFLOAT3 midBlock, rightBlock, leftBlock;
-
+    PxVec3 midBlock, rightBlock, leftBlock;
+	int block1counter = 0;
+	int block2counter = 0;
     for(int i = 0; i < mJengaNumLevels; i++)
     {
-        midBlock	= startLocation;
-        midBlock.y  = (float)i*height;
-
-        rightBlock = startLocation;
-        rightBlock.x += width;
-        rightBlock.y = (float)i*height;
-
-        leftBlock = startLocation;
-        leftBlock.x -= width;
-        leftBlock.y = (float)i*height;
-
         if((i % 2) == 1)
         {
-            //apply a 90 degree rotation
+            midBlock	= startLocation;
+            midBlock.y  += (float)i*height + mDist+(height/2.f);
+
+			blockDynamic = static_cast<PxRigidDynamic*>(blocks1[block1counter++]);
+            blockDynamic->setLinearVelocity(PxVec3(0,0,0));
+            blockDynamic->setGlobalPose(PxTransform(midBlock));
+            blockDynamic->setAngularVelocity(PxVec3(0,0,0));
+
+            rightBlock = startLocation;
+            rightBlock.z += width + mDist;
+            rightBlock.y += (float)i*height + mDist+(height/2.f);
+
+			blockDynamic = static_cast<PxRigidDynamic*>(blocks1[block1counter++]);
+            blockDynamic->setLinearVelocity(PxVec3(0,0,0));
+            blockDynamic->setGlobalPose(PxTransform(rightBlock));
+            blockDynamic->setAngularVelocity(PxVec3(0,0,0));
+
+            leftBlock = startLocation;
+            leftBlock.z -= width + mDist;
+            leftBlock.y += (float)i*height + mDist+(height/2.f);
+
+			blockDynamic = static_cast<PxRigidDynamic*>(blocks1[block1counter++]);
+            blockDynamic->setLinearVelocity(PxVec3(0,0,0));
+            blockDynamic->setGlobalPose(PxTransform(leftBlock));
+            blockDynamic->setAngularVelocity(PxVec3(0,0,0));
+        }
+        else
+        {
+            midBlock	= startLocation;
+            midBlock.y  += (float)i*height + mDist+(height/2.f);
+
+			blockDynamic = static_cast<PxRigidDynamic*>(blocks2[block2counter++]);
+            blockDynamic->setLinearVelocity(PxVec3(0,0,0));
+            blockDynamic->setGlobalPose(PxTransform(midBlock));
+            blockDynamic->setAngularVelocity(PxVec3(0,0,0));
+
+            rightBlock = startLocation;
+            rightBlock.x += width + mDist;
+            rightBlock.y += (float)i*height + mDist+(height/2.f);
+
+			blockDynamic = static_cast<PxRigidDynamic*>(blocks2[block2counter++]);
+            blockDynamic->setLinearVelocity(PxVec3(0,0,0));
+            blockDynamic->setGlobalPose(PxTransform(rightBlock));
+            blockDynamic->setAngularVelocity(PxVec3(0,0,0));
+
+            leftBlock = startLocation;
+            leftBlock.x -= width + mDist;
+            leftBlock.y += (float)i*height + mDist+(height/2.f);
+	
+			blockDynamic = static_cast<PxRigidDynamic*>(blocks2[block2counter++]);
+            blockDynamic->setLinearVelocity(PxVec3(0,0,0));
+            blockDynamic->setGlobalPose(PxTransform(leftBlock));
+            blockDynamic->setAngularVelocity(PxVec3(0,0,0));
         }
     }		
 
@@ -657,10 +799,53 @@ void Scene::Update()
             XMStoreFloat4x4(&bowlingSets[i]->mWorldMats[j], XMMatrixMultiply(scale,  XMLoadFloat4x4(&bowlingSets[i]->mWorldMats[j]) ));
         }
     }
+	
+	for(int i = 0; i < (int)JengaBlocks.size(); i++)
+    {
+        for(int j = 0; j < (int)JengaBlocks[i]->mWorldMats.size(); j++)
+        {
+			PxU32 nShapes = 0;
+			PxRigidActor* block;
+			if( i == 0 )
+			{
+				if(blocks1[j])
+					block = blocks1[j];
+				else	
+					return;
+			}
+			else
+			{
+				if(blocks2[j])
+					block = blocks2[j];
+				else	
+					return;
+			}
+
+			nShapes = block->getNbShapes();
+			
+
+			PxShape** shapes = new PxShape*[nShapes];
+ 
+			block->getShapes(shapes, nShapes);     
+			PxTransform pt = PxShapeExt::getGlobalPose(*shapes[0]);
+
+			delete [] shapes;
+
+			XMMATRIX world = XMLoadFloat4x4(&JengaBlocks[i]->mWorldMats[j]) ;
+			mApex->PxtoXMMatrix(pt, &world);
+
+			XMStoreFloat4x4(&JengaBlocks[i]->mWorldMats[j], world);          
+        }
+    }
+
 
     for(int i = 0; i < (int)mRenderables.size() ; i++)
     {
         mRenderables[i]->Update();
+    }
+    for(int i = 0; i < (int)mBlendRenderables.size() ; i++)
+    {
+        mBlendRenderables[i]->Update();
     }
 }
 

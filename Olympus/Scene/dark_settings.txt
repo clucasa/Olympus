@@ -1,0 +1,7 @@
+# hub scene settings
+# g			max gravity
+# p			max projectiles
+# s			speed scaling
+g -9.81
+p 0
+s 1.0

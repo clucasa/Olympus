@@ -21,7 +21,7 @@ cbuffer ObjectMat	: register(c1)
 
 Texture2D tex : register(t0);
 Texture2D depth : register(t1);
-Texture2D shadow : register(t6);
+Texture2D shadow[20] : register(t6);
 
 struct VOut
 {
@@ -54,7 +54,7 @@ float4 PShader(VOut input) : SV_TARGET
 	float luminance;
 	//return depth.Sample(samLinear, input.texcoord).r;
 	//return tex.Sample(samLinear, input.texcoord);
-	//return shadow.Sample(samLinear, input.texcoord);
+	//return shadow[2].Sample(samLinear, input.texcoord);
 
 
 	//else

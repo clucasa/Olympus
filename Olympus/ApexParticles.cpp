@@ -15,7 +15,7 @@ ApexParticles::~ApexParticles()
 
 void ApexParticles::CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
     ID3D11DeviceContext *devcon, ID3D11Device *dev,
-    physx::apex::NxUserRenderer* renderer, NxModuleIofx* iofxModule, const char* filename)
+    physx::apex::NxUserRenderer* renderer, NxModuleIofx* iofxModule, const char* filename, const char* texfile)
 {
     mDev = dev;
     mDevcon = devcon;
@@ -60,12 +60,15 @@ void ApexParticles::CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
     mRenderVolume = mIofxModule->createRenderVolume(*gApexScene, b, 0, true );
     emitterActor->setPreferredRenderVolume( mRenderVolume );
 
+	std::string tfile = std::string("Media/Textures/") + texfile;
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, tfile.c_str(), 0, 0, &spriteTexture, 0 );
+
     InitPipeline();
 }
 
 void ApexParticles::InitPipeline()
 {
-    HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, /*"Media/Textures/SoftParticle.dds"*/"Media/Textures/popcorn.png", 0, 0, &spriteTexture, 0 );
+    HRESULT hr;
 
     // compile the shaders
     ID3D10Blob *sVS, *sPS, *sGS;

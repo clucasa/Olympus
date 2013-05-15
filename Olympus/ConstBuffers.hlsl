@@ -12,3 +12,10 @@ struct SceneBuffer
     float    dirLightOn;
     float    shadowsOn;
 };
+
+struct ShadowProj
+{
+	float4x4 lightViewProj;
+	float3 lightPos;
+	float PADdyCake;
+};

@@ -1,5 +1,6 @@
 # object hallway
-m Media/Models/ceremonyhall.fbx
+# m Media/Models/ceremonyhall.fbx
+m Media/Models/newceremonyhall.fbx
 t Media/Textures/BLD_CeremonyWall_D_DM.png
 t Media/Textures/PRP_CeremonyOrnament_A_DM.png
 t Media/Textures/PRP_CeremonyColumn_B_DM.png

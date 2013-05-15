@@ -273,8 +273,11 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
                 case 'T': // T key has been pressed
                 {
-                    rendManager->scene[mCurrentScene]->ResetPins();	
-                    rendManager->scene[mCurrentScene]->ResetJenga();	
+					if(mCurrentScene == CurrentScene::BOWLING)
+						rendManager->scene[mCurrentScene]->ResetPins();
+					if(mCurrentScene == CurrentScene::JENGA)
+						rendManager->scene[mCurrentScene]->ResetJenga();	
+					rendManager->scene[mCurrentScene]->ClearProjectiles();
                 }
                 break;
             }

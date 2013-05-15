@@ -23,6 +23,7 @@
 #include "GameTimer.h"
 #include "ConstBuffers.h"
 #include "LightHelper.h"
+#include "ShadowManager.h"
 #include <string>
 using namespace std;
 
@@ -74,6 +75,10 @@ public:
 	void Render(int renderType);
 	void Render();
 	void RenderToTarget(enum renderTargets);
+
+	// Shadow Related Functions
+	void RenderToShadow();
+	void SetShadowSRV(int loc);
 
 	//DEBUG
 	void RenderManager::SetPosition(float x, float y, float z);
@@ -141,14 +146,21 @@ public:
 	POINT posPos;
 	string sText;
 
-		//Shadow Varibles
+	//Rasterizer Variables
+	ID3D11RasterizerState*		pState;
+	D3D11_RASTERIZER_DESC		raster;
+
+	//Shadow Varibles
 	D3D11_VIEWPORT mShadowPort;
-    ID3D11Texture2D* pShadowMap;
-    ID3D11DepthStencilView* pShadowMapDepthView;
-    ID3D11ShaderResourceView* pShadowMapSRView;
-    Camera *mShadowCam;
-    ID3D11Buffer *shadowCBuffer;
-    ShadowBuff shadowBuff;
+	ID3D11Texture2D* pShadowMap;
+	ID3D11DepthStencilView* pShadowMapDepthView;
+	ID3D11ShaderResourceView* pShadowMapSRView;
+	Camera *mShadowCam;
+	ID3D11Buffer *shadowCBuffer;
+	vector<ShadowBuff> shadowBuff;
+	ShadowBuff shadBuffer;
+	vector<ShadowManager*> shadows;
+	ShadowManager* shad;
 };
 
 

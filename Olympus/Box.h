@@ -27,6 +27,7 @@ public:
     virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
     virtual void RecompileShader();
     virtual void Update();
+    virtual void Depth();
 
 	void AddInstance(float x, float y, float z);
 

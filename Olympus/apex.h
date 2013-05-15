@@ -79,8 +79,8 @@ public:
     bool						InitParticles();
     bool						InitClothing();
 
-    ApexParticles*				CreateEmitter(physx::apex::NxUserRenderer* renderer, const char* filename);
-    ApexCloth*					CreateCloth(physx::apex::NxUserRenderer* renderer, const char* filename, const char* texfile);
+    ApexParticles*				CreateEmitter(physx::apex::NxUserRenderer* renderer, const char* filename, const char* texfile);
+    ApexCloth*					CreateCloth(physx::apex::NxUserRenderer* renderer, const char* filename, const char* texfile, float maxWind);
     void						CreatePlane(float nx, float ny, float nz, float distance);
 
     bool						advance(float dt);
@@ -89,7 +89,7 @@ public:
     void						PxtoXMMatrix(PxTransform input, XMMATRIX* start);
     void						XMtoPxMatrix(XMMATRIX* input, PxMat44* start);
 
-    bool						CreateScene();
+    bool						CreateScene(float gravity);
 
 
     void						Render();

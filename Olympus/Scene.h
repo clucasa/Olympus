@@ -32,6 +32,7 @@ public:
 	~Scene();
 
 	void Fire(Camera *mCam, float speed);
+	void ClearProjectiles();
 
 	void LoadFBX(string filename);
 	void LoadPhysX(string filename);
@@ -42,7 +43,7 @@ public:
 	void ResetPins();
 
 	void PlaceJenga(XMFLOAT3 location, int numlevels, float dist, float length);
-	void PlaceBlock(XMFLOAT3 location, float length, float width, float height); 
+	void PlaceBlock(XMFLOAT3 location, float length, float width, float height, int side); 
 	void ResetJenga();
 
 	void Update();
@@ -59,7 +60,10 @@ public:
 	float    mJengaDist;
 	int	     mJengaNumLevels;
 	float	 mJengaLength;
-	vector<PxRigidActor*> blocks;
+	float	 mJengaWidth;
+	float	 mJengaHeight;
+	vector<PxRigidActor*> blocks1;
+	vector<PxRigidActor*> blocks2;
 
 	Renderable *mSkyBox;
 	Projectile *projectile;
@@ -75,9 +79,14 @@ public:
 	GeometryGenerator *mGeoGen;
 
 	vector<Renderable*> mRenderables;
+	vector<Renderable*> mBlendRenderables;
 	ID3D11Device *mDev;
 	ID3D11DeviceContext *mDevcon;
 	Apex* mApex;
+
+	float mGravity;
+	int mMaxProjectile;
+	float mSpeedScale;
 };
 
 #endif
