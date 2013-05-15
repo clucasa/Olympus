@@ -34,7 +34,7 @@ public:
 
     CharacterController(Apex *mApex);
     ~CharacterController(void);
-
+    void MoveTo( float x, float y, float z );
     void Move( float x, float y, float z, float elapsedTime );
     void rotateX( float angle ) const;
     void zoom(bool zflag);

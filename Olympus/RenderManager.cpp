@@ -447,7 +447,7 @@ void RenderManager::Render()
 
 	mDevcon->UpdateSubresource(sceneCBuffer, 0, 0, &sceneBuff , 0, 0);
 
-	if(mCurrentScene != CurrentScene::DARKNESS)
+	if(mCurrentScene != CurrentScene::DARKNESS && mCurrentScene != CurrentScene::BOWLING)
 	{
 		//Skybox right now doesn't like zbuffers, so dont' set one for it
 		mDevcon->OMSetRenderTargets(1, &mScreen->mTargetView, 0);

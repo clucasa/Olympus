@@ -202,6 +202,7 @@ void Scene::LoadSettings(string filename)
     oin.close();
 
 	mApex->CreateScene(mGravity);
+	cController = new CharacterController(mApex);
 }
 
 void Scene::LoadFBX(string filename)

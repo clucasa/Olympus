@@ -273,11 +273,11 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
                 case 'T': // T key has been pressed
                 {
-					if(mCurrentScene == CurrentScene::BOWLING)
-						rendManager->scene[mCurrentScene]->ResetPins();
-					if(mCurrentScene == CurrentScene::JENGA)
-						rendManager->scene[mCurrentScene]->ResetJenga();	
-					rendManager->scene[mCurrentScene]->ClearProjectiles();
+                    if(mCurrentScene == CurrentScene::BOWLING)
+                        rendManager->scene[mCurrentScene]->ResetPins();
+                    if(mCurrentScene == CurrentScene::JENGA)
+                        rendManager->scene[mCurrentScene]->ResetJenga();	
+                    rendManager->scene[mCurrentScene]->ClearProjectiles();
                 }
                 break;
             }
@@ -434,7 +434,6 @@ int System::initd3d()
 
     //mApex->UpdateViewProjMat(&mCam->View(),&mCam->Proj(), 1.0f, 10000.0f, 0.25f*MathHelper::Pi, mClientWidth, mClientHeight);
 
-    cController = new CharacterController(rendManager->mApex);
     return InitPipeline();
 }
 
@@ -462,7 +461,7 @@ void System::RenderFrame(float dt)
         XMStoreFloat(&distance,length);
         if(abs(distance) < 10.0f)
         {
-			SwitchScene(CurrentScene::JENGA);
+            SwitchScene(CurrentScene::JENGA);
         }
 
         spherePos = XMLoadFloat3(&XMFLOAT3( -300.6f, -21.0f, -239.0f ) );
@@ -505,7 +504,7 @@ void System::RenderFrame(float dt)
     case CurrentScene::DARKNESS:
         
         break;
-	case CurrentScene::JENGA:
+    case CurrentScene::JENGA:
         
         break;
     }
@@ -618,12 +617,12 @@ void System::UpdateCamera(float dt)
                 (state.Gamepad.sThumbLY > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE ||
                 state.Gamepad.sThumbLY < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
             {    
-                cController->run(true);
+                rendManager->scene[mCurrentScene]->cController->run(true);
                 speed = 40.0f; // for fly mode
             }
             else
             {
-                cController->run(false);
+                rendManager->scene[mCurrentScene]->cController->run(false);
                 boolRun = false;
             }
         }
@@ -631,7 +630,7 @@ void System::UpdateCamera(float dt)
         // Aiming with left trigger
         if(state.Gamepad.bLeftTrigger && state.Gamepad.bRightTrigger < 256)
         { // 256 disables the right trigger
-            cController->zoom(true);
+            rendManager->scene[mCurrentScene]->cController->zoom(true);
             mCam->SetLens(0.1f*MathHelper::Pi, (float)mClientWidth/(float)mClientHeight, 1.0f, 10000.0f);
             mFovFlag = 1;
             XMFLOAT3 mLook = mCam->GetLook();
@@ -659,7 +658,7 @@ void System::UpdateCamera(float dt)
             mCam->Walk((leftThumbY / 3000.0f) * dt * speed);
             mCam->Strafe((leftThumbX / 3000.0f) * dt * speed);
 
-            cController->zoom(false);
+            rendManager->scene[mCurrentScene]->cController->zoom(false);
 
             XMFLOAT3 mLook = mCam->GetLook();
             if(mLook.y < -0.98f){ // looking down limit
@@ -689,23 +688,23 @@ void System::UpdateCamera(float dt)
                     (state.Gamepad.sThumbLY < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
                     state.Gamepad.sThumbLY > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
                 {    
-                        cController->control(true, true, 0.0f, -9.8f, 0.0f, dt);
+                        rendManager->scene[mCurrentScene]->cController->control(true, true, 0.0f, -9.8f, 0.0f, dt);
                 }
                 if((state.Gamepad.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
                 {
-                    cController->control(true, true, mCam->GetRight().x, -9.8f, mCam->GetRight().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, true, mCam->GetRight().x, -9.8f, mCam->GetRight().z, dt);
                 }
                 if((state.Gamepad.sThumbLX < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
                 {
-                    cController->control(true, true, -mCam->GetRight().x, -9.8f, -mCam->GetRight().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, true, -mCam->GetRight().x, -9.8f, -mCam->GetRight().z, dt);
                 }
                 if((state.Gamepad.sThumbLY > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
                 {
-                    cController->control(true, true, mCam->GetLook().x, -9.8f, mCam->GetLook().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, true, mCam->GetLook().x, -9.8f, mCam->GetLook().z, dt);
                 }
                 if((state.Gamepad.sThumbLY < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
                 {
-                    cController->control(true, true, -mCam->GetLook().x, -9.8f, -mCam->GetLook().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, true, -mCam->GetLook().x, -9.8f, -mCam->GetLook().z, dt);
                 }	
             }
             else
@@ -715,27 +714,28 @@ void System::UpdateCamera(float dt)
                     (state.Gamepad.sThumbLY < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
                     state.Gamepad.sThumbLY > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
                 {   
-                        cController->control(true, false, 0.0f, -9.8f, 0.0f, dt);
+                        rendManager->scene[mCurrentScene]->cController->control(true, false, 0.0f, -9.8f, 0.0f, dt);
                 }
                 if((state.Gamepad.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
                 {
-                    cController->control(true, false, mCam->GetRight().x, -9.8f, mCam->GetRight().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, false, mCam->GetRight().x, -9.8f, mCam->GetRight().z, dt);
                 }
                 if((state.Gamepad.sThumbLX < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
                 {
-                    cController->control(true, false, -mCam->GetRight().x, -9.8f, -mCam->GetRight().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, false, -mCam->GetRight().x, -9.8f, -mCam->GetRight().z, dt);
                 }
                 if((state.Gamepad.sThumbLY > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
                 {
-                    cController->control(true, false, mCam->GetLook().x, -9.8f, mCam->GetLook().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, false, mCam->GetLook().x, -9.8f, mCam->GetLook().z, dt);
                 }
                 if((state.Gamepad.sThumbLY < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
                 {
-                    cController->control(true, false, -mCam->GetLook().x, -9.8f, -mCam->GetLook().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, false, -mCam->GetLook().x, -9.8f, -mCam->GetLook().z, dt);
                 }
             }
             
-            mCam->SetPosition(cController->pCharacter->getPosition().x, cController->pCharacter->getPosition().y, cController->pCharacter->getPosition().z); 
+            mCam->SetPosition(rendManager->scene[mCurrentScene]->cController->pCharacter->getPosition().x,
+                rendManager->scene[mCurrentScene]->cController->pCharacter->getPosition().y, rendManager->scene[mCurrentScene]->cController->pCharacter->getPosition().z); 
         }
 
         else
@@ -799,12 +799,12 @@ void System::UpdateCamera(float dt)
             if((GetAsyncKeyState('W') & 0x8000) || (GetAsyncKeyState('S') & 0x8000) ||
                 (GetAsyncKeyState('A') & 0x8000) || (GetAsyncKeyState('D') & 0x8000))
             {    
-                cController->run(true);
+                rendManager->scene[mCurrentScene]->cController->run(true);
                 speed = 140.0f; // for fly mode
             }
             else
             {
-                cController->run(false);
+                rendManager->scene[mCurrentScene]->cController->run(false);
                 boolRun = false;
             }
         }
@@ -817,54 +817,55 @@ void System::UpdateCamera(float dt)
                 if(!((GetAsyncKeyState('W') & 0x8000) && (GetAsyncKeyState('S') & 0x8000) &&
                     (GetAsyncKeyState('A') & 0x8000) && (GetAsyncKeyState('D') & 0x8000)))
                 {
-                    cController->control(true, true, 0.0f, -9.8f, 0.0f, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, true, 0.0f, -9.8f, 0.0f, dt);
                 }
 
                 if( GetAsyncKeyState('W') & 0x8000 )
                 {
-                    cController->control(true, true, mCam->GetLook().x, -9.8f, mCam->GetLook().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, true, mCam->GetLook().x, -9.8f, mCam->GetLook().z, dt);
                 }
                     
                 if( GetAsyncKeyState('S') & 0x8000 )
                 {
-                    cController->control(true, true, -mCam->GetLook().x, -9.8f, -mCam->GetLook().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, true, -mCam->GetLook().x, -9.8f, -mCam->GetLook().z, dt);
                 }
            
                 if( GetAsyncKeyState('A') & 0x8000 )
                 {
-                    cController->control(true, true, -mCam->GetRight().x, -9.8f, -mCam->GetRight().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, true, -mCam->GetRight().x, -9.8f, -mCam->GetRight().z, dt);
                 }
     
                 if( GetAsyncKeyState('D') & 0x8000 )
                 {
-                    cController->control(true, true, mCam->GetRight().x, -9.8f, mCam->GetRight().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, true, mCam->GetRight().x, -9.8f, mCam->GetRight().z, dt);
                 }
             }
             else
             {
                 if(!((GetAsyncKeyState('W') & 0x8000) && (GetAsyncKeyState('S') & 0x8000) &&
                     (GetAsyncKeyState('A') & 0x8000) && (GetAsyncKeyState('D') & 0x8000))){
-                    cController->control(true, false, 0.0f, -9.8, 0.0f, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, false, 0.0f, -9.8, 0.0f, dt);
                 }
     
                 if( GetAsyncKeyState('W') & 0x8000 ){
-                    cController->control(true, false, mCam->GetLook().x, -9.8f/2.f, mCam->GetLook().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, false, mCam->GetLook().x, -9.8f/2.f, mCam->GetLook().z, dt);
                 }
                     
                 if( GetAsyncKeyState('S') & 0x8000 ){
-                    cController->control(true, false, -mCam->GetLook().x, -9.8f/2.f, -mCam->GetLook().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, false, -mCam->GetLook().x, -9.8f/2.f, -mCam->GetLook().z, dt);
                 }
            
                 if( GetAsyncKeyState('A') & 0x8000 ){
-                    cController->control(true, false, -mCam->GetRight().x, -9.8f/2.f, -mCam->GetRight().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, false, -mCam->GetRight().x, -9.8f/2.f, -mCam->GetRight().z, dt);
                 }
     
                 if( GetAsyncKeyState('D') & 0x8000 ){
-                    cController->control(true, false, mCam->GetRight().x, -9.8f/2.f, mCam->GetRight().z, dt);
+                    rendManager->scene[mCurrentScene]->cController->control(true, false, mCam->GetRight().x, -9.8f/2.f, mCam->GetRight().z, dt);
                 }
             }
 
-            mCam->SetPosition(cController->pCharacter->getPosition().x, cController->pCharacter->getPosition().y, cController->pCharacter->getPosition().z); 
+            mCam->SetPosition(rendManager->scene[mCurrentScene]->cController->pCharacter->getPosition().x,
+                rendManager->scene[mCurrentScene]->cController->pCharacter->getPosition().y, rendManager->scene[mCurrentScene]->cController->pCharacter->getPosition().z); 
         }
         else
         {
@@ -959,20 +960,20 @@ void System::UpdateCamera(float dt)
             rendManager->mScreen->cb->dofRange -= .001f;				
     }
 
-	// = key
+    // = key
     if( (GetAsyncKeyState('=') & 0x8000) )
     {
         if(mSpeedScalar < 10.f)
             mSpeedScalar += .001f;				
     }
 
-	// - key
+    // - key
     if( (GetAsyncKeyState('-') & 0x8000) )
     {
         if(mSpeedScalar > 0.f)
             mSpeedScalar -= .001f;				
     }
-	
+    
     mCam->UpdateViewMatrix();
 }
 
@@ -1115,6 +1116,6 @@ void System::SwitchScene(int scene)
 {
     rendManager->mCurrentScene = scene;
     rendManager->mApex->setScene(scene);
-    cController->SetScene(scene);
     mCurrentScene = (CurrentScene)scene;
+	rendManager->scene[mCurrentScene]->cController->MoveTo(0.0, 58.0f, 0.0f);//Move to specific location
 }

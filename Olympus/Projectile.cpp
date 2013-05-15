@@ -177,7 +177,7 @@ void Projectile::Clear()
 	for(int i = 0; i < numBoxes; i++)
 	{
 		boxes[i]->release();
-		if(spheres[i])
+		if(spheres.size() > i)
 			spheres[i]->release();
 	}
 	spheres.clear();

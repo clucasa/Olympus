@@ -184,7 +184,7 @@ float4 PShader(GOut input) : SV_TARGET
 	color = saturate(color);
 	color.a = theTexture.GatherAlpha(ss, input.texcoord, int2(0,0), int2(0,0), int2(0,0), int2(0,0));
 
-	//clip(color.a < 0.999999f ? -1:1 );
+	clip(color.a < 0.999999f ? -1:1 );
 
 	return color;
 

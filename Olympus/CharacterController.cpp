@@ -10,10 +10,10 @@ CharacterController::CharacterController(Apex *mApex)
 	PxMaterial* mMaterial		= mApex->defaultMaterial;
 
 	PxCapsuleControllerDesc desc;
-		desc.height					= 2.0f;
+		desc.height					= 4.0f;
 		desc.radius					= 2.0f;
 		//desc.halfHeight				= 10.0f; //for box
-		desc.density				= 10.0f;
+		desc.density				= 1000.0f;
 		desc.scaleCoeff				= 0.899998f;
 		desc.material				= mMaterial;
 		desc.position				= PxExtendedVec3(0.0, 58.0f, 0.0f);
@@ -115,4 +115,10 @@ void CharacterController::control(bool move, bool startJump, float x, float y, f
 	if(move){
 		Move(x, y, z, elapsedTime);
 	}
+}
+
+void CharacterController::MoveTo( float x, float y, float z )
+{
+	PxExtendedVec3 pos = PxExtendedVec3(x, y, z);
+	pCharacter->setPosition( pos );
 }

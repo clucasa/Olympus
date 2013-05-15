@@ -19,7 +19,7 @@
 #include "apex.h"
 #include <Xinput.h>
 #include "MathHelper.h"
-#include "CharacterController.h"
+
 
 #include <iostream>
 #include <fstream>
@@ -87,7 +87,7 @@ private:
     HWND                hWnd;               // The main window
     Camera              *mCam;				// the camera
     Apex*               mApex;
-    CharacterController *cController;
+    
 
     RenderManager       *rendManager; 
     POINT               mLastMousePos;		// the last mouse position

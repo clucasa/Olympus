@@ -8,6 +8,7 @@
 #include "Sphere.h"
 #include <vector>
 #include "Projectile.h"
+#include "CharacterController.h"
 #include <string>
 class Apex;
 //class Camera;
@@ -51,6 +52,8 @@ public:
 	void UpdateReflective(Camera *cam);
 
 	void ToggleParticles(bool on);
+
+	CharacterController *cController;
 
 	XMFLOAT3 mPinStartPosition;
 	float    mDist;

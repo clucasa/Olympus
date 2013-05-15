@@ -4,7 +4,7 @@ c FlagForWind_Med_v2 774.0 -40.0 -580.0 1.57 0.0 0.0 nvidia_flag_d.dds 800.0
 c curtainew 10.0 12.0 -30.0 0.0 0.0 0.0 OSU_Flag.png 50.0
 c curtainew -10.0 12.0 -30.0 0.0 0.0 0.0 NVIDIA_Flag.png 50.0
 e SmokeEmitter -25.0 -18.0 -348.0 smoke.dds
-e TorchEmitter 377.7 1.0 -252.9 bioFire1.png
-e TorchEmitter 416.35 1.0 -214.35 bioFire2.png
+e TorchEmitter 377.7 1.0 -252.9 fire.png
+e TorchEmitter 416.35 1.0 -214.35 fire.png
 e testSpriteEmitter4ParticleFluidIos -19.0 45.0 206.0 SoftParticle.dds
 p 0.0 1.0 0.0 50.0
