@@ -136,9 +136,15 @@ void Projectile::Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths)
         XMStoreFloat4x4(&final, trans );
 
         mWorldMats.push_back(final);
+		vector<physx::apex::NxClothingSphere*> sphere_in_each_cloth;
+		for(int i = 0; i < mCloths.size(); i++)
+		{
+			sphere_in_each_cloth.push_back(mCloths[i]->getClothingActor()->createCollisionSphere(pos, .5));
+		}
         if(mCloths.size() > 0)
-            spheres.push_back(mCloths[0]->getClothingActor()->createCollisionSphere(pos, .5));
-        
+		{
+            spheres.push_back(sphere_in_each_cloth);
+		}
     }
     else
     {
@@ -160,11 +166,11 @@ void Projectile::Fire(Camera *mCam, float speed, vector<ApexCloth*> mCloths)
         boxDynamic->setAngularVelocity(PxVec3(0,0,0));
         boxDynamic->setGlobalPose(transform);
 
-        if(mCloths.size() > 0)
-        {
-            physx::apex::NxClothingSphere* sphere = spheres[curBox];
+        for(int i = 0; i < mCloths.size(); i++)
+		{
+            physx::apex::NxClothingSphere* sphere = 0;
+			sphere = spheres[curBox][i];
             sphere->setPosition(pos);
-            
         }
 
         curBox++;
@@ -177,8 +183,13 @@ void Projectile::Clear()
     for(int i = 0; i < numBoxes; i++)
     {
         boxes[i]->release();
-        if(spheres.size() > i)
-            spheres[i]->release();
+		if(spheres.size() > 0)
+		{
+			for(int j = 0; j < spheres[i].size(); j++)
+			{
+				spheres[i][j]->release();
+			}
+		}
     }
     spheres.clear();
     mWorldMats.clear();
@@ -211,13 +222,16 @@ void Projectile::Update()
 
         XMStoreFloat4x4(&mWorldMats[i], world);
 
-        if(spheres.size() > 0)
-        {
-            physx::apex::NxClothingSphere* sphere = spheres[i];
+		if(spheres.size() > 0)
+		{
+			for(int j = 0; j < spheres[i].size(); j++)
+			{
+				physx::apex::NxClothingSphere* sphere = spheres[i][j];
 
-            PxVec3 pos = pt.p;
-            sphere->setPosition(pos);
-        }
+				PxVec3 pos = pt.p;
+				sphere->setPosition(pos);
+			}
+		}
     }
 }
 

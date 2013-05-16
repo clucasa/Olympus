@@ -155,15 +155,20 @@ void ApexCloth::Update()
 
 void ApexCloth::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
 {
-    //SPRITECBUFFER scBuffer;
-    //scBuffer.EyePos = mCam->GetPosition();
-
     mDevcon->VSSetShader(mVS, 0, 0);
     mDevcon->PSSetShader(mPS, 0, 0);
     mDevcon->PSSetShaderResources(0, 1, &clothTexture);
     mDevcon->IASetInputLayout(mLayout);
 
-//    mDevcon->UpdateSubresource(mConstBuffer, 0, 0, &scBuffer, 0, 0);
+    clothingActor->dispatchRenderResources(*gRenderer);
+}
+
+void ApexCloth::Depth()
+{
+    mDevcon->VSSetShader(mVS, 0, 0);
+    mDevcon->PSSetShader(NULL, 0, 0);
+    mDevcon->PSSetShaderResources(0, 1, &clothTexture);
+    mDevcon->IASetInputLayout(mLayout);
 
     clothingActor->dispatchRenderResources(*gRenderer);
 }

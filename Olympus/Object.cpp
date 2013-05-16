@@ -7,7 +7,7 @@ Object::Object()
 //---------------------------------------------------------------------------------------
 // Character Loader here
 //---------------------------------------------------------------------------------------
-void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *NormTextures, ID3D11Device* devv, ID3D11DeviceContext *devcon, Apex* apex )
+void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *NormTextures, vector<float> TextureScales, ID3D11Device* devv, ID3D11DeviceContext *devcon, Apex* apex )
 {
     mApex = apex;
     mScale = 0;
@@ -29,6 +29,11 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
     for( int i = 0; i < numMeshes; i++ )
     {
         int numVerts = vertexes[i].size();
+		for(int j = 0; j < numVerts; j++)
+		{
+			vertexes[i][j].Tex.x *= TextureScales[i];
+			vertexes[i][j].Tex.y *= TextureScales[i];
+		}
         D3D11_BUFFER_DESC bd;
         ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
         bd.Usage = D3D11_USAGE_DEFAULT;

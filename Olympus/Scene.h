@@ -59,14 +59,17 @@ public:
 	float    mDist;
 	int	     mNumLevels;
 
-	XMFLOAT3 mJengaStartPosition;
+	vector<XMFLOAT3> mJengaStartPosition;
 	float    mJengaDist;
-	int	     mJengaNumLevels;
-	float	 mJengaLength;
+	vector<int>	     mJengaNumLevels;
+	vector<float>	 mJengaLength;
 	float	 mJengaWidth;
 	float	 mJengaHeight;
 	vector<PxRigidActor*> blocks1;
 	vector<PxRigidActor*> blocks2;
+
+	Box* jengaBlock1;
+	Box* jengaBlock2;
 
 	Renderable *mSkyBox;
 	Projectile *projectile;

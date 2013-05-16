@@ -45,7 +45,7 @@ public:
     ID3D11VertexShader			*opVS;			// the pointer to the vertex shader
     ID3D11PixelShader			*opPS;          // the pointer to the vertex shader
 
-    vector<physx::apex::NxClothingSphere*> spheres;
+    vector<vector<physx::apex::NxClothingSphere*>> spheres;
     
     ID3D11Buffer *worldCBuffer;
     vector<XMFLOAT4X4> mWorldMats;

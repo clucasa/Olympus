@@ -328,6 +328,12 @@
     <None Include="Scene\jenga_settings.txt">
       <Filter>Resource Files\Scenes\Jenga Tower</Filter>
     </None>
+    <None Include="box.hlsl">
+      <Filter>Rendering\Objects\Box</Filter>
+    </None>
+    <None Include="spritebowling.hlsl">
+      <Filter>Rendering\Objects\ApexParticles</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="apex.h">

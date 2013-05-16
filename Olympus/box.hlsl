@@ -49,7 +49,6 @@ struct VOut
     float3 PosW       : POSITION;
     float3 NormalW    : NORMAL;
     float3 TangentW   : TANGENT;
-    float3 BiNormalW  : BINORM;
     float2 Tex        : TEXCOORD0;
     float3 CamPos     : CAMPOS;
     float4 lpos[NUMSHADOWS]    : TEXCOORD2;
@@ -60,9 +59,7 @@ struct Vin
     float4 Pos		: POSITION;
     float4 Normal	: NORMAL;
     float2 Tex		: TEXCOORD;
-    int TexNum	    : TEXNUM;
     float4 Tangent	: TANGENT;
-    float4 BiNormal	: BINORMAL;
 };
 
 SamplerState samLinear
@@ -80,8 +77,7 @@ VOut VShader( Vin input )
     output.PosW		 = mul(matWorld, input.Pos);
     output.NormalW   = normalize(mul((float3x3)matWorld, input.Normal));
     output.TangentW  = normalize(mul((float3x3)matWorld, input.Tangent));//cross(input.Pos, input.Normal)));
-    output.BiNormalW = normalize(mul((float3x3)matWorld, input.BiNormal));
-
+    
     output.PosH		 = mul( mul(sceneBuff.ViewProj, matWorld), input.Pos);
 
     output.Tex		 = input.Tex;
@@ -186,7 +182,7 @@ float shadowValPoint(VOut input, int start)
 
 float4 PShader(VOut input) : SV_TARGET
 {
-
+	//return float4(input.TangentW.xyz, 1.0f);
 	//return float4(pLight[2].Diffuse.xyz, 1.0f);
 
     float4 textureColor = float4(1.0f,1.0f,0.0f,1.0f);//float4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -221,12 +217,12 @@ float4 PShader(VOut input) : SV_TARGET
 
     float3 bumpedNormalW;
 
-    if(sceneBuff.normalMap == 1.0f)
-    {
-        float3 normalColor  = normalTexture.Sample( samLinear, input.Tex ).rgb;
-        bumpedNormalW = normalize(NormalSampleToWorldSpace(normalColor, input.NormalW, input.TangentW));
-    }
-    else
+    //if(sceneBuff.normalMap == 1.0f)
+    //{
+   //     float3 normalColor  = normalTexture.Sample( samLinear, input.Tex ).rgb;
+    //    bumpedNormalW = normalize(NormalSampleToWorldSpace(normalColor, input.NormalW, input.TangentW));
+    //}
+   // else
         bumpedNormalW = input.NormalW;
 
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);

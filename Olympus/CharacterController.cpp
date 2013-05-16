@@ -39,6 +39,7 @@ CharacterController::CharacterController(Apex *mApex)
 	time_t timer;
 	runFlag = false;
 	mCurrentScene = 0;
+	setSpeed = 0.0f;
 }
 
 CharacterController::~CharacterController(void)
@@ -69,19 +70,24 @@ void CharacterController::Move( float x, float y, float z, float elapsedTime )
 	if(runFlag){
 		PxVec3 moveVec( x*2.0f, y, z*2.0f );
 		static PxControllerFilters filters( 0 );
-		pCharacter->move( moveVec/5, 0.01f, elapsedTime, filters );
+		pCharacter->move( moveVec*setSpeed, 0.01f, elapsedTime, filters );
 	}
 
 	if(zoomFlag){
 		PxVec3 moveVec( x/3.0f, y, z/3.0f );
 		static PxControllerFilters filters( 0 );
-		pCharacter->move( moveVec/5, 0.01f, elapsedTime, filters );
+		pCharacter->move( moveVec*setSpeed, 0.01f, elapsedTime, filters );
 	}
 	else{
 		PxVec3 moveVec( x, y, z );
 		static PxControllerFilters filters( 0 );
-		pCharacter->move( moveVec/5, 0.01f, elapsedTime, filters );
+		pCharacter->move( moveVec*setSpeed, 0.01f, elapsedTime, filters );
 	}
+}
+
+void CharacterController::SetSpeed(float speed)
+{
+	setSpeed = speed;
 }
 
 void CharacterController::zoom(bool zflag)

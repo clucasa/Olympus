@@ -41,7 +41,7 @@ struct PointLight
 
 cbuffer PointLight : register(b3)
 {
-	struct PointLight pLight[2];
+	struct PointLight pLight[21];
 };
 
 struct VOut
@@ -97,7 +97,7 @@ void GShader(point VOut input[1], uint primID : SV_PrimitiveID, inout TriangleSt
 	for(int i = 0; i < 4; i++)
 	{
 		output.Position = mul(ViewProj, verts[i]);
-		output.posW		= verts[i].xyz;
+		output.posW		= verts[i];
 		output.primID = primID;		
         output.texcoord = texc[i];
 		output.lookAt = look;
@@ -122,17 +122,17 @@ float4 PShader(GOut input) : SV_TARGET
 	float4 totalAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 totalDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	float4 color = theTexture.Sample( ss, input.texcoord );///*float4(0.3f, 0.502f, 0.753f, 1.0f);*/theTexture.Gather(samTriLinearSam, input.texcoord, int2(0,0));
-	
-	int i = 0;
-	for(i = 0; i < 2; i++)
+	//float4 color = theTexture.Sample( ss, input.texcoord );///*float4(0.3f, 0.502f, 0.753f, 1.0f);*/theTexture.Gather(samTriLinearSam, input.texcoord, int2(0,0));
+	float4 color = float4(0.1f, 0.1f, 0.1f, 1.0f);
+
+	for(int i = 0; i < 2; i++)
 	{
 		ambient = dirLight[i].Ambient.xyz;
 
 		diffuse = dirLight[i].Diffuse.xyz;// * saturate(dot(input.lookAt.xyz, -Direction.xyz));
 
-		totalAmbient.xyz += ambient;
-		totalDiffuse.xyz += diffuse;
+		//totalAmbient.xyz += ambient;
+		//totalDiffuse.xyz += diffuse;
 	}	
 	
 
@@ -140,7 +140,7 @@ float4 PShader(GOut input) : SV_TARGET
 	float4 pAmbient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 pDiffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	
-	for(i = 0; i < 2; i++)
+	for(int i = 0; i < pLight[0].Pad; i++)
 	{
 		float3 lightVec = pLight[i].Position - input.posW;
 
@@ -153,9 +153,6 @@ float4 PShader(GOut input) : SV_TARGET
 
 		pAmbient = pLight[i].Ambient;
 
-		float diffuseFactor = dot(-lightVec, input.lookAt);
-
-
 		pDiffuse = pLight[i].Diffuse;
 
 		float att = 1.0f / dot(pLight[i].Att, float3(1.0f, d, d*d));
@@ -164,24 +161,23 @@ float4 PShader(GOut input) : SV_TARGET
 
 		float softie = .75;
 
-		if( d < softie*pLight[i].Range )
-			pAmbient  *= 1/((d/pLight[i].Range+1)*(d/pLight[i].Range+1));
-		if( d > softie*pLight[i].Range )
-		{
-			pAmbient *= 1/((softie*pLight[i].Range/pLight[i].Range+1)*(softie*pLight[i].Range/pLight[i].Range+1));
-			pAmbient *= (pLight[i].Range-d)/(pLight[0].Range-softie*pLight[0].Range);
-		}
+		//if( d < softie*pLight[i].Range )
+		//	pAmbient  *= 1/((d/pLight[i].Range+1)*(d/pLight[i].Range+1));
+		//if( d > softie*pLight[i].Range )
+		//{
+		//	pAmbient *= 1/((softie*pLight[i].Range/pLight[i].Range+1)*(softie*pLight[i].Range/pLight[i].Range+1));
+		//	pAmbient *= (pLight[i].Range-d)/(pLight[0].Range-softie*pLight[0].Range);
+		//}
 
 
 		totalAmbient.xyz +=  pAmbient.xyz;
 		totalDiffuse.xyz +=  pDiffuse.xyz;
 	}
+	
 
-
-	//color *= float4(1.0f, 0.3f, 0.0f, 1.0f);
-
-	color *= totalDiffuse + totalAmbient;///(5.0f-numLightsHit);
+	color = totalDiffuse + totalAmbient;
 	color = saturate(color);
+	color = color * 5.0f;
 	color.a = theTexture.GatherAlpha(ss, input.texcoord, int2(0,0), int2(0,0), int2(0,0), int2(0,0));
 
 	clip(color.a < 0.999999f ? -1:1 );

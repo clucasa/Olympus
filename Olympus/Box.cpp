@@ -24,8 +24,8 @@ void Box::SetupPipeline()
 {
     // load and compile the two shaders
     ID3D10Blob *VS, *PS;
-    D3DX11CompileFromFile("models.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
-    D3DX11CompileFromFile("models.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
+    D3DX11CompileFromFile("box.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
+    D3DX11CompileFromFile("box.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
 
     // encapsulate both shaders into shader objects
     mDev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &mVS);
@@ -40,11 +40,9 @@ void Box::SetupPipeline()
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "NORMAL",	  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }, 
-        { "TEXNUM",   0, DXGI_FORMAT_R32_FLOAT,		  0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TANGENT",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 56, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TANGENT",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0 }
     };
-    HRESULT hr = mDev->CreateInputLayout(ied, 6, VS->GetBufferPointer(), VS->GetBufferSize(), &mLayout);
+    HRESULT hr = mDev->CreateInputLayout(ied, 4, VS->GetBufferPointer(), VS->GetBufferSize(), &mLayout);
 
     hr = D3DX11CreateShaderResourceViewFromFile( mDev, "Media/Textures/Wood.png", NULL, NULL, &mTexture, NULL );
     if( FAILED( hr ) )
@@ -154,6 +152,10 @@ void Box::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
     //matTrans = XMMatrixTranslation(mCam->GetPosition().x, mCam->GetPosition().y, mCam->GetPosition().z);
     matTrans = XMMatrixTranslation(mX,mY,mZ);
     mDevcon->VSSetConstantBuffers(1, 1, &mConstBuffer);
+
+	mDevcon->PSSetShaderResources(0, 1, &mTexture);
+    mDevcon->PSSetShaderResources(1, 1, &mNmap);
+
     for(int i = 0; i < mWorldMats.size(); i++)
     {
         mDevcon->UpdateSubresource(mConstBuffer, 0, 0, &mWorldMats[i], 0, 0);
@@ -193,8 +195,8 @@ void Box::RecompileShader()
 {
     // load and compile the two shaders
     ID3D10Blob *VS, *PS;
-    D3DX11CompileFromFile("models.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
-    D3DX11CompileFromFile("models.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
+    D3DX11CompileFromFile("box.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
+    D3DX11CompileFromFile("box.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
 
     // encapsulate both shaders into shader objects
     mDev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &mVS);

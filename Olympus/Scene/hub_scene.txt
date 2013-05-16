@@ -1,6 +1,10 @@
 # HUB scene
 t Scene/hub_settings.txt
 
+# j 15.8 -8.5 24.0 15 0.0 0.5
+
+b -28.5 -19.3 22.5 2 1.0 1.0
+
 o Scene/hub_floor.txt
 o Scene/hub_archway.txt
 o Scene/hub_torch.txt

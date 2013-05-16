@@ -5,6 +5,8 @@
 
 ApexParticles::ApexParticles()
 {
+	Shadowpos = XMFLOAT3(0.0f,0.0f,0.0f);
+	mCurrentScene = 0;
     return;
 }
 
@@ -68,16 +70,29 @@ void ApexParticles::CreateEmitter(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 
 void ApexParticles::InitPipeline()
 {
-    HRESULT hr;
-
+    ID3D10Blob* pErrorBlob = NULL;
+    LPVOID pError = NULL;
+    char* errorStr = NULL;
     // compile the shaders
-    ID3D10Blob *sVS, *sPS, *sGS;
+    ID3D10Blob *sVS, * sGS, *sBPS, *sPS;
 
-    hr = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &sVS, 0, 0);
+    HRESULT hr = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &sVS, &pErrorBlob, 0);
+    /*if(pErrorBlob)
+    {
+        pError = pErrorBlob->GetBufferPointer();
+        errorStr = (char*)pError;
+		MessageBox(0, errorStr, 0, 0);
+        __asm {
+            INT 3
+        }
+        return;
+    }*/
 
     hr = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "GShader", "gs_5_0", 0, 0, 0, &sGS, 0, 0);
 
     hr = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &sPS, 0, 0);
+
+	hr = D3DX11CompileFromFile("spritebowling.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &sBPS, 0, 0);
 
 
     // create the shader objects
@@ -85,6 +100,7 @@ void ApexParticles::InitPipeline()
     mDev->CreateVertexShader(sVS->GetBufferPointer(), sVS->GetBufferSize(), NULL, &mVS);
     mDev->CreateGeometryShader(sGS->GetBufferPointer(), sGS->GetBufferSize(), NULL, &mGS);
     mDev->CreatePixelShader(sPS->GetBufferPointer(), sPS->GetBufferSize(), NULL, &mPS);
+	mDev->CreatePixelShader(sBPS->GetBufferPointer(), sBPS->GetBufferSize(), NULL, &mBPS);
 
     // create the input element object
     D3D11_INPUT_ELEMENT_DESC spriteied[] =
@@ -139,6 +155,10 @@ void ApexParticles::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType
 
     mDevcon->VSSetShader(mVS, 0, 0);
     mDevcon->PSSetShader(mPS, 0, 0);
+
+	if(mCurrentScene == 1)
+		mDevcon->PSSetShader(mBPS, 0, 0);
+
     mDevcon->IASetInputLayout(mLayout);
         
     mRenderVolume->dispatchRenderResources(*gRenderer);
@@ -146,6 +166,29 @@ void ApexParticles::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType
     mDevcon->GSSetShader(NULL, 0, 0);
 }
 
+void ApexParticles::Depth()
+{
+	SPRITECBUFFER scBuffer;
+    scBuffer.EyePos = Shadowpos;
+
+    mDevcon->VSSetShader(mVS, 0, 0);
+    mDevcon->GSSetShader(mGS, 0, 0);
+    mDevcon->PSSetShader(mPS, 0, 0);
+    mDevcon->IASetInputLayout(mLayout);
+
+    mDevcon->GSSetConstantBuffers(1, 1, &mConstBuffer);
+    mDevcon->PSSetShaderResources(0, 1, &spriteTexture);
+    mDevcon->UpdateSubresource(mConstBuffer, 0, 0, &scBuffer, 0, 0);
+
+    mDevcon->VSSetShader(mVS, 0, 0);
+    mDevcon->PSSetShader(mPS, 0, 0);
+    mDevcon->IASetInputLayout(mLayout);
+        
+    mRenderVolume->dispatchRenderResources(*gRenderer);
+    
+    mDevcon->GSSetShader(NULL, 0, 0);
+}
+	
 void ApexParticles::SetPosition(float x, float y, float z)
 {
     if(emitterActor)
@@ -173,7 +216,7 @@ void ApexParticles::SetEmit(bool on)
 void ApexParticles::RecompileShader()
 {
     // compile the shaders
-    ID3D10Blob *sVS, *sPS, *sGS;
+    ID3D10Blob *sVS, *sPS, *sBPS, *sGS;
     HRESULT hr;
     hr = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &sVS, 0, 0);
 
@@ -181,12 +224,12 @@ void ApexParticles::RecompileShader()
 
     hr = D3DX11CompileFromFile("spriteshader.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &sPS, 0, 0);
 
+	hr = D3DX11CompileFromFile("spritebowling.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &sBPS, 0, 0);
 
     // create the shader objects
 
     mDev->CreateVertexShader(sVS->GetBufferPointer(), sVS->GetBufferSize(), NULL, &mVS);
     mDev->CreateGeometryShader(sGS->GetBufferPointer(), sGS->GetBufferSize(), NULL, &mGS);
     mDev->CreatePixelShader(sPS->GetBufferPointer(), sPS->GetBufferSize(), NULL, &mPS);
-    
-
+	mDev->CreatePixelShader(sBPS->GetBufferPointer(), sBPS->GetBufferSize(), NULL, &mBPS);
 }

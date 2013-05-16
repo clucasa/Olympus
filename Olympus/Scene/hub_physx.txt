@@ -65,7 +65,7 @@ c curtainew -180.0 32.0 -30.0 0.0 0.0 0.0 NVIDIA_Flag.png 50.0
 c curtainew -190.0 32.0 -30.0 0.0 0.0 0.0 NVIDIA_Flag.png 50.0
 c curtainew -200.0 32.0 -30.0 0.0 0.0 0.0 NVIDIA_Flag.png 50.0
 e SmokeEmitter -25.0 -18.0 -348.0 smoke.dds
-e TorchEmitter 377.7 1.0 -252.9 fire.png
-e TorchEmitter 416.35 1.0 -214.35 fire.png
+e TorchEmitter -22.7255 -11.34 -15.337 fire.png
+e TorchEmitter -11.8275 -11.34 -26.35 fire.png
 e testSpriteEmitter4ParticleFluidIos -19.0 45.0 206.0 SoftParticle.dds
 p 0.0 1.0 0.0 50.0

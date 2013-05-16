@@ -312,8 +312,8 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
 	tempPointLight.Diffuse  = XMFLOAT4(1.7f, 0.6f, 0.0f, 1);
 	tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
-	tempPointLight.Range    = 15.0f;
-	tempPointLight.Position = XMFLOAT3(414, 1.5f, -211.5f);
+	tempPointLight.Range    = 5.0f;
+	tempPointLight.Position = XMFLOAT3(-11.82f, -10.8f, -26.35f);
 
 
 	scene[0]->mPointLights[0] =  tempPointLight;
@@ -323,8 +323,8 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
 	tempPointLight.Diffuse  = XMFLOAT4(1.7f, 0.6f, 0.0f, 1);
 	tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
-	tempPointLight.Range    = 15.0f;
-	tempPointLight.Position = XMFLOAT3(375, 1.5f, -250.88);
+	tempPointLight.Range    = 5.0f;
+	tempPointLight.Position = XMFLOAT3(-22.7255f, -10.8f, -15.33f);
 
 	scene[0]->mPointLights[1] = tempPointLight;
 

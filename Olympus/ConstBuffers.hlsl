@@ -11,6 +11,8 @@ struct SceneBuffer
     float    pLightOn;
     float    dirLightOn;
     float    shadowsOn;
+	float	 cascadeOn;
+	float3   pad;
 };
 
 struct ShadowProj

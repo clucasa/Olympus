@@ -49,9 +49,13 @@ public:
     virtual void Update();
     virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);
     virtual void RecompileShader();
+    virtual void Depth();
+	void SetShadowCam(XMFLOAT3 pos) {Shadowpos = pos;}
 
     void SetPosition(float x, float y, float z);
     void SetEmit(bool on);
+
+	int mCurrentScene;
 
 private:
     ID3D11Device *mDev;
@@ -61,6 +65,7 @@ private:
     ID3D11VertexShader  *mVS;               // the pointer to the vertex shader
     ID3D11GeometryShader  *mGS;             // the pointer to the vertex shader
     ID3D11PixelShader   *mPS;               // the pointer to the pixel shader
+    ID3D11PixelShader   *mBPS;               // the pointer to the pixel shader
     ID3D11Buffer*		mConstBuffer;
     ID3D11ShaderResourceView *spriteTexture;
 
@@ -69,6 +74,8 @@ private:
 
     NxModuleIofx* mIofxModule;
         
+	XMFLOAT3 Shadowpos;
+
     apex::NxUserRenderer*      gRenderer;
 };
 

@@ -109,5 +109,6 @@ private:
     bool				mResizing;
     bool                mInitialized;
     bool				boolRun;
+	bool				switchScene;
 };
 #endif

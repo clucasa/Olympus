@@ -1,6 +1,6 @@
 # object bowling lane plane
 m Media/Models/plane.fbx
-t Media/Textures/Wood.png
+t Media/Textures/Wood.png 8.0
 n Media/Textures/BlankNormalMap.png
 i 0.0 0.0 0.0 20.0 1.0 20.0 0.0 0.0 0.0
 a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.9 0.9 0.9 150.0 0.0 0.0 0.0 0.0 0

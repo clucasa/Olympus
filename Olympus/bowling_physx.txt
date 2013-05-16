@@ -1,0 +1,14 @@
+# bowling scene physx objects
+# c curtainew 0.0 2.0 100.0 0.0 0.0 0.0 banner1.png
+p 0.0 1.0 0.0 0.0
+p 1.0 0.0 0.0 54.0
+p -1.0 0.0 0.0 54.0
+e BowlingRightEmitter -26.7416 11.4389 -46.4472
+e BowlingRightEmitter -31.9217 18.5588 -15.7842
+e BowlingRightEmitter -31.9217 18.5588 -76.9391
+e BowlingRightEmitter -26.7416 11.4389 -108.11
+
+e BowlingLeftEmitter 26.7416 11.4389 -108.11
+e BowlingLeftEmitter 26.7416 11.4389 -46.4472
+e BowlingLeftEmitter 31.9217 18.5588 -15.7842
+e BowlingLeftEmitter 31.9217 18.5588 -76.9391

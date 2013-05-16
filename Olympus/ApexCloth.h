@@ -42,6 +42,7 @@ public:
                       physx::apex::NxUserRenderer* renderer, const char* filename, const char* texfile);
     virtual void Update();
     virtual void RecompileShader();
+	virtual void Depth();
 
     void SetPosition(float x, float y, float z, float rx, float ry, float rz);
     virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);

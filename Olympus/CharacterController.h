@@ -26,6 +26,7 @@ public:
     time_t timer;
     bool zoomFlag;
     bool runFlag;
+	float setSpeed;
 
     static const PxF32	minDist;
 
@@ -37,6 +38,7 @@ public:
     void MoveTo( float x, float y, float z );
     void Move( float x, float y, float z, float elapsedTime );
     void rotateX( float angle ) const;
+	void SetSpeed(float speed);
     void zoom(bool zflag);
     void run(bool rflag);
     void scale( float x, float y, float z ) const;

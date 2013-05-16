@@ -18,6 +18,8 @@ struct SceneBuff
 	float      pLightOn;
 	float      dirLightOn;
 	float	   shadowsOn;
+	float	   cascadeOn;
+	XMFLOAT3   padding;
 };
 
 struct EnvironBuff
