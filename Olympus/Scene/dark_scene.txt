@@ -3,4 +3,6 @@ t Scene/dark_settings.txt
 
 o Scene/dark_arena.txt
 
+s Scene/dark_spheres.txt
+
 p Scene/dark_physx.txt

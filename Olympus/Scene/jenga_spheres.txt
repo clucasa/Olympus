@@ -1,0 +1,6 @@
+# hub spheres
+# s is a normal environment mapped sphere
+# r is a dynamic reflective environment map
+# s radius slices stacks x y z
+
+s 9.0 30.0 30.0 -352.4 14.1 -20.66

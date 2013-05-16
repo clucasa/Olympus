@@ -121,7 +121,9 @@
     <None Include="models.hlsl" />
     <None Include="OnScreen.hlsl" />
     <None Include="Scene\bowling_settings.txt" />
+    <None Include="Scene\bowling_spheres.txt" />
     <None Include="Scene\dark_settings.txt" />
+    <None Include="Scene\dark_spheres.txt" />
     <None Include="Scene\hub_archway.txt" />
     <None Include="Scene\dark_arena.txt" />
     <None Include="Scene\bigbadman.txt" />
@@ -132,6 +134,7 @@
     <None Include="Scene\deadman.txt" />
     <None Include="Scene\envirospheres.txt" />
     <None Include="Scene\bowling_hallway.txt" />
+    <None Include="Scene\hub_bowlpin.txt" />
     <None Include="Scene\hub_floor.txt" />
     <None Include="Scene\hub_physx.txt" />
     <None Include="Scene\hub_scene.txt" />
@@ -141,6 +144,7 @@
     <None Include="Scene\jenga_plane.txt" />
     <None Include="Scene\jenga_scene.txt" />
     <None Include="Scene\jenga_settings.txt" />
+    <None Include="Scene\jenga_spheres.txt" />
     <None Include="Scene\physx.txt" />
     <None Include="Scene\bowling_physx.txt" />
     <None Include="Scene\Scene0.txt" />

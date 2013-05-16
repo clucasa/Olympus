@@ -290,17 +290,17 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
                 case 'T': // T key has been pressed
                 {
-                    if(mCurrentScene == CurrentScene::BOWLING/* || mCurrentScene == CurrentScene::HUB*/)
+                    if(mCurrentScene == CurrentScene::BOWLING )
                         rendManager->scene[mCurrentScene]->ResetPins();
-                    if(mCurrentScene == CurrentScene::JENGA || mCurrentScene == CurrentScene::HUB)
+                    if(mCurrentScene == CurrentScene::JENGA )
                         rendManager->scene[mCurrentScene]->ResetJenga();	
                     rendManager->scene[mCurrentScene]->ClearProjectiles();
                 }
                 break;
 
-				case 'C': // F7 key has been pressed
+                case 'C': // F7 key has been pressed
                 {
-					if(rendManager->sceneBuff.cascadeOn == 0)
+                    if(rendManager->sceneBuff.cascadeOn == 0)
                         rendManager->sceneBuff.cascadeOn = 1;
                     else
                         rendManager->sceneBuff.cascadeOn = 0;	
@@ -490,7 +490,7 @@ void System::RenderFrame(float dt)
         XMStoreFloat(&distance,length);
         if(abs(distance) < 6.0f)
         {
-			
+            
             SwitchScene(CurrentScene::JENGA);
         }
 
@@ -516,7 +516,7 @@ void System::RenderFrame(float dt)
             SwitchScene(CurrentScene::DARKNESS);
         }
 
-		/*spherePos = XMLoadFloat3(&XMFLOAT3( 21.5 -20.0 -20.9 ) );
+        /*spherePos = XMLoadFloat3(&XMFLOAT3( 21.5 -20.0 -20.9 ) );
         vectorSub = XMVectorSubtract(camPos,spherePos);
         length = XMVector3Length(vectorSub);
 
@@ -536,20 +536,38 @@ void System::RenderFrame(float dt)
 
         distance = 0.0f;
         XMStoreFloat(&distance,length);
-        if(abs(distance) < 11.0f)
+        if(abs(distance) < 20.0f)
         {
             SwitchScene(CurrentScene::HUB);
         }
         break;
 
     case CurrentScene::DARKNESS:
-        
+        spherePos = XMLoadFloat3(&XMFLOAT3( 0.15f , 16.95f , 198.9f ) );
+        vectorSub = XMVectorSubtract(camPos,spherePos);
+        length = XMVector3Length(vectorSub);
+
+        distance = 0.0f;
+        XMStoreFloat(&distance,length);
+        if(abs(distance) < 15.0f)
+        {
+            SwitchScene(CurrentScene::HUB);
+        }
         break;
     case CurrentScene::JENGA:
-        
+        spherePos = XMLoadFloat3(&XMFLOAT3( -352.4f , 14.13f , -20.66f ) );
+        vectorSub = XMVectorSubtract(camPos,spherePos);
+        length = XMVector3Length(vectorSub);
+
+        distance = 0.0f;
+        XMStoreFloat(&distance,length);
+        if(abs(distance) < 11.0f)
+        {
+            SwitchScene(CurrentScene::HUB);
+        }
         break;
 
-	/* case CurrentScene::OPENWORLD:  ???
+    /* case CurrentScene::OPENWORLD:  ???
         
         break;*/
     }
@@ -890,7 +908,7 @@ void System::UpdateCamera(float dt)
             {
                 if(!((GetAsyncKeyState('W') & 0x8000) && (GetAsyncKeyState('S') & 0x8000) &&
                     (GetAsyncKeyState('A') & 0x8000) && (GetAsyncKeyState('D') & 0x8000)))
-				{
+                {
                     rendManager->scene[mCurrentScene]->cController->control(true, false, 0.0f, -9.8, 0.0f, dt);
                 }
     
@@ -1175,68 +1193,72 @@ void System::SwitchScene(int scene)
     rendManager->mApex->setScene(scene);
     mCurrentScene = (CurrentScene)scene;
 
-	for(int i = 0; i < rendManager->scene[mCurrentScene]->particles.size(); i++)
-	{
-		rendManager->scene[mCurrentScene]->particles[i]->mCurrentScene = scene;
-	}
+    for(int i = 0; i < rendManager->scene[mCurrentScene]->particles.size(); i++)
+    {
+        rendManager->scene[mCurrentScene]->particles[i]->mCurrentScene = scene;
+    }
+    for(int i = 0; i < rendManager->scene[mCurrentScene]->reflectiveSpheres.size(); i++)
+    {
+        rendManager->scene[mCurrentScene]->reflectiveSpheres[i]->setCurrentScene(scene);
+    }
 
     if(scene == CurrentScene::BOWLING)
-	{
-		XMFLOAT3 pos = XMFLOAT3(0.0f, 10.0f, -150.0f);
-		XMFLOAT3 tar = XMFLOAT3(0.0f, 10.0f, -100.0f);
-		XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+    {
+        XMFLOAT3 pos = XMFLOAT3(0.0f, 10.0f, -150.0f);
+        XMFLOAT3 tar = XMFLOAT3(0.0f, 10.0f, -100.0f);
+        XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
-		rendManager->scene[mCurrentScene]->cController->MoveTo(0.0, 10.0f, -150.0f);//Move to specific location
-		rendManager->scene[mCurrentScene]->cController->SetSpeed(0.20f);
-		mCam->SetPosition(pos);
-		mCam->LookAt(pos, tar, up); 
-		mCam->UpdateViewMatrix();
-	}
+        rendManager->scene[mCurrentScene]->cController->MoveTo(pos.x,pos.y,pos.z);//Move to specific location
+        rendManager->scene[mCurrentScene]->cController->SetSpeed(0.20f);
+        mCam->SetPosition(pos);
+        mCam->LookAt(pos, tar, up); 
+        mCam->UpdateViewMatrix();
+    }
 
-	if(scene == CurrentScene::DARKNESS)
-	{
-		XMFLOAT3 pos = XMFLOAT3(-1.0f, -6.0f, 42.0f);
-		XMFLOAT3 tar = XMFLOAT3(0.0f, -6.0f, 100.0f);
-		XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+    if(scene == CurrentScene::DARKNESS)
+    {
+        XMFLOAT3 pos = XMFLOAT3(-3.33f, 3.0f, -41.0f);
+        XMFLOAT3 tar = XMFLOAT3(0.0f, -6.0f, 100.0f);
+        XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
-		rendManager->scene[mCurrentScene]->cController->MoveTo(0.0, 20.0f, -15.0f);//Move to specific location
-		rendManager->scene[mCurrentScene]->cController->SetSpeed(0.05f);
-		mCam->SetPosition(pos);
-		mCam->LookAt(pos, tar, up); 
-		mCam->UpdateViewMatrix();
-	}
+        rendManager->scene[mCurrentScene]->cController->MoveTo(pos.x,pos.y,pos.z);//Move to specific location
+        rendManager->scene[mCurrentScene]->cController->SetSpeed(0.05f);
+        mCam->SetPosition(pos);
+        mCam->LookAt(pos, tar, up); 
+        mCam->UpdateViewMatrix();
+    }
 
-	if(scene == CurrentScene::JENGA)
-	{
-		XMFLOAT3 pos = XMFLOAT3(-1.0f, -6.0f, 42.0f);
-		XMFLOAT3 tar = XMFLOAT3(0.0f, -6.0f, 100.0f);
-		XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+    if(scene == CurrentScene::JENGA)
+    {
+        XMFLOAT3 pos = XMFLOAT3(0.0f, 6.0f, 300.0f);
+        XMFLOAT3 tar = XMFLOAT3(0.0f, 0.0f, -10.0f);
+        XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
-		rendManager->scene[mCurrentScene]->cController->MoveTo(0.0, 20.0f, -15.0f);//Move to specific location
-		rendManager->scene[mCurrentScene]->cController->SetSpeed(0.05f);
-		mCam->SetPosition(pos);
-		mCam->LookAt(pos, tar, up); 
-		mCam->UpdateViewMatrix();
-	}
+        rendManager->scene[mCurrentScene]->cController->MoveTo(pos.x,pos.y,pos.z);//Move to specific location
+        rendManager->scene[mCurrentScene]->cController->SetSpeed(0.35f);
+        mCam->SetPosition(pos);
+        mCam->LookAt(pos, tar, up); 
+        mCam->UpdateViewMatrix();
+    }
 
-	/*if(scene == CurrentScene::OPENWORLD)
-	{
-		mCam->SetPosition(XMFLOAT3(-1.0f, -6.0f, 42.0f));
-		mCam->UpdateViewMatrix();
-	}*/
+    /*if(scene == CurrentScene::OPENWORLD)
+    {
+        mCam->SetPosition(XMFLOAT3(-1.0f, -6.0f, 42.0f));
+        mCam->UpdateViewMatrix();
+    }*/
 
-	if(scene == CurrentScene::HUB)
-	{
-		XMFLOAT3 pos = XMFLOAT3(-1.0f, -6.0f, 42.0f);
-		XMFLOAT3 tar = XMFLOAT3(0.0f, -6.0f, 100.0f);
-		XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+    if(scene == CurrentScene::HUB)
+    {
+        XMFLOAT3 pos = XMFLOAT3(0.0f, -5.0f, 10.0f);
+        XMFLOAT3 tar = XMFLOAT3(0.0f, -6.0f, 100.0f);
+        XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
-		rendManager->scene[mCurrentScene]->cController->MoveTo(0.0, -5.0f, -15.0f);//Move to specific location
-		rendManager->scene[mCurrentScene]->cController->SetSpeed(0.05f);
-		mCam->SetPosition(pos);
-		mCam->LookAt(pos, tar, up); 
-		mCam->UpdateViewMatrix();
-	}
+        rendManager->scene[mCurrentScene]->cController->MoveTo(pos.x,pos.y,pos.z);//Move to specific location
+        rendManager->scene[mCurrentScene]->cController->SetSpeed(0.25f);
+        mCam->SetPosition(pos);
+        mCam->LookAt(pos, tar, up); 
+        mCam->UpdateViewMatrix();
+    }
 
-	rendManager->scene[mCurrentScene]->cController->run(false); //stops from getting stuck in run mode from scene to scene
+    rendManager->scene[mCurrentScene]->cController->run(false); //stops from getting stuck in run mode from scene to scene
 }

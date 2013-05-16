@@ -38,6 +38,7 @@ Sphere::Sphere(ID3D11DeviceContext *mDevcon, ID3D11Device *mDev, GeometryGenerat
     delete [] shapes;
 
     mApex->getScene()->addActor(*sphereActor);
+    currentScene = 0;
 }
 
 void Sphere::SetupRenderTarget()
@@ -346,7 +347,7 @@ void Sphere::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
         for(int i = 0; i < 6; ++i) // for mirror, just do (int i = 0; i < 1; ++i) for 1 camera mapped to mirror surface
         {
             // Clear cube map face and depth buffer.
-            mDevcon->ClearRenderTargetView(mDynamicCubeMapRTVSphere[i], reinterpret_cast<const float*>(&Colors::Blue));
+            mDevcon->ClearRenderTargetView(mDynamicCubeMapRTVSphere[i], reinterpret_cast<const float*>(&Colors::Black));
             mDevcon->ClearDepthStencilView(mDynamicCubeMapDSVSphere, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 
             // Bind cube map face as render target.
@@ -360,9 +361,11 @@ void Sphere::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
             sphereBuff.textures = 1;
             mDevcon->UpdateSubresource(sceneBuff, 0, 0, &sphereBuff , 0, 0);
 
-            // Draw the scene with the exception of the center sphere to this cube map face
-            mSkyBox->Render(sceneBuff, &mCubeMapCamera[i], 0);
-    
+            if(currentScene != CurrentScene::DARKNESS && currentScene != CurrentScene::BOWLING)
+            {
+                // Draw the scene with the exception of the center sphere to this cube map face
+                mSkyBox->Render(sceneBuff, &mCubeMapCamera[i], 0);
+            }
 
             // Bind cube map face as render target.
             mDevcon->OMSetRenderTargets(1, &mDynamicCubeMapRTVSphere[i], mDynamicCubeMapDSVSphere);

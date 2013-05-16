@@ -334,6 +334,18 @@
     <None Include="spritebowling.hlsl">
       <Filter>Rendering\Objects\ApexParticles</Filter>
     </None>
+    <None Include="Scene\hub_bowlpin.txt">
+      <Filter>Resource Files\Scenes\Hub</Filter>
+    </None>
+    <None Include="Scene\bowling_spheres.txt">
+      <Filter>Resource Files\Scenes\Bowling Lane</Filter>
+    </None>
+    <None Include="Scene\dark_spheres.txt">
+      <Filter>Resource Files\Scenes\Dark Arena</Filter>
+    </None>
+    <None Include="Scene\jenga_spheres.txt">
+      <Filter>Resource Files\Scenes\Jenga Tower</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="apex.h">

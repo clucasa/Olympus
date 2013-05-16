@@ -16,7 +16,7 @@ CharacterController::CharacterController(Apex *mApex)
 		desc.density				= 1000.0f;
 		desc.scaleCoeff				= 0.899998f;
 		desc.material				= mMaterial;
-		desc.position				= PxExtendedVec3(0.0, 58.0f, 0.0f);
+		desc.position				= PxExtendedVec3(0.0, 508.0f, 0.0f);
 		desc.stepOffset				= 0.05f;
 		//desc.maxJumpHeight			= 20.0f;
 		desc.callback				= 0;

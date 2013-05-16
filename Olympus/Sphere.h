@@ -39,6 +39,10 @@ public:
     virtual void Depth();
     void IsItReflective(bool isReflective);
 
+    int currentScene;
+
+    void setCurrentScene(int scene) {currentScene = scene;}
+
     ID3D11Buffer *SphereVertBuffer;               
     ID3D11Buffer *SphereIndBuffer;
     ID3D11Buffer *envCBuffer;

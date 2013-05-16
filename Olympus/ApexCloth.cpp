@@ -139,12 +139,14 @@ void ApexCloth::CreateCloth(NxApexSDK* gApexSDK, NxApexScene* gApexScene,
 
 void ApexCloth::Update()
 {
-    float low = 0.0;
+    float low = -mMaxWind;
     float high = mMaxWind;
-    float val = low + (float)rand()/((float)RAND_MAX/(high-low));
+    float valx = low + (float)rand()/((float)RAND_MAX/(high-low));
+    float valy = 0.0f;
+    float valz = abs(low + (float)rand()/((float)RAND_MAX/(high-low)));
  
     NxParameterized::Interface* actorDesc = clothingActor->getActorDesc();
-    NxParameterized::setParamVec3(*actorDesc, "windParams.Velocity", PxVec3((PxReal)val,(PxReal)val,(PxReal)val));
+    NxParameterized::setParamVec3(*actorDesc, "windParams.Velocity", PxVec3((PxReal)valx,(PxReal)valy,(PxReal)valz));
     
     clothingActor->lockRenderResources();
     clothingActor->updateRenderResources();
@@ -175,7 +177,7 @@ void ApexCloth::Depth()
 
 void ApexCloth::SetPosition(float x, float y, float z, float rx, float ry, float rz)
 {
-    PxMat44 currentPose = PxTransform(PxVec3(x, y, z), PxQuat(rx, PxVec3(-1.,0.,0.) ) );//-40.f,-12.f,-39.f));//0.f,-5.f,5.f));//
+    PxMat44 currentPose = PxTransform(PxVec3(x, y, z), PxQuat(ry, PxVec3(0.,1.,0.) ) );//-40.f,-12.f,-39.f));//0.f,-5.f,5.f));//
     clothingActor->updateState(currentPose, NULL, 0, 0, ClothingTeleportMode::Continuous);
 }
 
