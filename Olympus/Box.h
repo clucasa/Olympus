@@ -12,6 +12,7 @@
 #include "Renderable.h"
 #include "apex.h"
 #include "ConstBuffers.h"
+#include "struct.h"
 
 class Box : public Renderable
 {
@@ -36,7 +37,7 @@ public:
     ID3D11Buffer *envCBuffer;
 
     vector<UINT> indices;
-    vector<PosNormalTexTan> vertices;
+    vector<Vertex> vertices;
 
 	vector<XMFLOAT4X4> mWorldMats;
     ID3D11Buffer* mConstBuffer;

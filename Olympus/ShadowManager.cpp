@@ -186,7 +186,9 @@ void ShadowManager::SetConstantBuffer(Camera* mCam)
 	else if( mType == PointLight )
 	{
 		mShadowCam->SetLens(0.5f*MathHelper::Pi, 1.0f, 1.0f, 100.0f);
-		ShadPos = mCam->GetPosition();
+		lightPos = XMFLOAT3( mCam->GetPosition().x,mCam->GetPosition().y-1.5,mCam->GetPosition().z );//XMFLOAT3( 7.7, 0, 66 );//mCam->GetPosition();
+		ShadPos = lightPos;
+		//ShadPos = XMFLOAT3( mCam->GetPosition().x,mCam->GetPosition().y + 3.0,mCam->GetPosition().z);
 		switch( viewType )
 		{
 		case 1:

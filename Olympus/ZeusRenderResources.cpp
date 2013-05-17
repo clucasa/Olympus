@@ -557,7 +557,7 @@ void ZeusRenderResource::Render()
         mIndexBuffer->mDevcon->DrawIndexed(mIndexCount, mIndexStart, mVertexStart);
 		free(strides);
 		free(offsets);
-		free(buffers);
+		 free(buffers);
     }
 }
 

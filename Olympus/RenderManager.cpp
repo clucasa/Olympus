@@ -89,8 +89,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	mScreenCam->SetLensOrtho(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1000.0f);
 	mScreenCam->UpdateViewMatrix();
 
-	free(geoGen);
-
+	
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 
@@ -245,6 +244,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	sceneNames.push_back("scene/bowling_scene.txt");
 	sceneNames.push_back("scene/dark_scene.txt");
 	sceneNames.push_back("scene/jenga_scene.txt");
+	//sceneNames.push_back("scene/openworld_scene.txt");
 
 
 
@@ -259,20 +259,47 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 
 		// Setting up Cascade Light Shadow Maps
-	shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 250.0, 250.0);
-	shad->lightPos = mDirLight[0].Direction;
 	for( int i = 0; i < scene.size(); i++ )
+	{
+		if( i == 0)
+			shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 25.0, 25.0);
+		else if( i == 1)
+			shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 50.0, 50.0);
+		else if( i == 2)
+			shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 60.0, 60.0);
+		else if( i == 3)
+			shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 60.0, 60.0);
+		shad->lightPos = mDirLight[0].Direction;
 		shadows[i].push_back( shad );
+	}
 
-	shad = new ShadowManager(mDev, mDevcon, 1024, 1024, 0, 500.0, 500.0);
-	shad->lightPos = mDirLight[0].Direction;
 	for( int i = 0; i < scene.size(); i++ )
+	{
+		if( i == 0)
+			shad = new ShadowManager(mDev, mDevcon, 1024, 1024, 0, 50.0, 50.0);
+		else if( i == 1)
+			shad = new ShadowManager(mDev, mDevcon, 1024, 1024, 0, 100.0, 100.0);
+		else if( i == 2)
+			shad = new ShadowManager(mDev, mDevcon, 1024, 1024, 0, 120.0, 120.0);
+		else if( i == 3)
+			shad = new ShadowManager(mDev, mDevcon, 1024, 1024, 0, 120.0, 120.0);
+		shad->lightPos = mDirLight[0].Direction;
 		shadows[i].push_back( shad );
-
-	shad = new ShadowManager(mDev, mDevcon, 512, 512, 0, 1024.0, 1024.0);
-	shad->lightPos = mDirLight[0].Direction;
+	}
+	
 	for( int i = 0; i < scene.size(); i++ )
+	{
+		if( i == 0)
+			shad = new ShadowManager(mDev, mDevcon, 512, 512, 0, 300.0, 300.0);
+		if( i == 1)
+			shad = new ShadowManager(mDev, mDevcon, 512, 512, 0, 300.0, 300.0);
+		if( i == 2)
+			shad = new ShadowManager(mDev, mDevcon, 512, 512, 0, 300.0, 300.0);
+		if( i == 3)
+			shad = new ShadowManager(mDev, mDevcon, 512, 512, 0, 300.0, 300.0);
+		shad->lightPos = mDirLight[0].Direction;
 		shadows[i].push_back( shad );
+	}
 
 	//// Setting up Point Light Shadow Maps
 	//for( int i = 1; i <= 6; i++ )
@@ -292,10 +319,6 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 
 
-
-
-
-
 	PointLight tempPointLight;
 
 	//SCENE0 - HUB
@@ -304,7 +327,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	tempPointLight.Diffuse  = XMFLOAT4(1.7f, 0.6f, 0.0f, 1);
 	tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
 	tempPointLight.Range    = 15.0f;
-	tempPointLight.Position = XMFLOAT3(414, 1.5f, -211.5f);
+	tempPointLight.Position = XMFLOAT3(-22.7255f, -11.34f, -15.337f);
 
 
 	scene[0]->mPointLights[0] =  tempPointLight;
@@ -315,7 +338,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	tempPointLight.Diffuse  = XMFLOAT4(1.7f, 0.6f, 0.0f, 1);
 	tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
 	tempPointLight.Range    = 15.0f;
-	tempPointLight.Position = XMFLOAT3(375, 1.5f, -250.88);
+	tempPointLight.Position = XMFLOAT3(-11.8275f, -11.34f, -26.35f);
 
 	scene[0]->mPointLights[1] = tempPointLight;
 
@@ -367,12 +390,9 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 	for( int i = 0; i < 1; i++ )
 	{
-		for( int j = 1; j <= 2; j++ )
+		for( int j = 1; j <= 6; j++ )
 		{
-			int k = 1;
-			if( j == 1 )
-				k = 4;
-			shad = new ShadowManager(mDev, mDevcon, 512, 512, k);
+			shad = new ShadowManager(mDev, mDevcon, 512, 512, j);
 			shad->lightPos = scene[1]->mPointLights[i].Position;
 			shadows[1].push_back( shad );
 		}
@@ -393,22 +413,22 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	//SCENE2 - DARKNESS
 	tempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
 	tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
-	tempPointLight.Diffuse  = Colors::Magenta;//Colors::TorchOrange;
+	tempPointLight.Diffuse  = Colors::TorchOrange;
 	tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
 	tempPointLight.Range    = 15.0f;
 	tempPointLight.Position = XMFLOAT3(-0.5f, 2.5f, 73.0f);
 
 	scene[2]->mPointLights[0] = tempPointLight;
-	scene[2]->mPointLights[0].Pad = 2;
+	scene[2]->mPointLights[0].Pad = 1;
 
-	tempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
+	/*tempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
 	tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
 	tempPointLight.Diffuse  = Colors::Magenta;
 	tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
 	tempPointLight.Range    = 15.0f;
 	tempPointLight.Position = XMFLOAT3(0.0f, 14.0f, 180.0f);
 
-	scene[2]->mPointLights[1] = tempPointLight;
+	scene[2]->mPointLights[1] = tempPointLight;*/
 
 	for( int i = 0; i < 2; i++ )
 	{
@@ -430,6 +450,11 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 	scene[3]->mPointLights[0] = tempPointLight;
 	scene[3]->mPointLights[0].Pad = 1;
+
+
+	//SCENE4 - OPEN WORLD
+	//scene[4]->mPointLights[0].Pad = 0;
+
 
 	apex->setScene(0);
 	
@@ -637,8 +662,11 @@ void RenderManager::Render()
 	if(mCurrentScene == CurrentScene::DARKNESS)
 	{
 		scene[mCurrentScene]->mPointLights[0].Position = mCam->GetPosition();
+		
 		for(int i = 0; i < 2; i++)
+		{
 			scene[mCurrentScene]->mPointLights[i].Range = Randomf(20.0f, 21.0f);
+		}
 	}
 
 	mDevcon->OMSetRenderTargets(1, &mScreen->mTargetView/*mBackbuffer*/, mZbuffer);
@@ -734,6 +762,9 @@ void RenderManager::RenderToShadow()
 			shadows[mCurrentScene][i]->SetConstantBuffer(mCam);
 		else
 			shadows[mCurrentScene][i]->SetConstantBuffer();
+
+		if( mCurrentScene == CurrentScene::DARKNESS )
+			shadows[mCurrentScene][i]->SetConstantBuffer(mCam);
 
 		shadowBuff[mCurrentScene][i].lightPos = shadows[mCurrentScene][i]->lightPos;
 

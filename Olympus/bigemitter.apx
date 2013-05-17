@@ -1,0 +1,42 @@
+<!DOCTYPE NxParameters>
+<NxParameters numObjects="1" version="1.0" >
+<value name="" type="Ref" className="ApexEmitterAssetParameters" version="0.2" checksum="0xcf54441b 0x37db41ef 0xda065555 0xdc1bbc3d">
+  <struct name="">
+    <struct name="densityRange">
+      <value name="min" type="F32">0</value>
+      <value name="max" type="F32">1</value>
+    </struct>
+    <struct name="rateRange">
+      <value name="min" type="F32">1000</value>
+      <value name="max" type="F32">2800</value>
+    </struct>
+    <struct name="lifetimeRange">
+      <value name="min" type="F32">10</value>
+      <value name="max" type="F32">30</value>
+    </struct>
+    <struct name="velocityRange">
+      <value name="min" type="Vec3">-3 0 -3</value>
+      <value name="max" type="Vec3">3 2 3</value>
+    </struct>
+    <value name="maxSamples" type="U32">10000</value>
+    <struct name="lodParamDesc">
+      <value name="version" type="U32">0</value>
+      <value name="maxDistance" type="F32">1000</value>
+      <value name="distanceWeight" type="F32">0.699999988</value>
+      <value name="speedWeight" type="F32">0</value>
+      <value name="lifeWeight" type="F32">0.300000012</value>
+      <value name="separationWeight" type="F32">0</value>
+      <value name="bias" type="F32">0</value>
+    </struct>
+    <value name="iofxAssetName" type="Ref" included="0" className="IOFX" objectName="testSpriteIofx"></value>
+    <value name="iosAssetName" type="Ref" included="0" className="ParticleIosAsset" objectName="SceneIos"></value>
+    <value name="geometryType" type="Ref" included="1" className="EmitterGeomSphereParams" version="0.0" checksum="0xef55035f 0xc941ff5a 0xf278eb78 0xc61a298c">    
+      <struct name="">
+        <value name="emitterType" type="Enum">rate</value>
+        <value name="radius" type="F32">10</value>
+      </struct>
+    </value>
+    <value name="emitterDuration" type="F32">PX_MAX_F32</value>
+  </struct>
+</value>
+</NxParameters>

@@ -24,25 +24,26 @@ void Box::SetupPipeline()
 {
     // load and compile the two shaders
     ID3D10Blob *VS, *PS;
-    D3DX11CompileFromFile("box.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
-    D3DX11CompileFromFile("box.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
-
-    // encapsulate both shaders into shader objects
-    mDev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &mVS);
-    
-
+    D3DX11CompileFromFile("models.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
+    D3DX11CompileFromFile("models.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
+    HRESULT hr;
+    hr = mDev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &mVS);
+    if( FAILED(hr) )
+        return ;
     mDev->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &mPS);
-    
-    
-    // create the input layout object
-     D3D11_INPUT_ELEMENT_DESC ied[] =
+    if( FAILED(hr) )
+        return ;
+
+    D3D11_INPUT_ELEMENT_DESC ied[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "NORMAL",	  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }, 
-        { "TANGENT",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+        { "TEXNUM",   0, DXGI_FORMAT_R32_FLOAT,		  0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TANGENT",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 56, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
-    HRESULT hr = mDev->CreateInputLayout(ied, 4, VS->GetBufferPointer(), VS->GetBufferSize(), &mLayout);
+    mDev->CreateInputLayout(ied, 6, VS->GetBufferPointer(), VS->GetBufferSize(), &mLayout);
 
     hr = D3DX11CreateShaderResourceViewFromFile( mDev, "Media/Textures/Wood.png", NULL, NULL, &mTexture, NULL );
     if( FAILED( hr ) )
@@ -58,15 +59,21 @@ void Box::CreateGeometry(GeometryGenerator *geoGen)
     GeometryGenerator::MeshData BoxData;			   // geometry for the sky box
     geoGen->CreateBox(mWidth, mHeight, mLength, BoxData);
 
-    PosNormalTexTan temp;
-
+    Vertex temp;
+	XMVECTOR p;
+	XMVECTOR n;
+	XMVECTOR cross;
     for(size_t i = 0; i < BoxData.Vertices.size(); i++)
     {
         temp.Pos      = BoxData.Vertices[i].Position;
         temp.Normal   = BoxData.Vertices[i].Normal;
         temp.Tex      = BoxData.Vertices[i].TexC;
-        temp.TangentU = BoxData.Vertices[i].TangentU;
-
+		temp.texNum   = 0;
+        temp.Tangent  = BoxData.Vertices[i].TangentU;
+        p = XMVectorSet( temp.Pos.x, temp.Pos.y, temp.Pos.z ,1.0 );
+        n = XMVectorSet( temp.Normal.x, temp.Normal.y, temp.Normal.z ,1.0 );
+        cross = XMVector3Cross(p, n);
+        XMStoreFloat3(&temp.BiNormal, cross);
         vertices.push_back(temp);
     }
 
@@ -86,7 +93,7 @@ void Box::SetupBuffer()
     ZeroMemory(&bd, sizeof(bd));
 
     bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU
-    bd.ByteWidth = sizeof(PosNormalTexTan) * vertices.size();             // size is the VERTEX struct
+    bd.ByteWidth = sizeof(Vertex) * vertices.size();             // size is the VERTEX struct
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
     bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
 
@@ -96,7 +103,7 @@ void Box::SetupBuffer()
     // copy the vertices into the buffer
     D3D11_MAPPED_SUBRESOURCE ms;
     mDevcon->Map(BoxVertBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer
-    memcpy(ms.pData, &vertices[0], sizeof(PosNormalTexTan) * vertices.capacity());                 // copy the data
+    memcpy(ms.pData, &vertices[0], sizeof(Vertex) * vertices.capacity());                 // copy the data
     mDevcon->Unmap(BoxVertBuffer, NULL);                                      // unmap the buffer
 
     // create the index buffer
@@ -138,7 +145,7 @@ void Box::Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType)
     mDevcon->IASetInputLayout(mLayout);
 
      // select which vertex buffer to display
-    UINT stride = sizeof(PosNormalTexTan);
+    UINT stride = sizeof(Vertex);
     UINT offset = 0;
     mDevcon->IASetVertexBuffers(0, 1, &BoxVertBuffer, &stride, &offset);
 
@@ -170,7 +177,7 @@ void Box::Depth()
     mDevcon->IASetInputLayout(mLayout);
 
      // select which vertex buffer to display
-    UINT stride = sizeof(PosNormalTexTan);
+    UINT stride = sizeof(Vertex);
     UINT offset = 0;
     mDevcon->IASetVertexBuffers(0, 1, &BoxVertBuffer, &stride, &offset);
 
@@ -195,8 +202,8 @@ void Box::RecompileShader()
 {
     // load and compile the two shaders
     ID3D10Blob *VS, *PS;
-    D3DX11CompileFromFile("box.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
-    D3DX11CompileFromFile("box.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
+    D3DX11CompileFromFile("models.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
+    D3DX11CompileFromFile("models.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
 
     // encapsulate both shaders into shader objects
     mDev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &mVS);

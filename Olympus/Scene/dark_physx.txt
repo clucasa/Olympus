@@ -1,5 +1,5 @@
 # Dark Arena physx objects
 
-e TorchEmitter 1.0 18.5 179.4 fire.png
-e TorchEmitter 2.0 18.5 180.0 fire.png
+e TorchEmitter 1.0 18.5 179.4 bioFire1.png
+e TorchEmitter 2.0 18.5 180.0 bioFire1.png
 p 0.0 1.0 0.0 151.0

@@ -1,6 +1,6 @@
 # bowling scene physx objects
 
-c curtainew 0.0 28.8 -172.3 0.0 0.0 0.0 banner1.png 50
+c curtainew 0.0 0.0 -172.3 0.0 0.0 0.0 banner1.png 50
 
 c curtainew 32.6 22.4 -62.3 0.0 1.57 0.0 NVIDIA_Flag.png 50
 c curtainew -32.6 22.4 -62.3 0.0 1.57 0.0 NVIDIA_Flag.png 50

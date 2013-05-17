@@ -110,6 +110,9 @@
     <Filter Include="Rendering\Objects\Box">
       <UniqueIdentifier>{36735abf-aec6-4611-8b4c-f7767b9698b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Scenes\Open World">
+      <UniqueIdentifier>{d74d6417-0638-41f1-9579-63afe6d49b2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="apex.cpp">
@@ -250,15 +253,6 @@
     <None Include="Scene\woodbridge.txt">
       <Filter>Resource Files\Scenes\DEBUG</Filter>
     </None>
-    <None Include="Scene\bigbadman.txt">
-      <Filter>Resource Files\Scenes\DEBUG</Filter>
-    </None>
-    <None Include="Scene\crate.txt">
-      <Filter>Resource Files\Scenes\DEBUG</Filter>
-    </None>
-    <None Include="Scene\deadman.txt">
-      <Filter>Resource Files\Scenes\DEBUG</Filter>
-    </None>
     <None Include="Scene\envirospheres.txt">
       <Filter>Resource Files\Scenes\DEBUG</Filter>
     </None>
@@ -345,6 +339,60 @@
     </None>
     <None Include="Scene\jenga_spheres.txt">
       <Filter>Resource Files\Scenes\Jenga Tower</Filter>
+    </None>
+    <None Include="Scene\dark_crate.txt">
+      <Filter>Resource Files\Scenes\Dark Arena</Filter>
+    </None>
+    <None Include="Scene\dark_deadman.txt">
+      <Filter>Resource Files\Scenes\Dark Arena</Filter>
+    </None>
+    <None Include="Scene\hub_bigbadman.txt">
+      <Filter>Resource Files\Scenes\Hub</Filter>
+    </None>
+    <None Include="Scene\openworld_archway.txt">
+      <Filter>Resource Files\Scenes\Open World</Filter>
+    </None>
+    <None Include="Scene\openworld_bigbadman.txt">
+      <Filter>Resource Files\Scenes\Open World</Filter>
+    </None>
+    <None Include="Scene\openworld_hugebadman.txt">
+      <Filter>Resource Files\Scenes\Open World</Filter>
+    </None>
+    <None Include="Scene\openworld_physx.txt">
+      <Filter>Resource Files\Scenes\Open World</Filter>
+    </None>
+    <None Include="Scene\openworld_scene.txt">
+      <Filter>Resource Files\Scenes\Open World</Filter>
+    </None>
+    <None Include="Scene\openworld_settings.txt">
+      <Filter>Resource Files\Scenes\Open World</Filter>
+    </None>
+    <None Include="Scene\openworld_sphere.txt">
+      <Filter>Resource Files\Scenes\Open World</Filter>
+    </None>
+    <None Include="Scene\openworld_target.txt">
+      <Filter>Resource Files\Scenes\Open World</Filter>
+    </None>
+    <None Include="Scene\openworld_terrain.txt">
+      <Filter>Resource Files\Scenes\Open World</Filter>
+    </None>
+    <None Include="Scene\openworld_torch.txt">
+      <Filter>Resource Files\Scenes\Open World</Filter>
+    </None>
+    <None Include="Scene\openworld_trees.txt">
+      <Filter>Resource Files\Scenes\Open World</Filter>
+    </None>
+    <None Include="Scene\dark_troll.txt">
+      <Filter>Resource Files\Scenes\Dark Arena</Filter>
+    </None>
+    <None Include="Scene\dark_frozenguy1.txt">
+      <Filter>Resource Files\Scenes\Dark Arena</Filter>
+    </None>
+    <None Include="Scene\dark_frozenguy3.txt">
+      <Filter>Resource Files\Scenes\Dark Arena</Filter>
+    </None>
+    <None Include="Scene\dark_frozenguy2.txt">
+      <Filter>Resource Files\Scenes\Dark Arena</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

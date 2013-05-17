@@ -1,0 +1,8 @@
+# Open World Settings
+
+# g			max gravity
+# p			max projectiles
+# s			speed scaling
+g -9.81
+p 32
+s 1.0

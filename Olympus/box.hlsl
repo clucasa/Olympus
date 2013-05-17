@@ -56,10 +56,10 @@ struct VOut
 
 struct Vin
 {
-    float4 Pos		: POSITION;
-    float4 Normal	: NORMAL;
+    float3 Pos		: POSITION;
+    float3 Normal	: NORMAL;
     float2 Tex		: TEXCOORD;
-    float4 Tangent	: TANGENT;
+    float3 Tangent	: TANGENT;
 };
 
 SamplerState samLinear
@@ -74,11 +74,11 @@ VOut VShader( Vin input )
 {
     VOut output;
 
-    output.PosW		 = mul(matWorld, input.Pos);
-    output.NormalW   = normalize(mul((float3x3)matWorld, input.Normal));
-    output.TangentW  = normalize(mul((float3x3)matWorld, input.Tangent));//cross(input.Pos, input.Normal)));
+    output.PosW		 = mul(matWorld, float4(input.Pos,1.0f));
+    output.NormalW   = normalize(mul((float3x3)matWorld, float4(input.Normal,1.0f)));
+    output.TangentW  = normalize(mul((float3x3)matWorld, float4(input.Tangent,1.0f)));//cross(input.Pos, input.Normal)));
     
-    output.PosH		 = mul( mul(sceneBuff.ViewProj, matWorld), input.Pos);
+    output.PosH		 = mul( mul(sceneBuff.ViewProj, matWorld), float4(input.Pos,1.0f));
 
     output.Tex		 = input.Tex;
 
@@ -182,7 +182,7 @@ float shadowValPoint(VOut input, int start)
 
 float4 PShader(VOut input) : SV_TARGET
 {
-	//return float4(input.TangentW.xyz, 1.0f);
+	//return float4(0.0f,input.Tex.y, 0.0f, 1.0f);
 	//return float4(pLight[2].Diffuse.xyz, 1.0f);
 
     float4 textureColor = float4(1.0f,1.0f,0.0f,1.0f);//float4(0.0f, 0.0f, 0.0f, 1.0f);

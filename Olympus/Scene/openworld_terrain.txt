@@ -1,0 +1,18 @@
+# Open World Terrain
+
+m Media/Models/terrain1.fbx
+# m Media/Models/terrainnew2.fbx
+t Media/Textures/newdarkdirt.dds
+t Media/Textures/lightdirt.dds
+t Media/Textures/newdarkdirt.dds
+t Media/Textures/newdarkdirt.dds
+n Media/Textures/BlankNormalMap.png
+n Media/Textures/TER_ForestGroundPlayable_I_NM.png
+n Media/Textures/BlankNormalMap.png
+n Media/Textures/BlankNormalMap.png
+i 269.0 -80.0 2.0 20.0 20.0 20.0 0.0 0.0 0.0
+# i 0.0 0.0 0.0 230.0 1.0 197.0 0.0 0.0 0.0
+a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.1 0.1 0.1 3.0 0.0 0.0 0.0 0.0 0
+a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.1 0.1 0.1 3.0 0.0 0.0 0.0 0.0 0
+a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.1 0.1 0.1 3.0 0.0 0.0 0.0 0.0 0
+a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.1 0.1 0.1 3.0 0.0 0.0 0.0 0.0 0

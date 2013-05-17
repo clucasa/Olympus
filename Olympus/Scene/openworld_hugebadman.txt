@@ -1,0 +1,15 @@
+# Open World HugeBadMan
+
+m Media/Models/bigbadman.fbx
+t Media/Textures/bricks.dds
+t Media/Textures/bricks.dds
+n Media/Textures/bricks_nmap.dds
+n Media/Textures/bricks_nmap.dds
+
+i 1452.9 -152.6 -781.0 500.0 500.0 500.0 0.0 -0.95 0.0
+a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.2 0.2 0.2 1.0 0.0 0.0 0.0 0.0 0
+a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.2 0.2 0.2 1.0 0.0 0.0 0.0 0.0 0
+
+i -810.4 -151.0 -669.6 500.0 500.0 500.0 0.0 -5.34 0.0
+a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.2 0.2 0.2 1.0 0.0 0.0 0.0 0.0 0
+a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.2 0.2 0.2 1.0 0.0 0.0 0.0 0.0 0

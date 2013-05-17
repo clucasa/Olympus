@@ -1,0 +1,10 @@
+# object archway
+m Media/Models/torch.fbx
+t Media/Textures/TrollArmor_DM.dds
+t Media/Textures/TrollBody_DM.dds
+n Media/Textures/TrollArmor_NM.dds
+n Media/Textures/TrollBody_NM.dds
+
+i -13.5 -5.0 -41.0 1.0 1.0 1.0 0.0 0.7 0.0
+a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.9 0.9 0.9 100.0 0.0 0.0 0.0 0.0 0
+a 0.2 0.2 0.2 1.0 0.3 0.3 0.3 1.0 0.9 0.9 0.9 10.0 0.0 0.0 0.0 0.0 0

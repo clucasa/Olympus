@@ -47,6 +47,7 @@ namespace Colors
 	XMGLOBALCONST XMFLOAT4 Yellow         = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
 	XMGLOBALCONST XMFLOAT4 Cyan           = XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f);
 	XMGLOBALCONST XMFLOAT4 Magenta        = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
+	XMGLOBALCONST XMFLOAT4 TorchOrange    = XMFLOAT4(0.7f, 0.45f, 0.2f, 1.0f);
 				  
 	XMGLOBALCONST XMFLOAT4 Silver		  = XMFLOAT4(0.75f, 0.75f, 0.75f, 1.0f);
 	XMGLOBALCONST XMFLOAT4 LightSteelBlue = XMFLOAT4(0.69f, 0.77f, 0.87f, 1.0f);

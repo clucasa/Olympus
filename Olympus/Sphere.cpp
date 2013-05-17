@@ -89,9 +89,23 @@ void Sphere::SetupRenderTarget()
 
 void Sphere::SetupPipeline()
 {
+	ID3D10Blob* pErrorBlob = NULL;
+    LPVOID pError = NULL;
+    char* errorStr = NULL;
     // load and compile the two shaders
     ID3D10Blob *VS, *PS;
-    D3DX11CompileFromFile("Sphere.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
+    D3DX11CompileFromFile("Sphere.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, &pErrorBlob, 0);
+	if(pErrorBlob)
+    {
+        pError = pErrorBlob->GetBufferPointer();
+        errorStr = (char*)pError;
+		//MessageBox(0,errorStr,0,0);
+       /* __asm {
+            INT 3
+        }*/
+        //return;
+    }
+
     D3DX11CompileFromFile("Sphere.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
 
     // encapsulate both shaders into shader objects

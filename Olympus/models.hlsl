@@ -161,7 +161,7 @@ float shadowValPoint(VOut input, int start)
 			input.lpos[i].x = input.lpos[i].x/2 + 0.5;
 			input.lpos[i].y = input.lpos[i].y/-2 + 0.5;
 
-			input.lpos[i].z -= .0005;
+			input.lpos[i].z -= .0007;
 
 			float samp = .0005;
 

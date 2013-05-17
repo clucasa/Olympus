@@ -1,0 +1,18 @@
+# Open World Scene
+
+t Scene/openworld_settings.txt
+
+# b 0.0 0.0 10.0
+
+o Scene/openworld_archway.txt
+# o Scene/openworld_torch.txt
+o Scene/openworld_bigbadman.txt
+o Scene/openworld_hugebadman.txt
+o Scene/openworld_trees.txt
+o Scene/openworld_terrain.txt
+s Scene/openworld_sphere.txt
+# o Scene/openworld_windmill.txt
+# o Scene/openworld_target.txt
+# o Scene/openworld_woodbridge.txt
+
+p Scene/openworld_physx.txt

@@ -54,7 +54,7 @@ float4 PShader(VOut input) : SV_TARGET
 	float luminance;
 	//return depth.Sample(samLinear, input.texcoord).r;
 	//return tex.Sample(samLinear, input.texcoord);
-	//return shadow[2].Sample(samLinear, input.texcoord);
+	//return shadow[3].Sample(samLinear, input.texcoord);
 
 
 	//else

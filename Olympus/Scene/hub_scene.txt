@@ -9,6 +9,7 @@ o Scene/hub_floor.txt
 o Scene/hub_archway.txt
 o Scene/hub_torch.txt
 o Scene/hub_bowlpin.txt
+o Scene/hub_bigbadman.txt
 
 o Scene/hub_trees.txt
 

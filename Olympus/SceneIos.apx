@@ -1,0 +1,44 @@
+<!DOCTYPE NxParameters>
+<NxParameters numObjects="1" version="1.0" >
+<value name="" type="Ref" className="ParticleIosAssetParam" version="0.1" checksum="0x2ac1fbb6 0x95b2fc4e 0x9f902cfe 0x4c97a8ab">
+  <struct name="">
+    <value name="particleType" type="Ref" included="1" className="FluidParticleSystemParams" version="0.0" checksum="0x986c06bb 0x7de711a7 0xa8681094 0x8ee8ef0b">    
+      <struct name="">
+        <value name="restParticleDistance" type="F32">0.200000003</value>
+        <value name="stiffness" type="F32">16</value>
+        <value name="viscosity" type="F32">6</value>
+      </struct>
+    </value>
+    <value name="maxParticleCount" type="U32">10000</value>
+    <value name="particleRadius" type="F32">0.5</value>
+    <value name="maxInjectedParticleCount" type="F32">0.100000001</value>
+    <value name="maxMotionDistance" type="F32">0.720000029</value>
+    <value name="contactOffset" type="F32">0.200000003</value>
+    <value name="restOffset" type="F32">0.100000001</value>
+    <value name="gridSize" type="F32">25.6000004</value>
+    <value name="damping" type="F32">0.100000001</value>
+    <value name="externalAcceleration" type="Vec3">1 15 1</value>
+    <value name="projectionPlaneNormal" type="Vec3">0 0 1</value>
+    <value name="projectionPlaneDistance" type="F32">0</value>
+    <value name="particleMass" type="F32">8</value>
+    <value name="restitution" type="F32">0.300000012</value>
+    <value name="dynamicFriction" type="F32">0.0500000007</value>
+    <value name="staticFriction" type="F32">0</value>
+    <value name="simulationFilterData" type="String">MESH_COL_GRP_MASK</value>
+    <value name="fieldSamplerFilterData" null="1" type="String"></value>
+    <value name="CollisionTwoway" type="Bool">false</value>
+    <value name="CollisionWithDynamicActors" type="Bool">true</value>
+    <value name="Enable" type="Bool">true</value>
+    <value name="ProjectToPlane" type="Bool">false</value>
+    <value name="PerParticleRestOffset" type="Bool">false</value>
+    <value name="PerParticleCollisionCacheHint" type="Bool">false</value>
+    <value name="useGPU" type="Bool">true</value>
+    <value name="PositionBuffer" type="Bool">true</value>
+    <value name="VelocityBuffer" type="Bool">true</value>
+    <value name="RestOffsetBuffer" type="Bool">false</value>
+    <value name="FlagsBuffer" type="Bool">true</value>
+    <value name="CollisionNormalBuffer" type="Bool">true</value>
+    <value name="DensityBuffer" type="Bool">false</value>
+  </struct>
+</value>
+</NxParameters>

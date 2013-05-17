@@ -20,7 +20,8 @@ enum CurrentScene
 	HUB,
 	BOWLING,
 	DARKNESS,
-	JENGA
+	JENGA,
+	OPENWORLD
 };
 
 
