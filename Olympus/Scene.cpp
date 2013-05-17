@@ -885,8 +885,10 @@ void Scene::Update()
 					return;
 			}
 
-			nShapes = block->getNbShapes();
-			
+			if(block)
+				nShapes = block->getNbShapes();
+			else	
+				return;
 
 			PxShape** shapes = new PxShape*[nShapes];
  

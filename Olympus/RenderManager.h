@@ -91,6 +91,8 @@ public:
 	void RecompShaders();
 	//void InitObjects();
 
+	float Randomf(float low, float high);
+
 	IDXGISwapChain *mSwapchain;             // the pointer to the swap chain interface
 	ID3D11Device *mDev;                     // the pointer to our Direct3D device interface
 	ID3D11DeviceContext *mDevcon; 
@@ -160,10 +162,10 @@ public:
 	ID3D11DepthStencilView* pShadowMapDepthView;
 	ID3D11ShaderResourceView* pShadowMapSRView;
 	Camera *mShadowCam;
-	ID3D11Buffer *shadowCBuffer;
-	vector<ShadowBuff> shadowBuff;
+	ID3D11Buffer *shadowCBuffer[4];
+	vector<ShadowBuff> shadowBuff[4];
 	ShadowBuff shadBuffer;
-	vector<ShadowManager*> shadows;
+	vector<ShadowManager*> shadows[4];
 	ShadowManager* shad;
 
 

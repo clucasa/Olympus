@@ -19,6 +19,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	sceneBuff.dirLightOn	= 1;
 	sceneBuff.pLightOn		= 1;
 	sceneBuff.shadowsOn		= 1;
+	sceneBuff.cascadeOn		= 0;
 
 
 	PartyMode = 0;
@@ -223,58 +224,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 	mDev->CreateBuffer(&bd, NULL, &pointLightCBuffer);
 
-	// Setting up Cascade Light Shadow Maps
-	shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 250.0, 250.0);
-	shad->lightPos = mDirLight[0].Direction;
-	shadows.push_back( shad );
 
-	shad = new ShadowManager(mDev, mDevcon, 1024, 1024, 0, 500.0, 500.0);
-	shad->lightPos = mDirLight[0].Direction;
-	shadows.push_back( shad );
-
-	shad = new ShadowManager(mDev, mDevcon, 512, 512, 0, 1024.0, 1024.0);
-	shad->lightPos = mDirLight[0].Direction;
-	shadows.push_back( shad );
-
-	// Setting up Point Light Shadow Maps
-	for( int i = 1; i <= 6; i++ )
-	{
-		shad = new ShadowManager(mDev, mDevcon, 512, 512, i);
-		shad->lightPos = mPointLight[0].Position;
-		shadows.push_back( shad );
-	}
-
-	for( int i = 1; i <= 6; i++ )
-	{
-		shad = new ShadowManager(mDev, mDevcon, 512, 512, i);
-		shad->lightPos = mPointLight[1].Position;
-		shadows.push_back( shad );
-	}
-
-	// Shadow Constant Buffer
-	ZeroMemory(&bd, sizeof(bd));
-
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(ShadowBuff) * shadows.size();
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-
-	mDev->CreateBuffer(&bd, NULL, &shadowCBuffer);
-
-	for( int i = 0; i < shadows.size(); i++ )
-	{
-		ShadowBuff temp;
-		temp.lightPos = shadows[i]->lightPos;
-		XMStoreFloat4x4( &temp.lightViewProj, shadows[i]->mShadowCam->ViewProj() );
-		shadowBuff.push_back( temp );
-
-		//if( shadows[i]->mType == ShadowManager.ShadowType.PointLight )
-		//	for( int j = 1; j < 5; j++ )
-		//	{
-		//		temp.lightPos = shadows[j]->lightPos;
-		//		XMStoreFloat4x4( &temp.lightViewProj, shadows[j]->mShadowCam[0]->ViewProj() );
-		//		shadowBuff.push_back( temp );
-		//	}
-	}
 
 	ID3D11SamplerState* pSS;
 	//	D3D11_SAMPLER_DESC sd;
@@ -296,6 +246,8 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	sceneNames.push_back("scene/dark_scene.txt");
 	sceneNames.push_back("scene/jenga_scene.txt");
 
+
+
 	Scene *tempScene;
 
 	for(int i = 0; i < (int)sceneNames.size(); i++)
@@ -305,6 +257,45 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 		scene.push_back(tempScene);
 	}
 
+
+		// Setting up Cascade Light Shadow Maps
+	shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 250.0, 250.0);
+	shad->lightPos = mDirLight[0].Direction;
+	for( int i = 0; i < scene.size(); i++ )
+		shadows[i].push_back( shad );
+
+	shad = new ShadowManager(mDev, mDevcon, 1024, 1024, 0, 500.0, 500.0);
+	shad->lightPos = mDirLight[0].Direction;
+	for( int i = 0; i < scene.size(); i++ )
+		shadows[i].push_back( shad );
+
+	shad = new ShadowManager(mDev, mDevcon, 512, 512, 0, 1024.0, 1024.0);
+	shad->lightPos = mDirLight[0].Direction;
+	for( int i = 0; i < scene.size(); i++ )
+		shadows[i].push_back( shad );
+
+	//// Setting up Point Light Shadow Maps
+	//for( int i = 1; i <= 6; i++ )
+	//{
+	//	shad = new ShadowManager(mDev, mDevcon, 512, 512, i);
+	//	shad->lightPos = mPointLight[0].Position;
+	//	shadows.push_back( shad );
+	//}
+
+	//for( int i = 1; i <= 6; i++ )
+	//{
+	//	shad = new ShadowManager(mDev, mDevcon, 512, 512, i);
+	//	shad->lightPos = mPointLight[1].Position;
+	//	shadows.push_back( shad );
+	//}
+
+
+
+
+
+
+
+
 	PointLight tempPointLight;
 
 	//SCENE0 - HUB
@@ -312,8 +303,8 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
 	tempPointLight.Diffuse  = XMFLOAT4(1.7f, 0.6f, 0.0f, 1);
 	tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
-	tempPointLight.Range    = 5.0f;
-	tempPointLight.Position = XMFLOAT3(-11.82f, -10.8f, -26.35f);
+	tempPointLight.Range    = 15.0f;
+	tempPointLight.Position = XMFLOAT3(414, 1.5f, -211.5f);
 
 
 	scene[0]->mPointLights[0] =  tempPointLight;
@@ -323,8 +314,8 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
 	tempPointLight.Diffuse  = XMFLOAT4(1.7f, 0.6f, 0.0f, 1);
 	tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
-	tempPointLight.Range    = 5.0f;
-	tempPointLight.Position = XMFLOAT3(-22.7255f, -10.8f, -15.33f);
+	tempPointLight.Range    = 15.0f;
+	tempPointLight.Position = XMFLOAT3(375, 1.5f, -250.88);
 
 	scene[0]->mPointLights[1] = tempPointLight;
 
@@ -374,18 +365,60 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 		scene[1]->mPointLights[0].Pad = 21;
 
+	for( int i = 0; i < 1; i++ )
+	{
+		for( int j = 1; j <= 2; j++ )
+		{
+			int k = 1;
+			if( j == 1 )
+				k = 4;
+			shad = new ShadowManager(mDev, mDevcon, 512, 512, k);
+			shad->lightPos = scene[1]->mPointLights[i].Position;
+			shadows[1].push_back( shad );
+		}
+	}
+
+
+	////SCENE2 - DARKNESS
+	//tempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
+	//tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
+	//tempPointLight.Diffuse  = Colors::Magenta;
+	//tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
+	//tempPointLight.Range    = 15.0f;
+	//tempPointLight.Position = XMFLOAT3(-0.5f, 2.5f, 73.0f);
+
+	//scene[2]->mPointLights[0] = tempPointLight;
+	//scene[2]->mPointLights[0].Pad = 1;
+
 	//SCENE2 - DARKNESS
 	tempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
 	tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
-	tempPointLight.Diffuse  = Colors::Magenta;
+	tempPointLight.Diffuse  = Colors::Magenta;//Colors::TorchOrange;
 	tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
 	tempPointLight.Range    = 15.0f;
 	tempPointLight.Position = XMFLOAT3(-0.5f, 2.5f, 73.0f);
 
 	scene[2]->mPointLights[0] = tempPointLight;
-	scene[2]->mPointLights[0].Pad = 1;
+	scene[2]->mPointLights[0].Pad = 2;
 
+	tempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
+	tempPointLight.Att      = XMFLOAT3(1.0f, 0.05f, .0075f);
+	tempPointLight.Diffuse  = Colors::Magenta;
+	tempPointLight.Specular = XMFLOAT4(1, 1, 1, 1);
+	tempPointLight.Range    = 15.0f;
+	tempPointLight.Position = XMFLOAT3(0.0f, 14.0f, 180.0f);
 
+	scene[2]->mPointLights[1] = tempPointLight;
+
+	for( int i = 0; i < 2; i++ )
+	{
+		for( int j = 1; j <= 6; j++ )
+		{
+			shad = new ShadowManager(mDev, mDevcon, 512, 512, j);
+			shad->lightPos = scene[2]->mPointLights[i].Position;
+			shadows[2].push_back( shad );
+		}
+	}
 
 	//SCENE3 - JENGA
 	tempPointLight.Ambient  = XMFLOAT4(0.0f, 0.0f, 0.0f, 1);
@@ -399,7 +432,27 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 	scene[3]->mPointLights[0].Pad = 1;
 
 	apex->setScene(0);
+	
 
+	// Shadow Constant Buffer
+	for( int j = 0; j < scene.size(); j++ )
+	{
+		ZeroMemory(&bd, sizeof(bd));
+
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		bd.ByteWidth = sizeof(ShadowBuff) * shadows[j].size();
+		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+		mDev->CreateBuffer(&bd, NULL, &shadowCBuffer[j]);
+
+		for( int i = 0; i < shadows[i].size(); i++ )
+		{
+			ShadowBuff temp;
+			temp.lightPos = shadows[j][i]->lightPos;
+			XMStoreFloat4x4( &temp.lightViewProj, shadows[j][i]->mShadowCam->ViewProj() );
+			shadowBuff[j].push_back( temp );
+		}
+	}
 }
 
 
@@ -560,8 +613,9 @@ void RenderManager::Render()
 	mDevcon->ClearRenderTargetView(mBackbuffer, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
 	mDevcon->ClearRenderTargetView(mScreen->mTargetView, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 
-	for( int i = 0; i < shadows.size(); i++ )
-		mDevcon->ClearDepthStencilView(shadows[i]->pShadowMapDepthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	for( int j = 0; j < scene.size(); j++ )
+		for( int i = 0; i < shadows[j].size(); i++ )
+			mDevcon->ClearDepthStencilView(shadows[j][i]->pShadowMapDepthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	//mDevcon->RSSetState(0);
 
@@ -578,6 +632,13 @@ void RenderManager::Render()
 		//Skybox right now doesn't like zbuffers, so dont' set one for it
 		mDevcon->OMSetRenderTargets(1, &mScreen->mTargetView, 0);
 		mSkyBox->Render(sceneCBuffer, mCam, 0);
+	}
+
+	if(mCurrentScene == CurrentScene::DARKNESS)
+	{
+		scene[mCurrentScene]->mPointLights[0].Position = mCam->GetPosition();
+		for(int i = 0; i < 2; i++)
+			scene[mCurrentScene]->mPointLights[i].Range = Randomf(20.0f, 21.0f);
 	}
 
 	mDevcon->OMSetRenderTargets(1, &mScreen->mTargetView/*mBackbuffer*/, mZbuffer);
@@ -667,25 +728,25 @@ void RenderManager::RenderToTarget(enum renderTargets target)
 
 void RenderManager::RenderToShadow()
 {
-	for( int i = 0; i < shadows.size(); i++ )
+	for( int i = 0; i < shadows[mCurrentScene].size(); i++ )
 	{
-		if( shadows[i]->viewType == 0 || shadows[i]->viewType == 8)
-			shadows[i]->SetConstantBuffer(mCam);
+		if( shadows[mCurrentScene][i]->viewType == 0 || shadows[mCurrentScene][i]->viewType == 8)
+			shadows[mCurrentScene][i]->SetConstantBuffer(mCam);
 		else
-			shadows[i]->SetConstantBuffer();
+			shadows[mCurrentScene][i]->SetConstantBuffer();
 
-		shadowBuff[i].lightPos = shadows[i]->lightPos;
+		shadowBuff[mCurrentScene][i].lightPos = shadows[mCurrentScene][i]->lightPos;
 
-		XMStoreFloat4x4( &shadowBuff[i].lightViewProj, shadows[i]->mShadowCam->ViewProj());
+		XMStoreFloat4x4( &shadowBuff[mCurrentScene][i].lightViewProj, shadows[mCurrentScene][i]->mShadowCam->ViewProj());
 
-		sceneBuff.camPos = shadows[i]->mShadowCam->GetPosition();
+		sceneBuff.camPos = shadows[mCurrentScene][i]->mShadowCam->GetPosition();
 
-		XMStoreFloat4x4(&sceneBuff.viewProj, shadows[i]->mShadowCam->ViewProj()); 
+		XMStoreFloat4x4(&sceneBuff.viewProj, shadows[mCurrentScene][i]->mShadowCam->ViewProj()); 
 
 		mDevcon->VSSetConstantBuffers(0, 1, &sceneCBuffer);
 		mDevcon->UpdateSubresource(sceneCBuffer, 0, 0, &sceneBuff , 0, 0);
 
-		mDevcon->OMSetRenderTargets(0, 0, shadows[i]->pShadowMapDepthView);
+		mDevcon->OMSetRenderTargets(0, 0, shadows[mCurrentScene][i]->pShadowMapDepthView);
 
 		for(int j = 0; j < scene[mCurrentScene]->mRenderables.size() ; j++)
 		{
@@ -697,22 +758,22 @@ void RenderManager::RenderToShadow()
 		}
 	}
 
-	mDevcon->PSSetConstantBuffers(5, 1, &shadowCBuffer);
-	mDevcon->VSSetConstantBuffers(5, 1, &shadowCBuffer);
-	mDevcon->UpdateSubresource(shadowCBuffer, 0, 0, &shadowBuff[0] , 0, 0);
+	mDevcon->PSSetConstantBuffers(5, 1, &shadowCBuffer[mCurrentScene]);
+	mDevcon->VSSetConstantBuffers(5, 1, &shadowCBuffer[mCurrentScene]);
+	mDevcon->UpdateSubresource(shadowCBuffer[mCurrentScene], 0, 0, &shadowBuff[mCurrentScene][0] , 0, 0);
 }
 
 void RenderManager::SetShadowSRV(int loc)
 {
 	vector<ID3D11ShaderResourceView*> shadSRV;
-	int val = loc;
-	for( int i = 0; i < shadows.size(); i++ )
+	//int val = loc;
+	//for( int i = 0; i < shadows[mCurrentScene].size(); i++ )
+	//{
+	//	val += shadows[mCurrentScene][0]->SetSRV(val);
+	//}
+	for( int i = 0; i < shadows[mCurrentScene].size(); i++ )
 	{
-		val += shadows[0]->SetSRV(val);
-	}
-	for( int i = 0; i < shadows.size(); i++ )
-	{
-		shadSRV.push_back( shadows[i]->pShadowMapSRView );
+		shadSRV.push_back( shadows[mCurrentScene][i]->pShadowMapSRView );
 	}
 	mDevcon->PSSetShaderResources(6, shadSRV.size(), &shadSRV[0]);
 }
@@ -743,4 +804,9 @@ void RenderManager::RecompShaders()
 	{
 		scene[mCurrentScene]->mBlendRenderables[i]->RecompileShader();
 	}
+}
+
+float RenderManager::Randomf(float low, float high)
+{
+    return low + (float)rand()/((float)RAND_MAX/(high-low));
 }

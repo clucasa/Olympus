@@ -186,7 +186,7 @@ void ShadowManager::SetConstantBuffer(Camera* mCam)
 	else if( mType == PointLight )
 	{
 		mShadowCam->SetLens(0.5f*MathHelper::Pi, 1.0f, 1.0f, 100.0f);
-		ShadPos = lightPos;
+		ShadPos = mCam->GetPosition();
 		switch( viewType )
 		{
 		case 1:
