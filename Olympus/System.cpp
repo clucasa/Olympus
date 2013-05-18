@@ -188,7 +188,7 @@ LRESULT System::msgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
                 break;
 
-				case 0x34: // 4 key has been pressed
+                case 0x34: // 4 key has been pressed
                 {
                     SwitchScene(4);
                 }
@@ -528,7 +528,7 @@ void System::RenderFrame(float dt)
 
         distance = 0.0f;
         XMStoreFloat(&distance,length);
-        if(abs(distance) < 11.0f)
+        if(abs(distance) < 6.0f)
         {
             SwitchScene(CurrentScene::OPENWORLD);
         }
@@ -582,7 +582,7 @@ void System::RenderFrame(float dt)
         XMStoreFloat(&distance,length);
         if(abs(distance) < 11.0f)
         {
-            //SwitchScene(CurrentScene::HUB);
+            SwitchScene(CurrentScene::HUB);
         }
         break;
     }
@@ -843,6 +843,15 @@ void System::UpdateCamera(float dt)
             buttonup = true;
         }
         
+        if( state.Gamepad.wButtons & XINPUT_GAMEPAD_B)
+        {
+                    if(mCurrentScene == CurrentScene::BOWLING )
+                        rendManager->scene[mCurrentScene]->ResetPins();
+                    if(mCurrentScene == CurrentScene::JENGA )
+                        rendManager->scene[mCurrentScene]->ResetJenga();	
+                    rendManager->scene[mCurrentScene]->ClearProjectiles();
+        }
+
 #ifdef _DEBUG
 
         if(cooldown > 0)
@@ -970,8 +979,8 @@ void System::UpdateCamera(float dt)
     if(GetAsyncKeyState('G') & 0x8000 )
           mFlyMode = false;
 
-    if(GetAsyncKeyState('R') & 0x8000 )
-        rendManager->RecompShaders();
+    /*if(GetAsyncKeyState('R') & 0x8000 )
+        rendManager->RecompShaders();*/
 
     if( GetAsyncKeyState('P') & 0x8000 )
     { // Super Zoom
@@ -1226,14 +1235,14 @@ void System::SwitchScene(int scene)
         rendManager->scene[mCurrentScene]->cController->MoveTo(pos.x,pos.y,pos.z);//Move to specific location
         rendManager->scene[mCurrentScene]->cController->SetSpeed(0.20f);
 
-		rendManager->PartyMode = 0;
+        rendManager->PartyMode = 0;
 
-		rendManager->sceneBuff.dirLightOn = 0.0f;
-		rendManager->sceneBuff.pLightOn  = 1.0f;
-		rendManager->scene[mCurrentScene]->ToggleParticles(false);
+        rendManager->sceneBuff.dirLightOn = 0.0f;
+        rendManager->sceneBuff.pLightOn  = 1.0f;
+        //rendManager->scene[mCurrentScene]->ToggleParticles(false);
 
-		rendManager->scene[mCurrentScene]->ResetPins();
-		
+        rendManager->scene[mCurrentScene]->ResetPins();
+        
         mCam->SetPosition(pos);
         mCam->LookAt(pos, tar, up); 
         mCam->UpdateViewMatrix();
@@ -1248,12 +1257,12 @@ void System::SwitchScene(int scene)
         rendManager->scene[mCurrentScene]->cController->MoveTo(pos.x,pos.y,pos.z);//Move to specific location
         rendManager->scene[mCurrentScene]->cController->SetSpeed(0.05f);
 
-		rendManager->PartyMode = 0;
+        rendManager->PartyMode = 0;
 
-		rendManager->sceneBuff.dirLightOn = 0.0f;
-		rendManager->sceneBuff.pLightOn  = 1.0f;
+        rendManager->sceneBuff.dirLightOn = 0.0f;
+        rendManager->sceneBuff.pLightOn  = 1.0f;
 
-		rendManager->scene[mCurrentScene]->ToggleParticles(true);
+        //rendManager->scene[mCurrentScene]->ToggleParticles(true);
 
         mCam->SetPosition(pos);
         mCam->LookAt(pos, tar, up); 
@@ -1269,12 +1278,12 @@ void System::SwitchScene(int scene)
         rendManager->scene[mCurrentScene]->cController->MoveTo(pos.x,pos.y,pos.z);//Move to specific location
         rendManager->scene[mCurrentScene]->cController->SetSpeed(0.35f);
 
-		rendManager->PartyMode = 0;
+        rendManager->PartyMode = 0;
 
-		rendManager->sceneBuff.dirLightOn = 1.0f;
-		rendManager->sceneBuff.pLightOn  = 1.0f;
+        rendManager->sceneBuff.dirLightOn = 1.0f;
+        rendManager->sceneBuff.pLightOn  = 1.0f;
 
-		rendManager->scene[mCurrentScene]->ResetJenga();
+        rendManager->scene[mCurrentScene]->ResetJenga();
 
 
         mCam->SetPosition(pos);
@@ -1283,32 +1292,32 @@ void System::SwitchScene(int scene)
     }
 
     if(scene == CurrentScene::OPENWORLD)
-	{
-		XMFLOAT3 pos = XMFLOAT3(348.6f, -159.7f, 483.7f);
-		XMFLOAT3 tar = XMFLOAT3(349.6f, -159.7f, 481.7f);
-		XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+    {
+        XMFLOAT3 pos = XMFLOAT3(348.6f, -159.7f, 483.7f);
+        XMFLOAT3 tar = XMFLOAT3(349.6f, -159.7f, 481.7f);
+        XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
-		rendManager->scene[mCurrentScene]->cController->MoveTo(348.6f, -159.7f, 483.7f);//Move to specific location
-		rendManager->scene[mCurrentScene]->cController->SetSpeed(0.75f);
-		mCam->SetPosition(pos);
-		mCam->LookAt(pos, tar, up); 
-		mCam->UpdateViewMatrix();
-	}
+        rendManager->scene[mCurrentScene]->cController->MoveTo(348.6f, -159.7f, 483.7f);//Move to specific location
+        rendManager->scene[mCurrentScene]->cController->SetSpeed(0.75f);
+        mCam->SetPosition(pos);
+        mCam->LookAt(pos, tar, up); 
+        mCam->UpdateViewMatrix();
+    }
 
     if(scene == CurrentScene::HUB)
     {
-        XMFLOAT3 pos = XMFLOAT3(0.0f, -5.0f, 10.0f);
-        XMFLOAT3 tar = XMFLOAT3(0.0f, -6.0f, 100.0f);
+        XMFLOAT3 pos = XMFLOAT3(-1.29f, -11.0f, 19.93f);
+        XMFLOAT3 tar = XMFLOAT3(-1.8f, -10.0f, 15.3f);
         XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
         rendManager->scene[mCurrentScene]->cController->MoveTo(pos.x,pos.y,pos.z);//Move to specific location
         rendManager->scene[mCurrentScene]->cController->SetSpeed(0.25f);
 
-		rendManager->PartyMode = 0;
+        rendManager->PartyMode = 0;
 
-		rendManager->sceneBuff.dirLightOn = 1.0f;
-		rendManager->sceneBuff.pLightOn  = 1.0f;
-		rendManager->scene[mCurrentScene]->ToggleParticles(true);
+        rendManager->sceneBuff.dirLightOn = 1.0f;
+        rendManager->sceneBuff.pLightOn  = 1.0f;
+        //rendManager->scene[mCurrentScene]->ToggleParticles(true);
 
 
         mCam->SetPosition(pos);

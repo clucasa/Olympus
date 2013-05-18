@@ -93,6 +93,11 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
     dev1->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &opPS);
     if( FAILED(hr) )
         return ;
+
+    D3DX11CompileFromFile("models.hlsl", 0, 0, "PSAplhaShadow", "ps_5_0", 0, 0, 0, &PS, 0, 0);
+    dev1->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &opPSAlpha);
+    if( FAILED(hr) )
+        return ;
     D3D11_INPUT_ELEMENT_DESC ied[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -235,7 +240,7 @@ void Object::Depth()
     UINT offset = 0;
 
     devcon1->VSSetShader(opVS, 0, 0);
-    devcon1->PSSetShader(NULL, 0, 0);
+    devcon1->PSSetShader(opPSAlpha, 0, 0);
     
     devcon1->VSSetConstantBuffers(1, 1, &worldCBuffer);
     devcon1->PSSetConstantBuffers(1, 1, &worldCBuffer);

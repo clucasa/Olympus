@@ -48,6 +48,7 @@ public:
     ID3D10Blob *oVS, *oPS;
     ID3D11VertexShader *opVS;               // the pointer to the vertex shader
     ID3D11PixelShader *opPS;               // the pointer to the vertex shader
+    ID3D11PixelShader *opPSAlpha;               // the pointer to the vertex shader
 
     
     ID3D11Buffer *worldCBuffer;

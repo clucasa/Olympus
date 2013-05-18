@@ -34,7 +34,7 @@ cbuffer PointLight : register(b3)
 
 cbuffer Shadows  : register(b5)
 {
-	struct ShadowProj shadowProj[NUMSHADOWS];
+    struct ShadowProj shadowProj[NUMSHADOWS];
 }
 
 Texture2D diffuseTexture : register(t0);
@@ -88,11 +88,11 @@ VOut VShader( Vin input )
 
     output.CamPos    = sceneBuff.cameraPos;
 
-	for( int i = 0; i < NUMSHADOWS; i++ )
-	{
-		output.lpos[i] = mul( matWorld, float4(input.Pos.xyz, 1.0) );
-		output.lpos[i] = mul( shadowProj[i].lightViewProj, float4(output.lpos[i].xyz, 1.0) );
-	}
+    for( int i = 0; i < NUMSHADOWS; i++ )
+    {
+        output.lpos[i] = mul( matWorld, float4(input.Pos.xyz, 1.0) );
+        output.lpos[i] = mul( shadowProj[i].lightViewProj, float4(output.lpos[i].xyz, 1.0) );
+    }
 
     return output;
 }
@@ -107,87 +107,87 @@ return map.SampleCmpLevelZero(ss, loc.xy + offset, loc.z).r;
 }
 float shadowVal(VOut input, int i)
 {
-	//	input.lpos[i].xyz /= input.lpos[i].w;
+    //	input.lpos[i].xyz /= input.lpos[i].w;
 
-	if( input.lpos[i].x < -1.0f || input.lpos[i].x > 1.0f ||
-		input.lpos[i].y < -1.0f || input.lpos[i].y > 1.0f ||
-		input.lpos[i].z < 0.0f  || input.lpos[i].z > 1.0f ) return  1.0;
+    if( input.lpos[i].x < -1.0f || input.lpos[i].x > 1.0f ||
+        input.lpos[i].y < -1.0f || input.lpos[i].y > 1.0f ||
+        input.lpos[i].z < 0.0f  || input.lpos[i].z > 1.0f ) return  1.0;
 
-	//return 0.0;
+    //return 0.0;
 
-	input.lpos[i].x = input.lpos[i].x/2 + 0.5;
-	input.lpos[i].y = input.lpos[i].y/-2 + 0.5;
+    input.lpos[i].x = input.lpos[i].x/2 + 0.5;
+    input.lpos[i].y = input.lpos[i].y/-2 + 0.5;
 
-	if( i == 0 )
-		input.lpos[i].z -= .0005;
-	if( i == 1 )
-		input.lpos[i].z -= .003;
-	if( i == 2 )
-		input.lpos[i].z -= .003;
+    if( i == 0 )
+        input.lpos[i].z -= .0005;
+    if( i == 1 )
+        input.lpos[i].z -= .003;
+    if( i == 2 )
+        input.lpos[i].z -= .003;
 
-	//float samp = 1000 * 1/4096;
-	float samp = .0005;
+    //float samp = 1000 * 1/4096;
+    float samp = .0005;
 
-	float3 shadowCoeff = (
-		offset_lookup(shadowTexture[i], input.lpos[i], float2(0, 0))+
-		offset_lookup(shadowTexture[i], input.lpos[i], float2(0, -samp)) +
-		offset_lookup(shadowTexture[i], input.lpos[i], float2(0, samp)) +
-		offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, 0)) +
-		offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, -samp)) +
-		offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, samp)) +
-		offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, 0)) +
-		offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, -samp)) +
-		offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, samp)) 
-		) * 1.f/9.f;
+    float3 shadowCoeff = (
+        offset_lookup(shadowTexture[i], input.lpos[i], float2(0, 0))+
+        offset_lookup(shadowTexture[i], input.lpos[i], float2(0, -samp)) +
+        offset_lookup(shadowTexture[i], input.lpos[i], float2(0, samp)) +
+        offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, 0)) +
+        offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, -samp)) +
+        offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, samp)) +
+        offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, 0)) +
+        offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, -samp)) +
+        offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, samp)) 
+        ) * 1.f/9.f;
 
-	return shadowCoeff.r;
+    return shadowCoeff.r;
 }
 
 
 float shadowValPoint(VOut input, int start)
 {
-	int test;
-	for( int i = start; i < (start+6); i++ )
-	{
-		input.lpos[i].xyz /= input.lpos[i].w;
+    int test;
+    for( int i = start; i < (start+6); i++ )
+    {
+        input.lpos[i].xyz /= input.lpos[i].w;
 
-		if( input.lpos[i].x < -1.0f || input.lpos[i].x > 1.0f ||
-			input.lpos[i].y < -1.0f || input.lpos[i].y > 1.0f ||
-			input.lpos[i].z < 0.0f  || input.lpos[i].z > 1.0f ) test = 1;
-		else
-		{
-			//if( i == start )
-			//return 0.0;
-			input.lpos[i].x = input.lpos[i].x/2 + 0.5;
-			input.lpos[i].y = input.lpos[i].y/-2 + 0.5;
+        if( input.lpos[i].x < -1.0f || input.lpos[i].x > 1.0f ||
+            input.lpos[i].y < -1.0f || input.lpos[i].y > 1.0f ||
+            input.lpos[i].z < 0.0f  || input.lpos[i].z > 1.0f ) test = 1;
+        else
+        {
+            //if( i == start )
+            //return 0.0;
+            input.lpos[i].x = input.lpos[i].x/2 + 0.5;
+            input.lpos[i].y = input.lpos[i].y/-2 + 0.5;
 
-			input.lpos[i].z -= .0007;
+            input.lpos[i].z -= .0007;
 
-			float samp = .0005;
+            float samp = .001;
 
-			float3 shadowCoeff = (
-				offset_lookup(shadowTexture[i], input.lpos[i], float2(0, 0))+
-				offset_lookup(shadowTexture[i], input.lpos[i], float2(0, -samp)) +
-				offset_lookup(shadowTexture[i], input.lpos[i], float2(0, samp)) +
-				offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, 0)) +
-				offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, -samp)) +
-				offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, samp)) +
-				offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, 0)) +
-				offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, -samp)) +
-				offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, samp)) 
-				) * 1.f/9.f;
+            float3 shadowCoeff = (
+                offset_lookup(shadowTexture[i], input.lpos[i], float2(0, 0))+
+                offset_lookup(shadowTexture[i], input.lpos[i], float2(0, -samp)) +
+                offset_lookup(shadowTexture[i], input.lpos[i], float2(0, samp)) +
+                offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, 0)) +
+                offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, -samp)) +
+                offset_lookup(shadowTexture[i], input.lpos[i], float2(-samp, samp)) +
+                offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, 0)) +
+                offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, -samp)) +
+                offset_lookup(shadowTexture[i], input.lpos[i], float2( samp, samp)) 
+                ) * 1.f/9.f;
 
-			return shadowCoeff.r;
-		}
-	}
-	return 1.0;
+            return shadowCoeff.r;
+        }
+    }
+    return 1.0;
 }
 
 
 float4 PShader(VOut input) : SV_TARGET
 {
 
-	//return float4(pLight[2].Diffuse.xyz, 1.0f);
+    //return float4(pLight[2].Diffuse.xyz, 1.0f);
 
     float4 textureColor = float4(1.0f,1.0f,0.0f,1.0f);//float4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -259,87 +259,87 @@ float4 PShader(VOut input) : SV_TARGET
         lightVec = -dirLight[i].Direction.xyz;
         lightVec = normalize(lightVec);
         diffuseFactor = dot(lightVec, bumpedNormalW);
-		
+        
 
         if(diffuseFactor > 0.0f)
         {
-			float shadow = 1.0;
-			//if( i < NUMDIRSHADOWS )
-			//	shadow = shadowVal(input, i);
-			if(sceneBuff.shadowsOn == 1.0f)
+            float shadow = 1.0;
+            //if( i < NUMDIRSHADOWS )
+            //	shadow = shadowVal(input, i);
+            if(sceneBuff.shadowsOn == 1.0f)
 
-				for( int k = 0; k < NUMDIRSHADOWS; k++ )
-				{
-					input.lpos[k].xyz /= input.lpos[k].w;
+                for( int k = 0; k < NUMDIRSHADOWS; k++ )
+                {
+                    input.lpos[k].xyz /= input.lpos[k].w;
 
-					if( k == 0 )
-					{
-						if( input.lpos[k].x < -1.0f || input.lpos[k].x > 1.0f ||
-							input.lpos[k].y < -1.0f || input.lpos[k].y > 1.0f ||
-							input.lpos[k].z < 0.0f  || input.lpos[k].z > 1.0f ) shadow = 1.0;
+                    if( k == 0 )
+                    {
+                        if( input.lpos[k].x < -1.0f || input.lpos[k].x > 1.0f ||
+                            input.lpos[k].y < -1.0f || input.lpos[k].y > 1.0f ||
+                            input.lpos[k].z < 0.0f  || input.lpos[k].z > 1.0f ) shadow = 1.0;
 
-						else
-						{
-							if(sceneBuff.cascadeOn == 1.0f)
-							{
-								if( k == 0 )
-									return float4( 1.0, 0.0, 0.0, 1.0 );
-								else if ( k == 1 )
-									return float4( 0.0, 1.0, 0.0, 1.0 );
-								else if ( k == 2 )
-									return float4( 0.0, 0.0, 1.0, 1.0 );
-							}
+                        else
+                        {
+                            if(sceneBuff.cascadeOn == 1.0f)
+                            {
+                                if( k == 0 )
+                                    return float4( 1.0, 0.0, 0.0, 1.0 );
+                                else if ( k == 1 )
+                                    return float4( 0.0, 1.0, 0.0, 1.0 );
+                                else if ( k == 2 )
+                                    return float4( 0.0, 0.0, 1.0, 1.0 );
+                            }
 
-							shadow = shadowVal( input, k );
-							if( shadow < 1.0 )
-							{
+                            shadow = shadowVal( input, k );
+                            if( shadow < 1.0 )
+                            {
 
-								//if( k == 0 )
-								//	return float4( 1.0, 0.0, 0.0, 1.0 );
-								//else if ( k == 1 )
-								//	return float4( 0.0, 1.0, 0.0, 1.0 );
-								//else if ( k == 2 )
-								//	return float4( 0.0, 0.0, 1.0, 1.0 );
-								break;
-							}
-						}
-					}
-					else
-					{
-						if( input.lpos[k-1].x < -1.0f || input.lpos[k-1].x > 1.0f ||
-							input.lpos[k-1].y < -1.0f || input.lpos[k-1].y > 1.0f ||
-							input.lpos[k-1].z < 0.0f  || input.lpos[k-1].z > 1.0f )
-						{
-							if( input.lpos[k].x < -1.0f || input.lpos[k].x > 1.0f ||
-								input.lpos[k].y < -1.0f || input.lpos[k].y > 1.0f ||
-								input.lpos[k].z < 0.0f  || input.lpos[k].z > 1.0f ) shadow = 1.0;
-							else
-							{
-								if(sceneBuff.cascadeOn == 1.0f)
-								{
-									if( k == 0 )
-										return float4( 1.0, 0.0, 0.0, 1.0 );
-									else if ( k == 1 )
-										return float4( 0.0, 1.0, 0.0, 1.0 );
-									else if ( k == 2 )
-										return float4( 0.0, 0.0, 1.0, 1.0 );
-								}
+                                //if( k == 0 )
+                                //	return float4( 1.0, 0.0, 0.0, 1.0 );
+                                //else if ( k == 1 )
+                                //	return float4( 0.0, 1.0, 0.0, 1.0 );
+                                //else if ( k == 2 )
+                                //	return float4( 0.0, 0.0, 1.0, 1.0 );
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if( input.lpos[k-1].x < -1.0f || input.lpos[k-1].x > 1.0f ||
+                            input.lpos[k-1].y < -1.0f || input.lpos[k-1].y > 1.0f ||
+                            input.lpos[k-1].z < 0.0f  || input.lpos[k-1].z > 1.0f )
+                        {
+                            if( input.lpos[k].x < -1.0f || input.lpos[k].x > 1.0f ||
+                                input.lpos[k].y < -1.0f || input.lpos[k].y > 1.0f ||
+                                input.lpos[k].z < 0.0f  || input.lpos[k].z > 1.0f ) shadow = 1.0;
+                            else
+                            {
+                                if(sceneBuff.cascadeOn == 1.0f)
+                                {
+                                    if( k == 0 )
+                                        return float4( 1.0, 0.0, 0.0, 1.0 );
+                                    else if ( k == 1 )
+                                        return float4( 0.0, 1.0, 0.0, 1.0 );
+                                    else if ( k == 2 )
+                                        return float4( 0.0, 0.0, 1.0, 1.0 );
+                                }
 
-								shadow = shadowVal( input, k );
-								if( shadow < 1.0 )
-								{
-									//if( k == 0 )
-									//	return float4( 1.0, 0.0, 0.0, 1.0 );
-									//else if ( k == 1 )
-									//	return float4( 0.0, 1.0, 0.0, 1.0 );
-									//else if ( k == 2 )
-									//	return float4( 0.0, 0.0, 1.0, 1.0 );
-									break;
-								}
-							}
-						}
-					}
-				}
+                                shadow = shadowVal( input, k );
+                                if( shadow < 1.0 )
+                                {
+                                    //if( k == 0 )
+                                    //	return float4( 1.0, 0.0, 0.0, 1.0 );
+                                    //else if ( k == 1 )
+                                    //	return float4( 0.0, 1.0, 0.0, 1.0 );
+                                    //else if ( k == 2 )
+                                    //	return float4( 0.0, 0.0, 1.0, 1.0 );
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
 
 
             if(sceneBuff.diffuseOn == 1.0f)
@@ -370,7 +370,7 @@ float4 PShader(VOut input) : SV_TARGET
             totalSpec	 += dirSpec;
     }
 
-	[unroll]
+    [unroll]
     for(int i = 0; i < pLight[0].pad; i++)
     {
         lightVec = pLight[i].Position - input.PosW;
@@ -394,7 +394,7 @@ float4 PShader(VOut input) : SV_TARGET
             pSpec	= specFactor * material.Specular * pLight[i].Specular;
         }
 
-		if(d > pLight[i].Range)
+        if(d > pLight[i].Range)
             continue;
 
         float att = 1.0f / dot(pLight[i].Att, float3(1.0f, d, d*d));
@@ -416,38 +416,38 @@ float4 PShader(VOut input) : SV_TARGET
             pAmbient *= (pLight[i].Range-d)/(pLight[i].Range-softie*pLight[i].Range);
             pDiffuse *= 1.0f/((softie*pLight[i].Range/pLight[i].Range+1.0f)*(softie*pLight[i].Range/pLight[i].Range+1.0f));
             pDiffuse *= (pLight[i].Range-d)/(pLight[i].Range-softie*pLight[i].Range);
-			pSpec *= 1.0f/((softie*pLight[i].Range/pLight[i].Range+1.0f)*(softie*pLight[i].Range/pLight[i].Range+1.0f));
+            pSpec *= 1.0f/((softie*pLight[i].Range/pLight[i].Range+1.0f)*(softie*pLight[i].Range/pLight[i].Range+1.0f));
             pSpec *= (pLight[i].Range-d)/(pLight[i].Range-softie*pLight[i].Range);
         }
-		
-		[flatten]
+        
+        [flatten]
         if(sceneBuff.pLightOn == 1.0f)
         {
-			int val = 0;
-			float shadow = 1.0;
-			//if( 1 )
-			//{
-			if(sceneBuff.shadowsOn == 1.0f)
+            int val = 0;
+            float shadow = 1.0;
+            //if( 1 )
+            //{
+            if(sceneBuff.shadowsOn == 1.0f)
 
-			[flatten]
-			if( i*6+6 <= NUMPOINTSHADOWS )
-			{
-				if( i == 0 )
-					shadow = shadowValPoint( input, 0 + NUMDIRSHADOWS );
-				else if( i == 1 )
-					shadow = shadowValPoint( input, 6 + NUMDIRSHADOWS);
-				else if( i == 2 )
-					shadow = shadowValPoint( input, 12 + NUMDIRSHADOWS);
-				else if( i == 3 )
-					shadow = shadowValPoint( input, 18 + NUMDIRSHADOWS);
-			}
+            [flatten]
+            if( i*6+6 <= NUMPOINTSHADOWS )
+            {
+                if( i == 0 )
+                    shadow = shadowValPoint( input, 0 + NUMDIRSHADOWS );
+                else if( i == 1 )
+                    shadow = shadowValPoint( input, 6 + NUMDIRSHADOWS);
+                else if( i == 2 )
+                    shadow = shadowValPoint( input, 12 + NUMDIRSHADOWS);
+                else if( i == 3 )
+                    shadow = shadowValPoint( input, 18 + NUMDIRSHADOWS);
+            }
 
             if(sceneBuff.ambientOn == 1.0f)
                 totalAmbient += (4.0f * pAmbient);
             if(sceneBuff.diffuseOn == 1.0f)
                 totalDiffuse += (4.0f * pDiffuse) * 10 * shadow;
             if(sceneBuff.specularOn == 1.0f)
-				totalSpec	 += pSpec;
+                totalSpec	 += pSpec;
         }
     }
 

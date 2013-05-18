@@ -31,7 +31,7 @@
 #define PX_TOOLKIT_FPS_H
 
 #include "common/PxPhysXCommon.h"
-#include "PsTime.h"
+#include "physx/source/foundation/include/PsTime.h"
 
 namespace PxToolkit
 {

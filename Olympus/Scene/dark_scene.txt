@@ -6,6 +6,6 @@ o Scene/dark_arena.txt
 o Scene/dark_deadman.txt
 o Scene/dark_troll.txt
 
-s Scene/dark_spheres.txt
+# s Scene/dark_spheres.txt
 
 p Scene/dark_physx.txt

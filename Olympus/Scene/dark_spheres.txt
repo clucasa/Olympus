@@ -3,4 +3,4 @@
 # r is a dynamic reflective environment map
 # s radius slices stacks x y z
 
-r 12.0 30.0 30.0 0.15 16.95 198.9
+s 12.0 30.0 30.0 0.15 16.95 198.9

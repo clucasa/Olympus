@@ -11,7 +11,7 @@
 e openworldEmitter5 -42.6 -27.2 -94.9 SoftParticle.dds
 e openworldEmitter6 -30.8 -0.5 66.7 SoftParticle.dds
 e openworldEmitter7 -10.8 38.2 277.7 SoftParticle.dds
-# e bigemitter 429.2 -184.0 77.99 SoftParticle.dds
+e bigemitter 429.2 -184.0 77.99 SoftParticle.dds
 # e bigemitter2 348 -159 483.0 SoftParticle.dds
 # e TorchEmitter 377.7 1.0 -252.9 fire.png
 # e TorchEmitter 416.35 1.0 -214.35 fire.png

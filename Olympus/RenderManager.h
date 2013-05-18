@@ -163,10 +163,10 @@ public:
 	ID3D11DepthStencilView* pShadowMapDepthView;
 	ID3D11ShaderResourceView* pShadowMapSRView;
 	Camera *mShadowCam;
-	ID3D11Buffer *shadowCBuffer[4];
-	vector<ShadowBuff> shadowBuff[4];
+	ID3D11Buffer *shadowCBuffer[5];
+	vector<ShadowBuff> shadowBuff[5];
 	ShadowBuff shadBuffer;
-	vector<ShadowManager*> shadows[4];
+	vector<ShadowManager*> shadows[5];
 	ShadowManager* shad;
 
 

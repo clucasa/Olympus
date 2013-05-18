@@ -31,8 +31,8 @@
 #define PX_TOOLKIT_REPX_H
 
 #include "common/PxPhysXCommon.h"
-#include "RepX.h"
-#include "RepXUtility.h"
+#include "physx/include/repx/RepX.h"
+#include "physx/include/repx/RepXUtility.h"
 
 namespace PxToolkit
 {
