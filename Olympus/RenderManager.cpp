@@ -37,7 +37,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
     dev->CreateRenderTargetView(pBackBuffer, NULL, &mBackbuffer);
     pBackBuffer->Release();
 
-
+	mAssetManager = new AssetManager(mDev, mDevcon);
 
     GeometryGenerator *geoGen = new GeometryGenerator();
 
@@ -253,13 +253,12 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
     for(int i = 0; i < (int)sceneNames.size(); i++)
     {
         apex->setScene(i);
-        tempScene = new Scene( dev, devcon, apex, geoGen, mSkyBox, mScreen, mZbuffer, mViewport, sceneNames[i]);
+        tempScene = new Scene( dev, devcon, apex, geoGen, mSkyBox, mScreen, mZbuffer, mViewport, sceneNames[i], mAssetManager);
         scene.push_back(tempScene);
     }
 
 
-        // Setting up Cascade Light Shadow Maps\
-  
+    // Setting up Cascade Light Shadow Maps
     for( int i = 0; i < scene.size(); i++ )
     {
         if( i == 0)
@@ -279,7 +278,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
     for( int i = 0; i < scene.size(); i++ )
     {
-            shad = new ShadowManager(mDev, mDevcon, 1024, 1024, 0, 120.0, 120.0);
+        shad = new ShadowManager(mDev, mDevcon, 1024, 1024, 0, 120.0, 120.0);
 
         if( i == 0)
             shad = new ShadowManager(mDev, mDevcon, 1024, 1024, 0, 50.0, 50.0);

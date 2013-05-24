@@ -1,6 +1,6 @@
 #include "Object.h"
 
-Object::Object()
+Object::Object(AssetManager* assetManager) : mAssetManager(assetManager)
 {
 
 }
@@ -68,12 +68,14 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
 
     for( int i = 0; i < (int)textures->size(); i++ )
     {
-        hr1 = D3DX11CreateShaderResourceViewFromFile( dev1, textures[0][i], NULL, NULL, &g_pTextureRV1, NULL );
+        //hr1 = D3DX11CreateShaderResourceViewFromFile( dev1, textures[0][i], NULL, NULL, &g_pTextureRV1, NULL );
+		g_pTextureRV1 = mAssetManager->RequestTexture(textures[0][i]);
         texArray.push_back( g_pTextureRV1 );
     }
     for( int i = 0; i < (int)NormTextures->size(); i++ )
     {
-        hr1 = D3DX11CreateShaderResourceViewFromFile( dev1, NormTextures[0][i], NULL, NULL, &g_pTextureRV1, NULL );
+        //hr1 = D3DX11CreateShaderResourceViewFromFile( dev1, NormTextures[0][i], NULL, NULL, &g_pTextureRV1, NULL );
+		g_pTextureRV1 = mAssetManager->RequestTexture(NormTextures[0][i]);
         NormArray.push_back( g_pTextureRV1 );
     }
     

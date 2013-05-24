@@ -13,6 +13,7 @@
 #include "apex.h"
 #include "LightHelper.h"
 #include "ConstBuffers.h"
+#include "AssetManager.h"
 
 using namespace std;
 
@@ -50,6 +51,7 @@ public:
     ID3D11PixelShader *opPS;               // the pointer to the vertex shader
     ID3D11PixelShader *opPSAlpha;               // the pointer to the vertex shader
 
+	AssetManager* mAssetManager;
     
     ID3D11Buffer *worldCBuffer;
     XMFLOAT4X4 mWorldMat;
@@ -59,7 +61,7 @@ public:
 
     cbuffs cb;
 
-    Object();
+    Object(AssetManager* assetManager);
     void objLoad( char* filename, vector<LPCSTR > *textures, vector<LPCSTR > *NormTextures, vector<float> TextureScales, ID3D11Device* devv, ID3D11DeviceContext *devcon, Apex* apex );
     void renderO(ID3D11DeviceContext *devcon);
     virtual void Render(ID3D11Buffer *sceneBuff, Camera *mCam, int renderType);

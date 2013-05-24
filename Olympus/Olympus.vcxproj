@@ -85,6 +85,7 @@
     <ClCompile Include="ApexCloth.cpp" />
     <ClCompile Include="ApexDestructable.cpp" />
     <ClCompile Include="ApexParticles.cpp" />
+    <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CharacterController.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="ApexCloth.h" />
     <ClInclude Include="ApexDestructable.h" />
     <ClInclude Include="ApexParticles.h" />
+    <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CharacterController.h" />

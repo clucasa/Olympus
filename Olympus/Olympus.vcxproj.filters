@@ -113,6 +113,9 @@
     <Filter Include="Resource Files\Scenes\Open World">
       <UniqueIdentifier>{d74d6417-0638-41f1-9579-63afe6d49b2a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\AssetManager">
+      <UniqueIdentifier>{127c1397-f9e5-484d-85e1-1d2803f2c5b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="apex.cpp">
@@ -199,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="ShadowManager.cpp">
       <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>Rendering\AssetManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -497,6 +503,9 @@
     </ClInclude>
     <ClInclude Include="ShadowManager.h">
       <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetManager.h">
+      <Filter>Rendering\AssetManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

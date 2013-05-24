@@ -428,19 +428,20 @@ float4 PShader(VOut input) : SV_TARGET
             //if( 1 )
             //{
             if(sceneBuff.shadowsOn == 1.0f)
-
-            [flatten]
-            if( i*6+6 <= NUMPOINTSHADOWS )
-            {
-                if( i == 0 )
-                    shadow = shadowValPoint( input, 0 + NUMDIRSHADOWS );
-                else if( i == 1 )
-                    shadow = shadowValPoint( input, 6 + NUMDIRSHADOWS);
-                else if( i == 2 )
-                    shadow = shadowValPoint( input, 12 + NUMDIRSHADOWS);
-                else if( i == 3 )
-                    shadow = shadowValPoint( input, 18 + NUMDIRSHADOWS);
-            }
+			{
+				[flatten]
+				if( i*6+6 <= NUMPOINTSHADOWS )
+				{
+					if( i == 0 )
+						shadow = shadowValPoint( input, 0 + NUMDIRSHADOWS );
+					else if( i == 1 )
+						shadow = shadowValPoint( input, 6 + NUMDIRSHADOWS);
+					else if( i == 2 )
+						shadow = shadowValPoint( input, 12 + NUMDIRSHADOWS);
+					else if( i == 3 )
+						shadow = shadowValPoint( input, 18 + NUMDIRSHADOWS);
+				}
+			}
 
             if(sceneBuff.ambientOn == 1.0f)
                 totalAmbient += (4.0f * pAmbient);

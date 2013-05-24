@@ -24,6 +24,7 @@
 #include "ConstBuffers.h"
 #include "LightHelper.h"
 #include "ShadowManager.h"
+#include "AssetManager.h"
 #include <string>
 using namespace std;
 
@@ -134,7 +135,7 @@ public:
 	ApexParticles* torch2;
     ApexCloth* mCloth;
 	
-	
+	AssetManager* mAssetManager;
 
 	SceneBuff sceneBuff;
 
