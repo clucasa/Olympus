@@ -22,7 +22,7 @@ System::System(HINSTANCE hInstance, int nCmdShow) :
     wc.style        = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc  = WindowProc;
     wc.hInstance    = hInstance;
-    wc.hIcon        = ::LoadIcon(hInstance, "ZeusIcon");
+    wc.hIcon        = ::LoadIcon(hInstance, "OlyIcon");
     wc.hCursor		= LoadCursor(NULL, IDC_ARROW);
     wc.lpszClassName = "WindowClass";
 
@@ -58,9 +58,18 @@ System::~System() {}
 
 int System::init()
 {
+    newTimer.Reset();
     int inited = initd3d();
     if(inited)
         mInitialized = true;
+    newTimer.Tick();
+    initializationTime = newTimer.DeltaTime();
+
+    ofstream myfile;
+    myfile.open("inittimes.txt", ios::app);
+    myfile << "Time to init with mesh + textures asset Manager: " << initializationTime << endl << endl;
+    myfile.close();
+
     return inited;
 }
 
@@ -461,8 +470,19 @@ int System::initd3d()
     mApex->InitParticles();
     mApex->InitClothing();
     //Sleep(200);
-    
+    newTimer.Tick();
     rendManager = new RenderManager(devcon, dev, swapchain, mApex, mCam, &mViewport);
+    newTimer.Tick();
+    float rendMangaerTime = newTimer.DeltaTime();
+
+    ofstream myfile;
+    myfile.open("inittimes.txt", ios::app);
+    for(int i = 0; i < rendManager->sceneLoadTimes.size(); i++)
+    {
+        myfile << endl << "Scene" << i << " Load time: " << rendManager->sceneLoadTimes[i] << endl;
+    }
+    myfile << endl << "Time to init render Manager: " << rendMangaerTime  << endl;
+    myfile.close();
 
     for(int i = 0; i <= CurrentScene::JENGA; i++)
     {

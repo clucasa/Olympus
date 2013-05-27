@@ -509,7 +509,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Media\ZeusIcon.rc">
+    <ResourceCompile Include="Media\OlympusIcon.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

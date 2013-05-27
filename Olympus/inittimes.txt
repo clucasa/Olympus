@@ -1,0 +1,46 @@
+Time to init without asset Manager: 348.174
+
+Time to init with textrue asset Manager: 342.168
+
+///brek
+
+Time to init with mesh + textures asset Manager: 374.97
+
+Time to init with mesh + textures asset Manager: 347.827
+
+Time to init with mesh + textures asset Manager: 329.06
+
+Time to init with mesh + textures asset Manager: 333.167
+
+/// new breek
+
+
+Scene0 Load time: 79.9238
+
+Scene1 Load time: 35.2465
+
+Scene2 Load time: 34.1348
+
+Scene3 Load time: 117.272
+
+Scene4 Load time: 60.8533
+
+Time to init render Manager: 328.855
+Time to init with mesh + textures asset Manager: 0.00152448
+
+
+
+
+Scene0 Load time: 82.6622
+
+Scene1 Load time: 36.3809
+
+Scene2 Load time: 35.3529
+
+Scene3 Load time: 40.2757
+
+Scene4 Load time: 71.7268
+
+Time to init render Manager: 268.031
+Time to init with mesh + textures asset Manager: 0.00194024
+

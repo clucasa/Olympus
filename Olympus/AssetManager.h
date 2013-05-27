@@ -6,12 +6,32 @@
 #include <d3d11.h>
 #include <d3dx11.h>
 
+#include "importer.h"
+
 using namespace std;
+
+enum AssetType
+{
+    Texture,
+    Shader,
+    Model
+};
 
 struct Asset
 {
     string name;
+    AssetType type;
+
+    //if texture asset
     ID3D11ShaderResourceView* texture;
+
+    //if shader asset
+    ID3D11PixelShader* pixelShader;
+    ID3D11VertexShader* vertexShader;
+
+    //if model asset
+    vector<vector<Vertex>> vertexes;
+    int numMeshes;
 
 };
 
@@ -24,14 +44,16 @@ public:
     ID3D11ShaderResourceView* RequestTexture(string filename);
 
     void RequestShader(string filename);
-    void RequestVertexBuffer(string filename);
+    vector<vector<Vertex>> RequestModel(string filename, int &numMesh);
 
-    Asset* FindAsset(string filename);
+    Asset* FindAsset(string filename, AssetType type);
 
     ID3D11DeviceContext *mDevcon;
     ID3D11Device *mDev;
 
-    vector<Asset*> mAssets;
+    vector<Asset*> mTextureAssets;
+    vector<Asset*> mShaderAssets;
+    vector<Asset*> mModelAssets;
 };
 
 #endif

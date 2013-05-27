@@ -37,7 +37,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
     dev->CreateRenderTargetView(pBackBuffer, NULL, &mBackbuffer);
     pBackBuffer->Release();
 
-	mAssetManager = new AssetManager(mDev, mDevcon);
+    mAssetManager = new AssetManager(mDev, mDevcon);
 
     GeometryGenerator *geoGen = new GeometryGenerator();
 
@@ -249,12 +249,14 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
 
 
     Scene *tempScene;
-
+    newTimer.Reset();
     for(int i = 0; i < (int)sceneNames.size(); i++)
     {
         apex->setScene(i);
         tempScene = new Scene( dev, devcon, apex, geoGen, mSkyBox, mScreen, mZbuffer, mViewport, sceneNames[i], mAssetManager);
         scene.push_back(tempScene);
+        newTimer.Tick();
+        sceneLoadTimes.push_back(newTimer.DeltaTime());
     }
 
 
@@ -725,7 +727,7 @@ void RenderManager::Render()
     mDevcon->UpdateSubresource(sceneCBuffer, 0, 0, mScreenCam->ViewProj().m , 0, 0);
     mScreen->Render(sceneCBuffer, mScreenCam, 0);
 
-    mText.DrawString(mDevcon, mFont, sText, textPos, XMCOLOR(0xffffffff));
+    //mText.DrawString(mDevcon, mFont, sText, textPos, XMCOLOR(0xffffffff));
     mText.DrawString(mDevcon, mFont, hair, hairPos, XMCOLOR(0xffffffff));
     mText.DrawString(mDevcon, mFont, pos, posPos, XMCOLOR(0xffffffff));
 

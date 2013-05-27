@@ -59,7 +59,7 @@ public:
     void CleanD3D(void);                    // closes Direct3D and releases memory
     int InitPipeline(void);                 // loads and prepares the shaders
 
-	void SwitchScene(int scene);
+    void SwitchScene(int scene);
 
     // call backs
     void OnMouseDown(WPARAM btnState, int x, int y);
@@ -83,6 +83,8 @@ private:
     int					mFovFlag;
 
     GameTimer			mTimer;
+    GameTimer			newTimer;
+    float               initializationTime;
 
     HWND                hWnd;               // The main window
     Camera              *mCam;				// the camera
@@ -101,7 +103,7 @@ private:
 
     CurrentScene		mCurrentScene;
 
-	float				mSpeedScalar;
+    float				mSpeedScalar;
 
     bool				mAppPaused;
     bool				mMinimized;
@@ -109,6 +111,6 @@ private:
     bool				mResizing;
     bool                mInitialized;
     bool				boolRun;
-	bool				switchScene;
+    bool				switchScene;
 };
 #endif

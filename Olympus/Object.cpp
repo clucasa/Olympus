@@ -21,7 +21,8 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
 
     vector<Vertex> verts;
 
-    numMeshes = Import( filename, &vertexes );
+    //numMeshes = Import( filename, &vertexes );
+    vertexes = mAssetManager->RequestModel( filename, numMeshes );
     ID3D11Buffer* tempVB;
 
     
@@ -29,11 +30,11 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
     for( int i = 0; i < numMeshes; i++ )
     {
         int numVerts = vertexes[i].size();
-		for(int j = 0; j < numVerts; j++)
-		{
-			vertexes[i][j].Tex.x *= TextureScales[i];
-			vertexes[i][j].Tex.y *= TextureScales[i];
-		}
+        for(int j = 0; j < numVerts; j++)
+        {
+            vertexes[i][j].Tex.x *= TextureScales[i];
+            vertexes[i][j].Tex.y *= TextureScales[i];
+        }
         D3D11_BUFFER_DESC bd;
         ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
         bd.Usage = D3D11_USAGE_DEFAULT;
@@ -69,13 +70,13 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
     for( int i = 0; i < (int)textures->size(); i++ )
     {
         //hr1 = D3DX11CreateShaderResourceViewFromFile( dev1, textures[0][i], NULL, NULL, &g_pTextureRV1, NULL );
-		g_pTextureRV1 = mAssetManager->RequestTexture(textures[0][i]);
+        g_pTextureRV1 = mAssetManager->RequestTexture(textures[0][i]);
         texArray.push_back( g_pTextureRV1 );
     }
     for( int i = 0; i < (int)NormTextures->size(); i++ )
     {
         //hr1 = D3DX11CreateShaderResourceViewFromFile( dev1, NormTextures[0][i], NULL, NULL, &g_pTextureRV1, NULL );
-		g_pTextureRV1 = mAssetManager->RequestTexture(NormTextures[0][i]);
+        g_pTextureRV1 = mAssetManager->RequestTexture(NormTextures[0][i]);
         NormArray.push_back( g_pTextureRV1 );
     }
     
@@ -88,13 +89,15 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
     ID3D10Blob *VS, *PS;
     D3DX11CompileFromFile("models.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
     D3DX11CompileFromFile("models.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
+
     HRESULT hr;
     hr = dev1->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &opVS);
     if( FAILED(hr) )
-        return ;
+        return;
+
     dev1->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &opPS);
     if( FAILED(hr) )
-        return ;
+        return;
 
     D3DX11CompileFromFile("models.hlsl", 0, 0, "PSAplhaShadow", "ps_5_0", 0, 0, 0, &PS, 0, 0);
     dev1->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &opPSAlpha);

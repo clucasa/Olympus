@@ -179,11 +179,11 @@ void ProcessMesh( FbxNode* node )
             }
             Vertices[0][temp.texNum].push_back( temp );//.push_back( temp );
         }
-        if( Vertices[texNumVal].size() % 3 == 0 && Vertices[texNumVal].size() > 0  )
+        if( Vertices[0][texNumVal].size() % 3 == 0 && Vertices[0][texNumVal].size() > 0  )
         {
-            int i0 = Vertices[texNumVal].size() - 3;
-            int i1 = Vertices[texNumVal].size() - 2;
-            int i2 = Vertices[texNumVal].size() - 1;
+            int i0 = Vertices[0][texNumVal].size() - 3;
+            int i1 = Vertices[0][texNumVal].size() - 2;
+            int i2 = Vertices[0][texNumVal].size() - 1;
 
             XMFLOAT3 Q11;
             Q11.x = Vertices[0][texNumVal][i1].Pos.x - Vertices[0][texNumVal][i0].Pos.x;
