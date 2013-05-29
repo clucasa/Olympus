@@ -87,7 +87,7 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
 //	return;
 
     ID3D10Blob *VS, *PS;
-    D3DX11CompileFromFile("models.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
+    /*D3DX11CompileFromFile("models.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
     D3DX11CompileFromFile("models.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
 
     HRESULT hr;
@@ -97,12 +97,20 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
 
     dev1->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &opPS);
     if( FAILED(hr) )
-        return;
+        return;*/
 
+	Asset* vertS = mAssetManager->RequestVShader("models.hlsl");
+	opVS = vertS->vertexShader;
+	VS = vertS->VS;
+
+	Asset* pixS = mAssetManager->RequestPShader("models.hlsl");
+	opPS = pixS->pixelShader;
+	PS = pixS->PS;
+
+	HRESULT hr;
     D3DX11CompileFromFile("models.hlsl", 0, 0, "PSAplhaShadow", "ps_5_0", 0, 0, 0, &PS, 0, 0);
     dev1->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &opPSAlpha);
-    if( FAILED(hr) )
-        return ;
+    
     D3D11_INPUT_ELEMENT_DESC ied[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -126,6 +134,8 @@ void Object::objLoad( char* filename, vector<LPCSTR> *textures, vector<LPCSTR> *
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
     hr = dev1->CreateBuffer(&bd, NULL, &worldCBuffer);
+	if( FAILED(hr) )
+        return ;
 }
 
 void Object::renderO( ID3D11DeviceContext * devcon)

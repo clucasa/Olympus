@@ -5,35 +5,43 @@ Box::Box()
     
 }
 
-Box::Box(ID3D11DeviceContext *mDevcon, ID3D11Device *mDev, Apex* apex, float length, float width, float height) : 
-    mDevcon(mDevcon), mDev(mDev), mApex(apex), mLength(length), mWidth(width), mHeight(height)
+Box::Box(ID3D11DeviceContext *mDevcon, ID3D11Device *mDev, Apex* apex, float length, float width, float height, AssetManager* assetManager) : 
+    mDevcon(mDevcon), mDev(mDev), mApex(apex), mLength(length), mWidth(width), mHeight(height), mAssetManager(assetManager)
 {
     GeometryGenerator* geoGen = new GeometryGenerator();
     mX = -20.0f;
     mY = 4.0f;
     mZ = 25.0f;
     cb = new cbuffs();
-
+	
     CreateGeometry(geoGen);
     SetupBuffer();
     SetupPipeline();
 }
 
-
 void Box::SetupPipeline()
 {
     // load and compile the two shaders
     ID3D10Blob *VS, *PS;
-    D3DX11CompileFromFile("models.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
+	/*D3DX11CompileFromFile("models.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, 0, 0);
     D3DX11CompileFromFile("models.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, 0, &PS, 0, 0);
+
     HRESULT hr;
     hr = mDev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &mVS);
     if( FAILED(hr) )
         return ;
     mDev->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &mPS);
     if( FAILED(hr) )
-        return ;
+        return ;*/
+	Asset* vertS = mAssetManager->RequestVShader("models.hlsl");
+	mVS = vertS->vertexShader;
+	VS = vertS->VS;
 
+	Asset* pixS = mAssetManager->RequestPShader("models.hlsl");
+	mPS = pixS->pixelShader;
+	PS = pixS->PS;
+
+	HRESULT hr;
     D3D11_INPUT_ELEMENT_DESC ied[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -44,14 +52,15 @@ void Box::SetupPipeline()
         { "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 56, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
     mDev->CreateInputLayout(ied, 6, VS->GetBufferPointer(), VS->GetBufferSize(), &mLayout);
-
-    hr = D3DX11CreateShaderResourceViewFromFile( mDev, "Media/Textures/Wood.png", NULL, NULL, &mTexture, NULL );
+	
+	hr = D3DX11CreateShaderResourceViewFromFile( mDev, "Media/Textures/Wood.png", NULL, NULL, &mTexture, NULL );
+    if( FAILED( hr ) )
+        return;
+	hr = D3DX11CreateShaderResourceViewFromFile( mDev, "Media/Textures/BlankNormalMap.png", NULL, NULL, &mNmap, NULL );
     if( FAILED( hr ) )
         return;
 
-    hr = D3DX11CreateShaderResourceViewFromFile( mDev, "Media/Textures/BlankNormalMap.png", NULL, NULL, &mNmap, NULL );
-    if( FAILED( hr ) )
-        return;
+
 }
 
 void Box::CreateGeometry(GeometryGenerator *geoGen)

@@ -44,3 +44,262 @@ Scene4 Load time: 71.7268
 Time to init render Manager: 268.031
 Time to init with mesh + textures asset Manager: 0.00194024
 
+
+Scene0 Load time: 129.078
+
+Scene1 Load time: 49.9209
+
+Scene2 Load time: 57.0939
+
+Scene3 Load time: 52.0735
+
+Scene4 Load time: 84.7179
+
+Time to init render Manager: 376.125
+Time to init with mesh + textures asset Manager: 0.0212288
+
+
+//sd
+
+
+Scene0 Load time: 103.87
+
+Scene1 Load time: 49.0794
+
+Scene2 Load time: 47.2742
+
+Scene3 Load time: 52.2109
+
+Scene4 Load time: 81.1743
+
+Time to init render Manager: 336.558
+Time to init with mesh + textures asset Manager: 0.0171952
+
+
+Scene0 Load time: 18.1885
+
+Scene1 Load time: 0.160975
+
+Scene2 Load time: 0.164749
+
+Scene3 Load time: 46.7508
+
+Scene4 Load time: 0.170133
+
+Time to init render Manager: 69.067
+Time to init with mesh + textures asset Manager: 0.0224119
+
+// scene test
+
+
+
+
+Scene0 Load time: 0.67537
+
+Scene1 Load time: 0.150114
+
+Scene2 Load time: 0.15393
+
+Scene3 Load time: 28.9073
+
+Scene4 Load time: 0.235814
+
+Time to init render Manager: 32.235
+Time to init with mesh + textures asset Manager: 0.014709
+
+
+Scene0 Load time: 0.563767
+
+Scene1 Load time: 0.120904
+
+Scene2 Load time: 0.124121
+
+Scene3 Load time: 28.5303
+
+Scene4 Load time: 0.133662
+
+Time to init render Manager: 32.3384
+Time to init with mesh + textures asset Manager: 0.0160997
+
+
+Time to init jenga objects: 28.5637
+
+Time to init blockmaterial: 2.70465e-005
+
+Time to init object: 4.04028e-005
+
+
+Time to init box object 1: 14.5306
+
+Time to init box object 2: 14.3786
+
+Scene0 Load time: 2.27974
+
+Scene1 Load time: 0.175261
+
+Scene2 Load time: 0.191167
+
+Scene3 Load time: 29.4591
+
+Scene4 Load time: 0.181951
+
+Time to init render Manager: 35.3164
+Time to init with mesh + textures asset Manager: 0.0159427
+
+
+Time to create geometry: 5.74321e-005
+
+Time to setup buffer 0.000719236
+
+Time to setup pipeline: 14.4791
+
+Time to create geometry: 6.54458e-005
+
+Time to setup buffer 0.0338151
+
+Time to setup pipeline: 14.2849
+
+Scene0 Load time: 1.18307
+
+Scene1 Load time: 0.172731
+
+Scene2 Load time: 0.185241
+
+Scene3 Load time: 29.4479
+
+Scene4 Load time: 0.239862
+
+Time to init render Manager: 34.3394
+Time to init with mesh + textures asset Manager: 0.0496099
+
+
+Time to compile shaders: 14.2997
+
+Time to create shaders: 0.00148388
+
+Time to read in wood texture 0.0881943
+
+Time to read in blank normal map: 0.026548
+
+Time to compile shaders: 14.3868
+
+Time to create shaders: 0.0012221
+
+Time to read in wood texture 0.0200398
+
+Time to read in blank normal map: 0.00259646
+
+Scene0 Load time: 1.45713
+
+Scene1 Load time: 0.154707
+
+Scene2 Load time: 0.196133
+
+Scene3 Load time: 29.4025
+
+Scene4 Load time: 0.226081
+
+Time to init render Manager: 34.618
+Time to init with mesh + textures asset Manager: 0.0198
+
+
+Scene0 Load time: 1.15829
+
+Scene1 Load time: 0.156214
+
+Scene2 Load time: 0.240708
+
+Scene3 Load time: 40.4355
+
+Scene4 Load time: 0.195742
+
+Time to init render Manager: 45.1893
+Time to init with mesh + textures asset Manager: 0.028325
+
+
+Scene0 Load time: 0.531334
+
+Scene1 Load time: 0.144688
+
+Scene2 Load time: 0.169219
+
+Scene3 Load time: 14.734
+
+Scene4 Load time: 0.308222
+
+Time to init render Manager: 18.9039
+Time to init with mesh + textures asset Manager: 0.0178173
+
+// New Benchmark
+
+
+
+Scene0 Load time: 49.2667
+
+Scene1 Load time: 9.96303
+
+Scene2 Load time: 11.5562
+
+Scene3 Load time: 3.74305
+
+Scene4 Load time: 14.236
+
+Time to init render Manager: 91.9676
+Time to init with mesh + textures asset Manager: 0.0229842
+
+
+Scene0 Load time: 55.6475
+
+Scene1 Load time: 8.33797
+
+Scene2 Load time: 10.648
+
+Scene3 Load time: 3.74577
+
+Scene4 Load time: 15.7236
+
+Time to init render Manager: 97.6993
+Time to init with mesh + textures asset Manager: 0.0188781
+
+
+Scene0 Load time: 51.9301
+
+Scene1 Load time: 8.03052
+
+Scene2 Load time: 11.0949
+
+Scene3 Load time: 4.06829
+
+Scene4 Load time: 15.3898
+
+Time to init render Manager: 93.8137
+Time to init with mesh + textures asset Manager: 0.0187319
+
+
+Scene0 Load time: 58.5632
+
+Scene1 Load time: 8.40947
+
+Scene2 Load time: 12.0615
+
+Scene3 Load time: 3.84678
+
+Scene4 Load time: 14.1224
+
+Time to init render Manager: 100.642
+Time to init with mesh + textures asset Manager: 0.0262812
+
+
+Scene0 Load time: 52.2627
+
+Scene1 Load time: 8.16536
+
+Scene2 Load time: 11.0407
+
+Scene3 Load time: 4.31507
+
+Scene4 Load time: 14.5129
+
+Time to init render Manager: 93.9462
+Time to init with mesh + textures asset Manager: 0.0202371
+

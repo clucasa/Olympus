@@ -13,7 +13,8 @@ using namespace std;
 enum AssetType
 {
     Texture,
-    Shader,
+    VShader,
+    PShader,
     Model
 };
 
@@ -24,15 +25,18 @@ struct Asset
 
     //if texture asset
     ID3D11ShaderResourceView* texture;
-
-    //if shader asset
-    ID3D11PixelShader* pixelShader;
+	
+	//if vShader
     ID3D11VertexShader* vertexShader;
+	ID3D10Blob* VS;
+
+    //if pShader asset
+    ID3D11PixelShader* pixelShader;
+	ID3D10Blob* PS;
 
     //if model asset
     vector<vector<Vertex>> vertexes;
     int numMeshes;
-
 };
 
 class AssetManager
@@ -43,7 +47,9 @@ public:
 
     ID3D11ShaderResourceView* RequestTexture(string filename);
 
-    void RequestShader(string filename);
+    Asset* RequestVShader(string filename);
+    Asset* RequestPShader(string filename);
+
     vector<vector<Vertex>> RequestModel(string filename, int &numMesh);
 
     Asset* FindAsset(string filename, AssetType type);
@@ -52,7 +58,8 @@ public:
     ID3D11Device *mDev;
 
     vector<Asset*> mTextureAssets;
-    vector<Asset*> mShaderAssets;
+    vector<Asset*> mVShaderAssets;
+    vector<Asset*> mPShaderAssets;
     vector<Asset*> mModelAssets;
 };
 

@@ -650,6 +650,7 @@ void Scene::PlaceJenga(XMFLOAT3 location, int numlevels, float dist, float lengt
     float height = (length / 5.0f);
 
     bool different = false;
+	
 
     if(mJengaStartPosition.size() == 1 || length != oldLength)
     {
@@ -658,12 +659,13 @@ void Scene::PlaceJenga(XMFLOAT3 location, int numlevels, float dist, float lengt
             mRenderables.push_back(jengaBlock1);
             mRenderables.push_back(jengaBlock2);
         }
-
+		
         different = true;
-        jengaBlock1 = new Box(mDevcon, mDev, mApex, length, width, height);
-        jengaBlock2 = new Box(mDevcon, mDev, mApex, width, length, height);
-
+        jengaBlock1 = new Box(mDevcon, mDev, mApex, length, width, height, mAssetManager);
+        jengaBlock2 = new Box(mDevcon, mDev, mApex, width, length, height, mAssetManager);
     }
+
+	
 
     HRESULT hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/Wood.png", 0, 0, &jengaBlock1->mTexture, 0 );
     //hr = D3DX11CreateShaderResourceViewFromFile(mDev, "Media/Textures/bricks_nmap.dds", 0, 0, &jengaBlock1->mNmap, 0 );
@@ -675,7 +677,7 @@ void Scene::PlaceJenga(XMFLOAT3 location, int numlevels, float dist, float lengt
     oldLength = length;
 
     XMFLOAT3 midBlock, rightBlock, leftBlock;
-
+	
     for(int i = 0; i < numlevels; i++)
     {
         if((i % 2) == 1)
@@ -734,6 +736,9 @@ void Scene::PlaceJenga(XMFLOAT3 location, int numlevels, float dist, float lengt
         JengaBlocks[blocks-2] = jengaBlock2;
         JengaBlocks[blocks-1] = jengaBlock1;
     }
+
+
+	
    
 }
 
