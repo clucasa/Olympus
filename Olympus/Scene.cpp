@@ -138,11 +138,41 @@ Scene::Scene( ID3D11Device *dev, ID3D11DeviceContext *devcon, Apex* apex, Geomet
     {
         LoadSettings(settingsFilenames[i]);
     }*/
+#ifdef _OPENMP
+	
+	#pragma omp parallel sections
+	{
+		#pragma omp section
+		{
+			for(int i = 0; i < (int)objectFilenames.size(); i++)
+			{
+				LoadFBX(objectFilenames[i]);
+			}
+		}
+
+		#pragma omp section
+		{
+			for(int i = 0; i < (int)sphereFilenames.size(); i++)
+			{
+				LoadSpheres(sphereFilenames[i]);
+			}
+		}
+
+		#pragma omp section
+		{
+			for(int i = 0; i < (int)physxFilenames.size(); i++)
+			{
+				LoadPhysX(physxFilenames[i]);
+			}
+		}
+	}
+
+#else
     for(int i = 0; i < (int)objectFilenames.size(); i++)
     {
         LoadFBX(objectFilenames[i]);
     }
-    for(int i = 0; i < (int)sphereFilenames.size(); i++)
+	for(int i = 0; i < (int)sphereFilenames.size(); i++)
     {
         LoadSpheres(sphereFilenames[i]);
     }
@@ -150,6 +180,9 @@ Scene::Scene( ID3D11Device *dev, ID3D11DeviceContext *devcon, Apex* apex, Geomet
     {
         LoadPhysX(physxFilenames[i]);
     }
+#endif
+
+    
 }
 
 Scene::~Scene()

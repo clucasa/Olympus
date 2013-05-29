@@ -303,3 +303,35 @@ Scene4 Load time: 14.5129
 Time to init render Manager: 93.9462
 Time to init with mesh + textures asset Manager: 0.0202371
 
+// OPen mp test
+
+
+
+
+Scene0 Load time: 37.6553
+
+Scene1 Load time: 5.13272
+
+Scene2 Load time: 9.54803
+
+Scene3 Load time: 5.00144
+
+Scene4 Load time: 11.1403
+
+Time to init render Manager: 71.5096
+Time to init with mesh + textures asset Manager: 0.0219631
+
+
+Scene0 Load time: 44.405
+
+Scene1 Load time: 6.75591
+
+Scene2 Load time: 6.6176
+
+Scene3 Load time: 4.57723
+
+Scene4 Load time: 12.3804
+
+Time to init render Manager: 78.2836
+Time to init with mesh + textures asset Manager: 0.0187656
+
