@@ -57,7 +57,7 @@ Asset* AssetManager::RequestVShader(string filename)
         char* errorStr = NULL;
         // load and compile the two shaders
 
-		D3DX11CompileFromFile(filename.c_str(), 0, 0, "VShader", "vs_5_0", 0, 0, 0, &asset->VS, &pErrorBlob, 0);
+        D3DX11CompileFromFile(filename.c_str(), 0, 0, "VShader", "vs_5_0", 0, 0, 0, &asset->VS, &pErrorBlob, 0);
         if(pErrorBlob)
         {
             pError = pErrorBlob->GetBufferPointer();
@@ -68,11 +68,11 @@ Asset* AssetManager::RequestVShader(string filename)
             }*/
             //return NULL;
         }
-		mDev->CreateVertexShader(asset->VS->GetBufferPointer(), asset->VS->GetBufferSize(), NULL, &asset->vertexShader);
+        mDev->CreateVertexShader(asset->VS->GetBufferPointer(), asset->VS->GetBufferSize(), NULL, &asset->vertexShader);
         
         mVShaderAssets.push_back(asset);
 
-		return asset;
+        return asset;
     }
 }
 
@@ -83,7 +83,7 @@ Asset* AssetManager::RequestPShader(string filename)
     {
         if(asset->type != AssetType::PShader)
             return NULL;
-		return asset;
+        return asset;
     }
     else
     {
@@ -97,7 +97,7 @@ Asset* AssetManager::RequestPShader(string filename)
         char* errorStr = NULL;
         // load and compile the two shaders
 
-		D3DX11CompileFromFile(filename.c_str(), 0, 0, "PShader", "ps_5_0", 0, 0, 0, &asset->PS, &pErrorBlob, 0);
+        D3DX11CompileFromFile(filename.c_str(), 0, 0, "PShader", "ps_5_0", 0, 0, 0, &asset->PS, &pErrorBlob, 0);
         if(pErrorBlob)
         {
             pError = pErrorBlob->GetBufferPointer();
@@ -108,10 +108,10 @@ Asset* AssetManager::RequestPShader(string filename)
             }*/
             //return NULL;
         }
-		mDev->CreatePixelShader(asset->PS->GetBufferPointer(), asset->PS->GetBufferSize(), NULL, &asset->pixelShader);
+        mDev->CreatePixelShader(asset->PS->GetBufferPointer(), asset->PS->GetBufferSize(), NULL, &asset->pixelShader);
         
         mPShaderAssets.push_back(asset);
-		return asset;
+        return asset;
     }
 }
 
@@ -167,7 +167,7 @@ Asset* AssetManager::FindAsset(string filename, AssetType type)
         }
         break;
 
-	case AssetType::PShader:
+    case AssetType::PShader:
         for(int i = 0; i < mPShaderAssets.size(); i++)
         {
             if( mPShaderAssets[i]->name.compare(filename) == 0 )
@@ -189,4 +189,9 @@ Asset* AssetManager::FindAsset(string filename, AssetType type)
     };
 
     return NULL;
+}
+
+void AssetManager::RecompileShaders()
+{
+
 }

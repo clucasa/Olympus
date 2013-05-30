@@ -255,7 +255,7 @@ void Object::Depth()
     UINT offset = 0;
 
     devcon1->VSSetShader(opVS, 0, 0);
-    devcon1->PSSetShader(opPSAlpha, 0, 0);
+    devcon1->PSSetShader(NULL, 0, 0);
     
     devcon1->VSSetConstantBuffers(1, 1, &worldCBuffer);
     devcon1->PSSetConstantBuffers(1, 1, &worldCBuffer);
@@ -277,6 +277,11 @@ void Object::Depth()
         {
             cb.material = materials[j][i]; // Per mesh
 
+			if( materials[j][i].alphaKillOn == 1 )
+			{
+				    devcon1->VSSetShader(opVS, 0, 0);
+					devcon1->PSSetShader(opPSAlpha, 0, 0);
+			}
             tempMat = XMLoadFloat4x4(&mWorldMats[j]);
             tempMat = XMMatrixInverse(&XMMatrixDeterminant(tempMat), tempMat);
             

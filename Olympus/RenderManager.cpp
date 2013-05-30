@@ -270,7 +270,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
         else if( i == 2)
             shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 60.0, 60.0);
         else if( i == 3)
-            shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 60.0, 60.0);
+            shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 120.0, 120.0);
         else
             shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 60.0, 60.0);
 
@@ -289,7 +289,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
         else if( i == 2)
             shad = new ShadowManager(mDev, mDevcon, 1024, 1024, 0, 120.0, 120.0);
         else if( i == 3)
-            shad = new ShadowManager(mDev, mDevcon, 1024, 1024, 0, 120.0, 120.0);
+            shad = new ShadowManager(mDev, mDevcon, 1024, 1024, 0, 250.0, 250.0);
         else
             shad = new ShadowManager(mDev, mDevcon, 1024, 1024, 0, 120.0, 120.0);
 
@@ -308,7 +308,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
         else if( i == 2)
             shad = new ShadowManager(mDev, mDevcon, 512, 512, 0, 300.0, 300.0);
         else if( i == 3)
-            shad = new ShadowManager(mDev, mDevcon, 512, 512, 0, 300.0, 300.0);
+            shad = new ShadowManager(mDev, mDevcon, 512, 512, 0, 500.0, 500.0);
         else
             shad = new ShadowManager(mDev, mDevcon, 512, 512, 0, 300.0, 300.0);
         shad->lightPos = mDirLight[0].Direction;
@@ -448,7 +448,7 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
     {
         for( int j = 1; j <= 6; j++ )
         {
-            shad = new ShadowManager(mDev, mDevcon, 512, 512, j);
+            shad = new ShadowManager(mDev, mDevcon, 1024, 1024, j);
             shad->lightPos = scene[2]->mPointLights[i].Position;
             shadows[2].push_back( shad );
         }

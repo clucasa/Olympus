@@ -1176,7 +1176,7 @@ void System::OnResize()
     ZeroMemory(&texd, sizeof(texd));
 
     texd.Width = mClientWidth;
-    texd.Height = mClientWidth;
+    texd.Height = mClientHeight;
     texd.ArraySize = 1;
     texd.MipLevels = 1;
     texd.SampleDesc.Count = 1;

@@ -25,14 +25,14 @@ struct Asset
 
     //if texture asset
     ID3D11ShaderResourceView* texture;
-	
-	//if vShader
+    
+    //if vShader
     ID3D11VertexShader* vertexShader;
-	ID3D10Blob* VS;
+    ID3D10Blob* VS;
 
     //if pShader asset
     ID3D11PixelShader* pixelShader;
-	ID3D10Blob* PS;
+    ID3D10Blob* PS;
 
     //if model asset
     vector<vector<Vertex>> vertexes;
@@ -53,6 +53,8 @@ public:
     vector<vector<Vertex>> RequestModel(string filename, int &numMesh);
 
     Asset* FindAsset(string filename, AssetType type);
+
+    void RecompileShaders();
 
     ID3D11DeviceContext *mDevcon;
     ID3D11Device *mDev;
