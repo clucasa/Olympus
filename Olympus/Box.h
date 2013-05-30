@@ -13,12 +13,15 @@
 #include "apex.h"
 #include "ConstBuffers.h"
 #include "struct.h"
+#include "AssetManager.h"
+
+#include "GameTimer.h"
 
 class Box : public Renderable
 {
 public:
     Box();
-    Box(ID3D11DeviceContext *devcon, ID3D11Device *dev, Apex* apex, float length, float width, float height);
+    Box(ID3D11DeviceContext *devcon, ID3D11Device *dev, Apex* apex, float length, float width, float height, AssetManager* assetManager);
 
     void UpdateBox(Camera *cam);
     void CreateGeometry(GeometryGenerator *geoGen);
@@ -55,7 +58,7 @@ public:
     ID3D11ShaderResourceView*   mTexture;
     ID3D11ShaderResourceView*   mNmap;
     
-    
+    AssetManager* mAssetManager;
 
     struct cbuffs *cb;
 

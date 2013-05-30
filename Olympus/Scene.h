@@ -12,6 +12,8 @@
 #include <string>
 #include "AssetManager.h"
 
+#include <omp.h>
+
 class Apex;
 //class Camera;
 

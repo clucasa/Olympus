@@ -36,46 +36,82 @@ ID3D11ShaderResourceView* AssetManager::RequestTexture(string filename)
     }
 }
 
-void AssetManager::RequestShader(string filename)
+Asset* AssetManager::RequestVShader(string filename)
 {
-    Asset* asset = FindAsset(filename, AssetType::Shader);
+    Asset* asset = FindAsset(filename, AssetType::VShader);
     if(asset)
     {
-        if(asset->type != AssetType::Shader)
-            return;
-        //return asset->texture;
+        if(asset->type != AssetType::VShader)
+            return NULL;
+        return asset;
     }
     else
     {
         asset = new Asset();
         asset->name = filename;
-        asset->type = AssetType::Shader;
+        asset->type = AssetType::VShader;
+
 
         ID3D10Blob* pErrorBlob = NULL;
         LPVOID pError = NULL;
         char* errorStr = NULL;
         // load and compile the two shaders
-        ID3D10Blob *VS, *PS;
-        //D3DX11CompileFromFile(, 0, 0, "VShader", "vs_5_0", 0, 0, 0, &VS, &pErrorBlob, 0);
-        //if(pErrorBlob)
-        //{
-        //    pError = pErrorBlob->GetBufferPointer();
-        //    errorStr = (char*)pError;
-        //    MessageBox(0,errorStr,0,0);
-        //   /* __asm {
-        //        INT 3
-        //    }*/
-        //    //return;
-        //}
 
-        //HRESULT hr = D3DX11CreateShaderResourceViewFromFile( mDev, filename.c_str(), NULL, NULL, &asset->texture, NULL );
-        //if(FAILED(hr))
-        //	return NULL;
-        //else
+		D3DX11CompileFromFile(filename.c_str(), 0, 0, "VShader", "vs_5_0", 0, 0, 0, &asset->VS, &pErrorBlob, 0);
+        if(pErrorBlob)
         {
-            mShaderAssets.push_back(asset);
-            //return asset->texture;
+            pError = pErrorBlob->GetBufferPointer();
+            errorStr = (char*)pError;
+            //MessageBox(0,errorStr,0,0);
+           /* __asm {
+                INT 3
+            }*/
+            //return NULL;
         }
+		mDev->CreateVertexShader(asset->VS->GetBufferPointer(), asset->VS->GetBufferSize(), NULL, &asset->vertexShader);
+        
+        mVShaderAssets.push_back(asset);
+
+		return asset;
+    }
+}
+
+Asset* AssetManager::RequestPShader(string filename)
+{
+    Asset* asset = FindAsset(filename, AssetType::PShader);
+    if(asset)
+    {
+        if(asset->type != AssetType::PShader)
+            return NULL;
+		return asset;
+    }
+    else
+    {
+        asset = new Asset();
+        asset->name = filename;
+        asset->type = AssetType::PShader;
+
+
+        ID3D10Blob* pErrorBlob = NULL;
+        LPVOID pError = NULL;
+        char* errorStr = NULL;
+        // load and compile the two shaders
+
+		D3DX11CompileFromFile(filename.c_str(), 0, 0, "PShader", "ps_5_0", 0, 0, 0, &asset->PS, &pErrorBlob, 0);
+        if(pErrorBlob)
+        {
+            pError = pErrorBlob->GetBufferPointer();
+            errorStr = (char*)pError;
+            //MessageBox(0,errorStr,0,0);
+           /* __asm {
+                INT 3
+            }*/
+            //return NULL;
+        }
+		mDev->CreatePixelShader(asset->PS->GetBufferPointer(), asset->PS->GetBufferSize(), NULL, &asset->pixelShader);
+        
+        mPShaderAssets.push_back(asset);
+		return asset;
     }
 }
 
@@ -121,12 +157,22 @@ Asset* AssetManager::FindAsset(string filename, AssetType type)
         }
         break;
 
-    case AssetType::Shader:
-        for(int i = 0; i < mShaderAssets.size(); i++)
+    case AssetType::VShader:
+        for(int i = 0; i < mVShaderAssets.size(); i++)
         {
-            if( mShaderAssets[i]->name.compare(filename) == 0 )
+            if( mVShaderAssets[i]->name.compare(filename) == 0 )
             {
-                return mShaderAssets[i];
+                return mVShaderAssets[i];
+            }
+        }
+        break;
+
+	case AssetType::PShader:
+        for(int i = 0; i < mPShaderAssets.size(); i++)
+        {
+            if( mPShaderAssets[i]->name.compare(filename) == 0 )
+            {
+                return mPShaderAssets[i];
             }
         }
         break;
