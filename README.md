@@ -3,11 +3,11 @@ Olympus
 This is a graphics engine developed by four Oregon State University Students in Computer Science. 
 Made for our senior design project, this uses the most recent versions of DirectX and PhysX.
 
-NOTE: Takes a really long time to load all the files. Give it 10-15 minutes. We are working on the speed as our next priority.
+NOTE: While we have improved load times, give it a minute or two to laod.
 
 To run:
 1. Requires a Windows machine, and preferably a discrete graphics card (DirectX 11 Compatible).
-2. Delete rainEmitter.apb and RainEmitter.apb
+2. Delete rainEmitter.apb and RainEmitter.apb (if they exist)
 3. Navigate to Olympus/Olympus/Olympus.exe to run
 
 Controls:
