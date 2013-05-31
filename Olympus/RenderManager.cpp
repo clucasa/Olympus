@@ -264,15 +264,15 @@ mDevcon(devcon), mDev(dev), mSwapchain(swapchain), mCam(cam), mApex(apex), mView
     for( int i = 0; i < scene.size(); i++ )
     {
         if( i == 0)
-            shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 25.0, 25.0);
-        else if( i == 1)
-            shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 50.0, 50.0);
-        else if( i == 2)
-            shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 60.0, 60.0);
-        else if( i == 3)
             shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 120.0, 120.0);
+        else if( i == 1)
+            shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 120.0, 120.0);
+        else if( i == 2)
+            shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 120.0, 120.0);
+        else if( i == 3)
+            shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 180.0, 180.0);
         else
-            shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 60.0, 60.0);
+            shad = new ShadowManager(mDev, mDevcon, 2048, 2048, 0, 120.0, 120.0);
 
         shad->lightPos = mDirLight[0].Direction;
         shadows[i].push_back( shad );

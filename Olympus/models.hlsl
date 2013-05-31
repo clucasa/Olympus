@@ -119,14 +119,14 @@ float shadowVal(VOut input, int i)
     input.lpos[i].y = input.lpos[i].y/-2 + 0.5;
 
     if( i == 0 )
-        input.lpos[i].z -= .0005;
+        input.lpos[i].z -= .0002;
     if( i == 1 )
-        input.lpos[i].z -= .003;
+        input.lpos[i].z -= .0003;
     if( i == 2 )
         input.lpos[i].z -= .003;
 
     //float samp = 1000 * 1/4096;
-    float samp = .0005;
+    float samp = .00025;
 
     float3 shadowCoeff = (
         offset_lookup(shadowTexture[i], input.lpos[i], float2(0, 0))+
