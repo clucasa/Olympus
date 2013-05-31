@@ -1262,7 +1262,9 @@ void System::SwitchScene(int scene)
         //rendManager->scene[mCurrentScene]->ToggleParticles(false);
 
         rendManager->scene[mCurrentScene]->ResetPins();
+        rendManager->scene[mCurrentScene]->ClearProjectiles();
         
+
         mCam->SetPosition(pos);
         mCam->LookAt(pos, tar, up); 
         mCam->UpdateViewMatrix();
@@ -1304,6 +1306,7 @@ void System::SwitchScene(int scene)
         rendManager->sceneBuff.pLightOn  = 1.0f;
 
         rendManager->scene[mCurrentScene]->ResetJenga();
+        rendManager->scene[mCurrentScene]->ClearProjectiles();
 
 
         mCam->SetPosition(pos);
@@ -1313,21 +1316,24 @@ void System::SwitchScene(int scene)
 
     if(scene == CurrentScene::OPENWORLD)
     {
-        XMFLOAT3 pos = XMFLOAT3(348.6f, -159.7f, 483.7f);
-        XMFLOAT3 tar = XMFLOAT3(349.6f, -159.7f, 481.7f);
-        XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+        XMFLOAT3 pos = XMFLOAT3(11.6f, 7.7f, 116.7f);
+		XMFLOAT3 tar = XMFLOAT3(12.6f, 7.7f, 103.7f);
+		XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
-        rendManager->scene[mCurrentScene]->cController->MoveTo(348.6f, -159.7f, 483.7f);//Move to specific location
-        rendManager->scene[mCurrentScene]->cController->SetSpeed(0.75f);
-        mCam->SetPosition(pos);
-        mCam->LookAt(pos, tar, up); 
-        mCam->UpdateViewMatrix();
+		rendManager->scene[mCurrentScene]->cController->MoveTo(11.6f, 7.7f, 116.7f);//Move to specific location
+		rendManager->scene[mCurrentScene]->cController->SetSpeed(0.75f);
+		mCam->SetPosition(pos);
+		mCam->LookAt(pos, tar, up); 
+		mCam->UpdateViewMatrix();
+
+        rendManager->scene[mCurrentScene]->ClearProjectiles();
+
     }
 
     if(scene == CurrentScene::HUB)
     {
-        XMFLOAT3 pos = XMFLOAT3(-1.29f, -11.0f, 19.93f);
-        XMFLOAT3 tar = XMFLOAT3(-1.8f, -10.0f, 15.3f);
+        XMFLOAT3 pos = XMFLOAT3(-3.0f, -11.0f, -2.5f);
+        XMFLOAT3 tar = XMFLOAT3(-3.0f, -10.0f, -10.0f);
         XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
         rendManager->scene[mCurrentScene]->cController->MoveTo(pos.x,pos.y,pos.z);//Move to specific location
@@ -1338,6 +1344,8 @@ void System::SwitchScene(int scene)
         rendManager->sceneBuff.dirLightOn = 1.0f;
         rendManager->sceneBuff.pLightOn  = 1.0f;
         //rendManager->scene[mCurrentScene]->ToggleParticles(true);
+
+        rendManager->scene[mCurrentScene]->ClearProjectiles();
 
 
         mCam->SetPosition(pos);

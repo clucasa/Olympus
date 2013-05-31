@@ -7,8 +7,8 @@
       <value name="max" type="F32">1</value>
     </struct>
     <struct name="rateRange">
-      <value name="min" type="F32">1000</value>
-      <value name="max" type="F32">2800</value>
+      <value name="min" type="F32">19500</value>
+      <value name="max" type="F32">19900</value>
     </struct>
     <struct name="lifetimeRange">
       <value name="min" type="F32">10</value>
@@ -18,7 +18,7 @@
       <value name="min" type="Vec3">-3 0 -3</value>
       <value name="max" type="Vec3">3 2 3</value>
     </struct>
-    <value name="maxSamples" type="U32">3000</value>
+    <value name="maxSamples" type="U32">19990</value>
     <struct name="lodParamDesc">
       <value name="version" type="U32">0</value>
       <value name="maxDistance" type="F32">1000</value>
@@ -33,7 +33,7 @@
     <value name="geometryType" type="Ref" included="1" className="EmitterGeomSphereParams" version="0.0" checksum="0xef55035f 0xc941ff5a 0xf278eb78 0xc61a298c">    
       <struct name="">
         <value name="emitterType" type="Enum">rate</value>
-        <value name="radius" type="F32">100</value>
+        <value name="radius" type="F32">300</value>
       </struct>
     </value>
     <value name="emitterDuration" type="F32">PX_MAX_F32</value>
