@@ -13,5 +13,4 @@ c curtainew 17.8 -5.0 22.55 0.0 0.7854 0.0 jenga_flag.png 50.0
 # e SmokeEmitter 36.8 -18.0 -32.0 smoke.dds
 e TorchEmitter -22.7255 -11.34 -15.337 bioFire1.png
 e TorchEmitter -11.8275 -11.34 -26.35 bioFire1.png
-e RainEmitter 0.0 5.0 26.0 SoftParticle.dds
 p 0.0 1.0 0.0 50.0
